@@ -4,9 +4,10 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Download, FileJson } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CategoryPie, type CategorySlice } from "@/components/reports/category-pie";
 import { MonthBars } from "@/components/reports/month-bars";
+import { ExportLinks } from "@/components/settings/export-links";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile } from "@/lib/auth";
@@ -50,7 +51,9 @@ async function Reports({
   const current = getFinancialPeriod(await currentDate(), msd);
   const period = month ? periodStartingIn(month, msd) : current;
   const isCurrent = period.start === current.start;
-  const periods = Array.from({ length: MONTHS }, (_, i) => shiftPeriod(period, msd, i - MONTHS + 1));
+  const periods = Array.from({ length: MONTHS }, (_, i) =>
+    shiftPeriod(period, msd, i - MONTHS + 1),
+  );
 
   const [t, summaries, spend] = await Promise.all([
     getTranslations("Reports"),
@@ -154,7 +157,9 @@ async function Reports({
                       <th scope="row" className="px-3 py-2 text-left font-normal">
                         {m.label}
                       </th>
-                      <td className="px-3 py-2 text-right">{formatMoney(m.incomeCents, primary)}</td>
+                      <td className="px-3 py-2 text-right">
+                        {formatMoney(m.incomeCents, primary)}
+                      </td>
                       <td className="px-3 py-2 text-right">
                         {formatMoney(m.expenseCents, primary)}
                       </td>
@@ -188,21 +193,7 @@ async function Reports({
       )}
 
       <Section title={t("export")} hint={t("exportHint")}>
-        <div className="flex flex-wrap gap-2">
-          {/* Plain links: the route handler answers with a file download. */}
-          <Button asChild variant="outline">
-            <a href="/app/reports/export?format=csv" download>
-              <Download aria-hidden />
-              {t("exportCsv")}
-            </a>
-          </Button>
-          <Button asChild variant="outline">
-            <a href="/app/reports/export?format=json" download>
-              <FileJson aria-hidden />
-              {t("exportJson")}
-            </a>
-          </Button>
-        </div>
+        <ExportLinks />
       </Section>
     </>
   );

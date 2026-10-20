@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  deleteAccountSchema,
   onboardingSchema,
   recurringItemSchema,
   signInSchema,
@@ -194,5 +195,16 @@ describe("recurringItemSchema", () => {
     expect(firstMessage(recurringItemSchema.safeParse({ ...valid, name: "  " }))).toBe(
       "recurringNameRequired",
     );
+  });
+});
+
+describe("deleteAccountSchema", () => {
+  it("accepts only the exact confirmation word", () => {
+    expect(deleteAccountSchema.safeParse({ confirmation: "EXCLUIR" }).success).toBe(true);
+    for (const confirmation of ["excluir", " EXCLUIR", "EXCLUIR ", "", "DELETE"]) {
+      expect(firstMessage(deleteAccountSchema.safeParse({ confirmation }))).toBe(
+        "confirmationMismatch",
+      );
+    }
   });
 });

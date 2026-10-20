@@ -47,6 +47,12 @@ export const onboardingSchema = z.object({
     .max(28, { error: "monthStartDayInvalid" }),
 });
 export type OnboardingInput = z.input<typeof onboardingSchema>;
+
+/** The user types this word to confirm deleting their account. */
+export const DELETE_ACCOUNT_WORD = "EXCLUIR";
+export const deleteAccountSchema = z.object({
+  confirmation: z.literal(DELETE_ACCOUNT_WORD, { error: "confirmationMismatch" }),
+});
 export type OnboardingData = z.output<typeof onboardingSchema>;
 
 export const TRANSACTION_TYPES = ["expense", "income"] as const;

@@ -8,13 +8,131 @@
     "back": "Voltar",
     "continue": "Continuar",
     "signOut": "Sair",
+    "settings": "Ajustes",
     "loading": "Carregando…"
+  },
+  "Settings": {
+    "title": "Ajustes",
+    "account": "Conta",
+    "name": "Nome",
+    "email": "E-mail",
+    "currency": "Moeda principal",
+    "monthStartDay": "Mês financeiro começa",
+    "dayValue": "dia {day}",
+    "data": "Seus dados",
+    "dataHint": "Baixe uma cópia de tudo o que está guardado na sua conta.",
+    "legal": "Privacidade e termos",
+    "privacy": "Política de privacidade",
+    "terms": "Termos de uso",
+    "delete": {
+      "section": "Excluir conta",
+      "hint": "Apaga sua conta e todos os dados (lançamentos, fixos, metas e categorias). Não dá para desfazer.",
+      "button": "Excluir minha conta",
+      "title": "Excluir sua conta para sempre?",
+      "description": "Todos os seus dados serão apagados na hora e não poderão ser recuperados. Se quiser uma cópia, exporte antes.",
+      "typeToConfirm": "Digite {word} para confirmar",
+      "cancel": "Cancelar",
+      "confirm": "Excluir conta",
+      "deleting": "Excluindo…"
+    },
+    "errors": {
+      "confirmationMismatch": "Digite a palavra de confirmação exatamente como pedido.",
+      "deleteUnavailable": "A exclusão de conta não está disponível neste ambiente.",
+      "deleteFailed": "Não foi possível excluir a conta. Tente de novo em instantes."
+    }
+  },
+  "Legal": {
+    "home": "Início",
+    "updated": "Atualizado em 20 de outubro de 2026",
+    "privacy": {
+      "title": "Política de privacidade",
+      "sections": [
+        {
+          "title": "O que guardamos",
+          "paragraphs": [
+            "Seu e-mail e nome, usados para entrar e para identificar a conta.",
+            "O que você registra no app: lançamentos, categorias, orçamentos, fixos e metas, além das preferências de moeda e de início do mês financeiro.",
+            "Não coletamos localização, contatos nem dados bancários, e não pedimos acesso à sua conta no banco."
+          ]
+        },
+        {
+          "title": "Para que usamos",
+          "paragraphs": [
+            "Só para o app funcionar: mostrar seus números, calcular orçamentos e metas e converter entre euro e real. Seus dados não são vendidos, compartilhados para publicidade nem usados para traçar perfil."
+          ]
+        },
+        {
+          "title": "Onde ficam",
+          "paragraphs": [
+            "O banco de dados e a autenticação ficam no Supabase, em servidores na Irlanda (União Europeia). O site é servido pela Vercel.",
+            "As cotações de câmbio vêm do Banco Central Europeu pela API Frankfurter; nenhum dado seu é enviado nessa consulta.",
+            "Cada conta só enxerga os próprios dados: o banco aplica essa regra em todas as tabelas."
+          ]
+        },
+        {
+          "title": "Cookies",
+          "paragraphs": [
+            "Usamos apenas os cookies necessários para manter você conectado. Não há cookies de publicidade nem ferramentas de análise de terceiros."
+          ]
+        },
+        {
+          "title": "Seus direitos",
+          "paragraphs": [
+            "Você pode ver e corrigir seus dados no próprio app, baixar uma cópia completa em Ajustes → Seus dados e excluir a conta em Ajustes → Excluir conta. A exclusão apaga tudo na hora e não pode ser desfeita.",
+            "Pelo Regulamento Geral de Proteção de Dados (RGPD) e pela LGPD, você também pode pedir informações sobre o tratamento dos seus dados ou apresentar reclamação à autoridade de proteção de dados do seu país."
+          ]
+        },
+        {
+          "title": "Por quanto tempo",
+          "paragraphs": [
+            "Guardamos seus dados enquanto a conta existir. Ao excluí-la, eles são apagados do banco imediatamente; cópias de segurança do provedor expiram sozinhas em poucos dias."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "title": "Termos de uso",
+      "sections": [
+        {
+          "title": "O serviço",
+          "paragraphs": [
+            "Finanças é uma ferramenta pessoal para registrar entradas, gastos, orçamentos e metas em euro e real. É oferecida gratuitamente e como está, sem garantia de disponibilidade contínua."
+          ]
+        },
+        {
+          "title": "Não é aconselhamento financeiro",
+          "paragraphs": [
+            "Os números, projeções e conversões de câmbio são estimativas para organização pessoal. Não são aconselhamento financeiro, contábil ou fiscal; confira valores importantes antes de tomar decisões."
+          ]
+        },
+        {
+          "title": "Sua conta",
+          "paragraphs": [
+            "Você é responsável pelo que registra e por manter sua senha em segredo. Não use o app para fins ilegais nem tente acessar dados de outras pessoas."
+          ]
+        },
+        {
+          "title": "Encerramento",
+          "paragraphs": [
+            "Você pode excluir sua conta a qualquer momento em Ajustes. Podemos encerrar contas usadas de forma abusiva ou descontinuar o serviço; nesse caso, avisaremos com antecedência para que você possa exportar seus dados."
+          ]
+        },
+        {
+          "title": "Mudanças",
+          "paragraphs": [
+            "Se estes termos mudarem, a data no topo da página será atualizada. Continuar usando o app depois disso significa aceitar a nova versão."
+          ]
+        }
+      ]
+    }
   },
   "Landing": {
     "title": "Seu dinheiro em euro e real, sem planilha",
     "subtitle": "Registre o que entra e o que sai, acompanhe o mês e veja se suas metas estão no ritmo. Tudo convertido para a sua moeda principal.",
     "cta": "Criar conta",
     "login": "Já tenho conta",
+    "privacy": "Privacidade",
+    "terms": "Termos",
     "features": {
       "currencies": "EUR e BRL com conversão automática",
       "monthly": "Tracker mensal com orçamento por categoria",
@@ -268,7 +386,8 @@
       "checkEmailTitle": "Confirme seu e-mail",
       "checkEmail": "Enviamos um link de confirmação para {email}. Clique nele para ativar sua conta.",
       "hasAccount": "Já tem conta?",
-      "loginLink": "Entrar"
+      "loginLink": "Entrar",
+      "legal": "Ao criar a conta, você aceita os <terms>Termos de uso</terms> e a <privacy>Política de privacidade</privacy>."
     },
     "errors": {
       "invalidInput": "Confira os campos destacados.",

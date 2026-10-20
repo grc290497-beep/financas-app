@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/actions/auth";
 
@@ -14,12 +14,21 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           <Link href="/app" className="font-semibold tracking-tight">
             {t("appName")}
           </Link>
-          <form action={signOut}>
-            <Button type="submit" variant="ghost" size="sm">
-              <LogOut aria-hidden />
-              {t("signOut")}
+          <div className="flex items-center gap-1">
+            {/* Ajustes sits here instead of a sixth tab; revisited in the design pass. */}
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/app/settings">
+                <Settings aria-hidden />
+                {t("settings")}
+              </Link>
             </Button>
-          </form>
+            <form action={signOut}>
+              <Button type="submit" variant="ghost" size="sm">
+                <LogOut aria-hidden />
+                {t("signOut")}
+              </Button>
+            </form>
+          </div>
         </div>
       </header>
       {children}

@@ -4,7 +4,8 @@ import { supabaseUrl } from "@/lib/env";
 
 /**
  * Service-role client: bypasses RLS. Server only, and only for writes no
- * user may do themselves (the shared FX cache). Returns null when the key
+ * user may do themselves (the shared FX cache, deleting their own auth
+ * account). Returns null when the key
  * is not configured (e.g. local development without it).
  */
 export function createAdminClient() {

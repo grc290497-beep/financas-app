@@ -92,7 +92,7 @@ Push direto na `main` está aprovado; a Vercel faz o deploy sozinha. Para confer
 | 4 Dashboard + orçamento | ✅ |
 | 5 Metas | ✅ testado no navegador |
 | Extra pós-fase 5 | ✅ meses futuros mostram os fixos previstos (até 12 meses à frente, gerados ao abrir o mês); edição de fixo com **"Mudança vale a partir de"** (divide o item: antigo termina na véspera, novo começa na próxima ocorrência; recusa se já há pagamento confirmado a partir da data) |
-| 6 Relatórios + exportação | ✅ `/app/reports` (barras 12 meses, rosca por categoria, tabela) + `/app/reports/export?format=csv\|json`; gráficos ainda não vistos com dados confirmados |
+| 6 Relatórios + exportação | ✅ `/app/reports` (barras 12 meses, rosca por categoria, tabela) + `/app/reports/export?format=csv\|json`; testado no navegador com dados de teste (já apagados) |
 | 7 PWA, polimento, E2E, privacidade + passe de design | pendente |
 
 Último commit: "Resolve the session before goal queries…" (após `c4ac7c2`). 175 testes unitários passando.

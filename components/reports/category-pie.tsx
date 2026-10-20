@@ -57,7 +57,11 @@ export function CategoryPie({ slices, currency }: { slices: CategorySlice[]; cur
       <ul className="flex w-full flex-col gap-2 text-sm">
         {slices.map((s) => (
           <li key={s.name} className="flex items-center gap-2">
-            <span className="size-2.5 shrink-0 rounded-sm" style={{ background: s.color }} aria-hidden />
+            <span
+              className="size-2.5 shrink-0 rounded-sm"
+              style={{ background: s.color }}
+              aria-hidden
+            />
             <span className="min-w-0 flex-1 truncate">{s.name}</span>
             <span className="shrink-0 tabular-nums">{formatMoney(s.cents, currency)}</span>
             <span className="w-10 shrink-0 text-right text-muted-foreground tabular-nums">
