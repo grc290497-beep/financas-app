@@ -36,7 +36,7 @@ export function AppNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium md:h-11 md:flex-row md:gap-2 md:px-3 md:text-sm",
-                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className="size-5 md:size-4" aria-hidden />

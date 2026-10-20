@@ -29,8 +29,8 @@ export async function generateMetadata(): Promise<Metadata> {
 // Matches --background in light and dark (globals.css), so the browser chrome blends in.
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#fbfbfe" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d0f17" },
   ],
   viewportFit: "cover",
 };

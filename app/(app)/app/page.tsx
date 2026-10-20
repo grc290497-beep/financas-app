@@ -127,19 +127,23 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
         </section>
       ) : (
         <>
-          <section className="flex flex-col gap-1.5 py-2" aria-labelledby="free">
-            <h2 id="free" className="text-sm text-muted-foreground">
+          {/* The one coloured region: the number the month is steered by. */}
+          <section
+            className="flex flex-col gap-1.5 rounded-3xl bg-linear-135 from-hero to-hero-2 px-5 py-6 text-hero-foreground shadow-lg shadow-hero/25"
+            aria-labelledby="free"
+          >
+            <h2 id="free" className="text-sm text-hero-muted">
               {t("freeToSpend")}
             </h2>
             <p
               className={cn(
                 "text-5xl font-semibold tracking-tight tabular-nums",
-                m.freeToSpendCents < 0 && "text-destructive",
+                m.freeToSpendCents < 0 && "text-hero-negative",
               )}
             >
               {formatMoney(m.freeToSpendCents, primary)}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-hero-muted">
               {isCurrent && m.freePerDayCents !== null
                 ? t("perDay", {
                     amount: formatMoney(m.freePerDayCents, primary),
@@ -148,7 +152,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                 : t("freeToSpendHint")}
             </p>
             {goalsPlannedCents > 0 && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-hero-muted">
                 {t("goalsHint", { amount: formatMoney(goalsPlannedCents, primary) })}
               </p>
             )}
@@ -353,11 +357,7 @@ function DashboardSkeleton() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-9 w-full" />
       </div>
-      <div className="flex flex-col gap-2 py-2">
-        <Skeleton className="h-4 w-28" />
-        <Skeleton className="h-12 w-56" />
-        <Skeleton className="h-4 w-44" />
-      </div>
+      <Skeleton className="h-40 w-full rounded-3xl" />
       <Skeleton className="h-40 w-full rounded-2xl" />
       <Skeleton className="h-40 w-full rounded-xl" />
     </div>
