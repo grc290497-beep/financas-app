@@ -55,8 +55,11 @@ async function Fixed() {
   const toPay = planned.filter((p) => p.type === "expense");
   const toReceive = planned.filter((p) => p.type === "income");
   const remaining = toPay.reduce((sum, p) => sum + p.amountPrimaryCents, 0);
-  const expenses = items.filter((i) => i.type === "expense");
-  const incomes = items.filter((i) => i.type === "income");
+  // Items with no occurrence left (e.g. the old version after a raise) move to a folded list.
+  const running = items.filter((i) => nextOccurrence(i, today) !== null);
+  const ended = items.filter((i) => nextOccurrence(i, today) === null);
+  const expenses = running.filter((i) => i.type === "expense");
+  const incomes = running.filter((i) => i.type === "income");
 
   const addButton = (
     <RecurringSheet
@@ -148,6 +151,23 @@ async function Fixed() {
           primary={primary}
         />
       )}
+      {ended.length > 0 && (
+        <details className="group">
+          <summary className="cursor-pointer text-sm text-muted-foreground select-none hover:text-foreground">
+            {t("endedList", { count: ended.length })}
+          </summary>
+          <div className="mt-2">
+            <ItemList
+              title={t("endedTitle")}
+              items={ended}
+              today={today}
+              categories={categories}
+              categoryById={categoryById}
+              primary={primary}
+            />
+          </div>
+        </details>
+      )}
     </>
   );
 }
@@ -182,7 +202,7 @@ async function PlannedList({
           const overdue = row.occurredOn < today && row.type === "expense";
           const due = dayMonth(row.occurredOn);
           return (
-            <li key={row.id} className="flex items-center gap-3 px-3 py-3">
+            <li key={row.id} className="flex items-center gap-3 px-4 py-3.5">
               <CategoryIcon icon={category?.icon ?? null} color={category?.color ?? null} />
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">{row.description}</span>
@@ -274,7 +294,7 @@ async function ItemList({
                   startOn: item.startOn,
                   endOn: item.endOn ?? "",
                 }}
-                className="flex w-full items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none"
+                className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-accent/60 focus-visible:bg-accent/60 focus-visible:outline-none"
               >
                 <CategoryIcon icon={category?.icon ?? null} color={category?.color ?? null} />
                 <span className="flex min-w-0 flex-1 flex-col">

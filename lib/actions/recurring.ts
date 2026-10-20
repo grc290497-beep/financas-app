@@ -91,12 +91,12 @@ export async function deleteRecurringItem(id: string): Promise<RecurringActionRe
   if (!parsedId.success) return { status: "error", error: "invalidInput" };
 
   const supabase = await createClient();
-  // Unpaid occurrences go with the item; paid ones stay (the link is cleared).
+  // Unpaid and skipped occurrences go with the item; paid ones stay (the link is cleared).
   const { error: plannedError } = await supabase
     .from("transactions")
     .delete()
     .eq("recurring_item_id", parsedId.data)
-    .eq("status", "planned");
+    .in("status", ["planned", "skipped"]);
   if (plannedError) return { status: "error", error: "deleteFailed" };
 
   const { data: deleted, error } = await supabase
@@ -214,7 +214,7 @@ async function splitRecurringItem(
     .from("transactions")
     .delete()
     .eq("recurring_item_id", id)
-    .eq("status", "planned")
+    .in("status", ["planned", "skipped"]) // the old item ends; the new one plans afresh
     .gte("occurred_on", effectiveFrom);
 
   await planCurrentPeriod();

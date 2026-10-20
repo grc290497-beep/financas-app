@@ -92,6 +92,7 @@ export const getCategoryUsage = cache(async (): Promise<Record<string, number>> 
   const { data, error } = await supabase
     .from("transactions")
     .select("category_id")
+    .neq("status", "skipped")
     .gte("occurred_on", since)
     .limit(1000);
   if (error) throw error;
@@ -111,6 +112,7 @@ export async function listTransactions(
     .select(
       "id, type, category_id, description, amount_cents, currency, fx_rate, amount_primary_cents, occurred_on, status, recurring_item_id, categories (name, icon, color)",
     )
+    .neq("status", "skipped") // removed fixed-cost occurrences (see deleteTransaction)
     .gte("occurred_on", from)
     .lte("occurred_on", to)
     .order("occurred_on", { ascending: false })

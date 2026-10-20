@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       "occurred_on",
     );
     return download(
-      transactionsCsv(rows as ExportTransaction[]),
+      transactionsCsv((rows as ExportTransaction[]).filter((t) => t.status !== "skipped")),
       `lancamentos-${today}.csv`,
       "text/csv; charset=utf-8",
     );

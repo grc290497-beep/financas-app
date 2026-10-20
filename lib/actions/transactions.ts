@@ -78,10 +78,22 @@ export async function deleteTransaction(id: string): Promise<TransactionActionRe
   if (!parsedId.success) return { status: "error", error: "invalidInput" };
 
   const supabase = await createClient();
-  const { error, count } = await supabase
+  const { data: existing } = await supabase
     .from("transactions")
-    .delete({ count: "exact" })
-    .eq("id", parsedId.data);
+    .select("status, recurring_item_id")
+    .eq("id", parsedId.data)
+    .maybeSingle();
+  if (!existing) return { status: "error", error: "notFound" };
+
+  // A planned occurrence of a fixed cost is marked skipped, not deleted: the row
+  // keeps its (recurring_item_id, occurred_on) slot, so generation won't recreate it.
+  const skip = existing.recurring_item_id !== null && existing.status === "planned";
+  const { error, count } = skip
+    ? await supabase
+        .from("transactions")
+        .update({ status: "skipped" }, { count: "exact" })
+        .eq("id", parsedId.data)
+    : await supabase.from("transactions").delete({ count: "exact" }).eq("id", parsedId.data);
   if (error) return { status: "error", error: "deleteFailed" };
   if (!count) return { status: "error", error: "notFound" };
 

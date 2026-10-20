@@ -190,6 +190,8 @@
     "expenses": "Custos fixos",
     "incomes": "Entradas recorrentes",
     "next": "Próximo: {date}",
+    "endedList": "{count, plural, one {# fixo encerrado} other {# fixos encerrados}}",
+    "endedTitle": "Encerrados",
     "ended": "Encerrado",
     "schedule": {
       "monthly": "Todo dia {day}",
