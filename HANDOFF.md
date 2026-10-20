@@ -93,7 +93,7 @@ Push direto na `main` está aprovado; a Vercel faz o deploy sozinha. Para confer
 | 5 Metas | ✅ testado no navegador |
 | Extra pós-fase 5 | ✅ meses futuros mostram os fixos previstos (até 12 meses à frente, gerados ao abrir o mês); edição de fixo com **"Mudança vale a partir de"** (divide o item: antigo termina na véspera, novo começa na próxima ocorrência; recusa se já há pagamento confirmado a partir da data) |
 | 6 Relatórios + exportação | ✅ `/app/reports` (barras 12 meses, rosca por categoria, tabela) + `/app/reports/export?format=csv\|json`; testado no navegador com dados de teste (já apagados) |
-| 7 PWA, polimento, E2E, privacidade + passe de design | 🟡 feito: Ajustes (`/app/settings`), excluir conta, `/privacy` e `/terms`, manifest + ícones (`app/icon.tsx`), modo escuro (next-themes), E2E (`npm run test:e2e`, precisa da service role no `.env.local`), passe de design no Início e Lançamentos. Falta: rodar o E2E, contato do responsável na política de privacidade, editar perfil, design das demais telas, testar instalação no iOS/Android |
+| 7 PWA, polimento, E2E, privacidade + passe de design | 🟡 quase: Ajustes com edição de perfil, excluir conta, `/privacy` e `/terms`, PWA (`app/manifest.ts`, ícones de `components/brand/mark.ts`), escuro por padrão, paleta esmeralda+latão (positivo latão, negativo cobre), logo, rodapé, E2E escrito. Falta: rodar o E2E (service role no `.env.local`), e-mail de contato na privacidade, testar "Adicionar à tela inicial" no celular, domínio próprio (opcional) |
 
 Último commit: "Resolve the session before goal queries…" (após `c4ac7c2`). 175 testes unitários passando.
 O usuário apagou os próprios dados de teste no app; o banco estava vazio em 20/10.
@@ -157,5 +157,3 @@ O usuário apagou os próprios dados de teste no app; o banco estava vazio em 20
 - Variáveis de ambiente de Preview na Vercel ainda só estão em Production.
 - Supabase: ativar "leaked password protection" (aviso do advisor).
 - SMTP próprio no Supabase (o padrão tem limite baixo de e-mails) — Fase 7.
-- Excluir um lançamento previsto de um fixo faz ele ser recriado (falta um status "skipped").
-- Depois de um aumento, a aba Fixos mostra o fixo antigo como "Encerrado" (não é escondido).
