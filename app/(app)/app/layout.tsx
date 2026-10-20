@@ -1,0 +1,28 @@
+import { Suspense } from "react";
+import { AppNav } from "@/components/nav/app-nav";
+import { QuickAdd } from "@/components/transactions/quick-add";
+import { requireProfile } from "@/lib/auth";
+import { getCategories, getCategoryUsage } from "@/lib/transactions";
+
+export default function AppSectionLayout({ children }: LayoutProps<"/app">) {
+  return (
+    <div className="flex flex-1 flex-col pb-24 md:pb-0">
+      <AppNav />
+      {children}
+      <Suspense fallback={null}>
+        <QuickAddLoader />
+      </Suspense>
+    </div>
+  );
+}
+
+async function QuickAddLoader() {
+  // Profile first: it resolves the session (request time) before the category queries.
+  const profile = await requireProfile();
+  const [categories, usage] = await Promise.all([getCategories(), getCategoryUsage()]);
+  if (!profile.onboardingDone) return null;
+
+  return (
+    <QuickAdd categories={categories} usage={usage} primaryCurrency={profile.primaryCurrency} />
+  );
+}

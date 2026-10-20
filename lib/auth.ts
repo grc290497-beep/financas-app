@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { Currency } from "@/lib/validators";
 
@@ -16,6 +17,9 @@ export type Profile = {
 
 /** The signed-in user's id and email, or a redirect to /login. */
 export const requireUser = cache(async () => {
+  // The session is request data, and the Supabase client checks token expiry
+  // against the clock, so this can never be prerendered.
+  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;

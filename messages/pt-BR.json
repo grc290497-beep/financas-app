@@ -29,7 +29,89 @@
     "passwordTooLong": "A senha pode ter no máximo 72 caracteres.",
     "passwordRequired": "Digite sua senha.",
     "currencyRequired": "Escolha sua moeda principal.",
-    "monthStartDayInvalid": "Escolha um dia entre 1 e 28."
+    "monthStartDayInvalid": "Escolha um dia entre 1 e 28.",
+    "amountInvalid": "Digite um valor maior que zero.",
+    "amountTooLarge": "Esse valor é grande demais.",
+    "categoryRequired": "Escolha uma categoria.",
+    "dateInvalid": "Escolha uma data válida.",
+    "descriptionTooLong": "Use no máximo 140 caracteres.",
+    "rateInvalid": "Digite uma cotação maior que zero, por exemplo 5,6339."
+  },
+  "Nav": {
+    "home": "Início",
+    "transactions": "Lançamentos",
+    "main": "Navegação principal"
+  },
+  "Transactions": {
+    "title": "Lançamentos",
+    "add": "Novo lançamento",
+    "addShort": "Lançar",
+    "edit": "Editar lançamento",
+    "form": {
+      "expense": "Gasto",
+      "income": "Entrada",
+      "amount": "Valor",
+      "currency": "Moeda",
+      "category": "Categoria",
+      "date": "Data",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Opcional",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "delete": "Excluir",
+      "converted": "≈ {amount} · cotação {rate} de {date}",
+      "convertedFallback": "≈ {amount} · cotação {rate} de {date} (última disponível)",
+      "rateLoading": "Buscando cotação…",
+      "rateUnavailable": "Não conseguimos buscar a cotação agora. Digite a cotação manualmente.",
+      "adjustRate": "Ajustar cotação",
+      "useAutoRate": "Usar cotação automática",
+      "manualRate": "Cotação ({from} → {to})",
+      "manualRateHint": "Use a cotação que você realmente pagou (Wise, Revolut…).",
+      "saved": "Lançamento salvo.",
+      "updated": "Lançamento atualizado.",
+      "deleted": "Lançamento excluído."
+    },
+    "delete": {
+      "title": "Excluir lançamento?",
+      "description": "Essa ação não pode ser desfeita.",
+      "confirm": "Excluir",
+      "cancel": "Cancelar"
+    },
+    "filters": {
+      "month": "Mês",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "type": "Tipo",
+      "allTypes": "Todos",
+      "currency": "Moeda",
+      "allCurrencies": "Todas",
+      "category": "Categoria",
+      "allCategories": "Todas",
+      "search": "Buscar na descrição",
+      "clear": "Limpar filtros"
+    },
+    "summary": {
+      "income": "Entradas",
+      "expenses": "Gastos",
+      "balance": "Saldo",
+      "inPrimary": "Valores convertidos para {currency}"
+    },
+    "empty": {
+      "title": "Nenhum lançamento neste mês",
+      "description": "Toque em + para registrar um gasto ou uma entrada.",
+      "filteredTitle": "Nada encontrado",
+      "filteredDescription": "Nenhum lançamento combina com esses filtros."
+    },
+    "originalAmount": "Valor original",
+    "errors": {
+      "invalidInput": "Confira os campos destacados.",
+      "categoryInvalid": "Essa categoria não serve para esse tipo de lançamento.",
+      "fxUnavailable": "Sem cotação disponível para essa data. Digite a cotação manualmente.",
+      "saveFailed": "Não conseguimos salvar. Tente de novo.",
+      "deleteFailed": "Não conseguimos excluir. Tente de novo.",
+      "notFound": "Esse lançamento não existe mais.",
+      "unexpected": "Algo deu errado. Tente de novo."
+    }
   },
   "Auth": {
     "login": {
@@ -105,6 +187,7 @@
     "greetingNoName": "Olá!",
     "summary": "Moeda principal: {currency} · Mês começa no dia {day}",
     "emptyTitle": "Nenhum lançamento ainda",
-    "emptyDescription": "Logo você vai poder registrar entradas e gastos por aqui. Os totais do mês aparecem assim que houver lançamentos."
+    "emptyDescription": "Toque em + para registrar seu primeiro gasto ou entrada. Os totais do mês chegam na próxima etapa.",
+    "seeTransactions": "Ver lançamentos"
   }
 }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { formatRate, parseAmount, parseRate } from "@/lib/money";
 
 // Shared by forms (client) and Server Actions (server).
 // Error messages are keys under "Validation" in messages/pt-BR.json.
@@ -47,3 +48,65 @@ export const onboardingSchema = z.object({
 });
 export type OnboardingInput = z.input<typeof onboardingSchema>;
 export type OnboardingData = z.output<typeof onboardingSchema>;
+
+export const TRANSACTION_TYPES = ["expense", "income"] as const;
+export type TransactionType = (typeof TRANSACTION_TYPES)[number];
+
+/** 999.999.999,99: far above any personal amount, well inside safe integers. */
+export const MAX_AMOUNT_CENTS = 99_999_999_999;
+
+export const transactionSchema = z.object({
+  type: z.enum(TRANSACTION_TYPES),
+  // Typed text ("12,50") in, integer cents out.
+  amount: z.string().transform((value, ctx) => {
+    const cents = parseAmount(value);
+    if (cents === null || cents <= 0) {
+      ctx.addIssue({ code: "custom", message: "amountInvalid" });
+      return z.NEVER;
+    }
+    if (cents > MAX_AMOUNT_CENTS) {
+      ctx.addIssue({ code: "custom", message: "amountTooLarge" });
+      return z.NEVER;
+    }
+    return cents;
+  }),
+  currency: z.enum(CURRENCIES, { error: "currencyRequired" }),
+  categoryId: z.uuid({ error: "categoryRequired" }),
+  occurredOn: z.iso.date({ error: "dateInvalid" }),
+  description: z
+    .string()
+    .trim()
+    .max(140, { error: "descriptionTooLong" })
+    .optional()
+    .transform((value) => value || null),
+  // Optional manual rate (e.g. the one Wise/Revolut actually charged), currency -> primary.
+  fxRate: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value, ctx) => {
+      if (!value) return null;
+      try {
+        return formatRate(parseRate(value));
+      } catch {
+        ctx.addIssue({ code: "custom", message: "rateInvalid" });
+        return z.NEVER;
+      }
+    }),
+});
+export type TransactionInput = z.input<typeof transactionSchema>;
+export type TransactionData = z.output<typeof transactionSchema>;
+
+/** Filters on /app/transactions, read from the URL. Invalid values are dropped. */
+export const transactionFiltersSchema = z.object({
+  month: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+    .optional()
+    .catch(undefined),
+  type: z.enum(TRANSACTION_TYPES).optional().catch(undefined),
+  currency: z.enum(CURRENCIES).optional().catch(undefined),
+  category: z.uuid().optional().catch(undefined),
+  q: z.string().trim().max(60).optional().catch(undefined),
+});
+export type TransactionFilters = z.output<typeof transactionFiltersSchema>;
