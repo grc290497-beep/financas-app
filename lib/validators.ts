@@ -164,3 +164,21 @@ export const markPaidSchema = z.object({
   amount: amountSchema,
 });
 export type MarkPaidInput = z.input<typeof markPaidSchema>;
+
+/** A category's monthly budget in the primary currency; empty clears it. */
+export const budgetSchema = z.object({
+  categoryId: z.uuid(),
+  amount: z
+    .string()
+    .trim()
+    .transform((value, ctx) => {
+      if (!value) return null;
+      const cents = parseAmount(value);
+      if (cents === null || cents <= 0 || cents > MAX_AMOUNT_CENTS) {
+        ctx.addIssue({ code: "custom", message: "amountInvalid" });
+        return z.NEVER;
+      }
+      return cents;
+    }),
+});
+export type BudgetInput = z.input<typeof budgetSchema>;

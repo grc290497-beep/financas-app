@@ -2,27 +2,40 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { CalendarClock, ReceiptText } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { CalendarClock, ChevronLeft, ChevronRight, ReceiptText } from "lucide-react";
+import { BudgetBar } from "@/components/budget/budget-bar";
+import { CategoryIcon } from "@/components/transactions/category-icon";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile } from "@/lib/auth";
+import { computeMetrics, variation } from "@/lib/dashboard";
 import { formatMoney } from "@/lib/money";
-import { getFinancialPeriod } from "@/lib/period";
+import { daysLeft, getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/lib/period";
 import { ensureRecurringGenerated, listPlanned } from "@/lib/recurring-store";
-import { currentDate, currentMonth, listTransactions } from "@/lib/transactions";
-import type { Currency } from "@/lib/validators";
+import { currentDate, getCategorySpend, getMonthSummary } from "@/lib/transactions";
+import { cn } from "@/lib/utils";
+import { transactionFiltersSchema } from "@/lib/validators";
 
-export default function DashboardPage() {
+const dayMonth = (date: string) => format(parseISO(date), "dd/MM");
+const percent = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 0 });
+const signedPercent = new Intl.NumberFormat("pt-BR", {
+  style: "percent",
+  maximumFractionDigits: 0,
+  signDisplay: "exceptZero",
+});
+
+export default function DashboardPage({ searchParams }: PageProps<"/app">) {
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6">
       <Suspense fallback={<DashboardSkeleton />}>
-        <Dashboard />
+        <Dashboard searchParams={searchParams} />
       </Suspense>
     </main>
   );
 }
 
-async function Dashboard() {
+async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["searchParams"] }) {
   const profile = await requireProfile();
   if (!profile.onboardingDone) {
     redirect("/onboarding");
@@ -31,25 +44,34 @@ async function Dashboard() {
   // Plan this month's fixed costs before reading anything (PLAN.md 3.4).
   const today = await currentDate();
   await ensureRecurringGenerated(today);
-  const period = getFinancialPeriod(today, profile.monthStartDay);
 
-  const [t, tTx, rows, planned] = await Promise.all([
+  const raw = await searchParams;
+  const { month } = transactionFiltersSchema.parse({
+    month: Array.isArray(raw.month) ? raw.month[0] : raw.month,
+  });
+  const msd = profile.monthStartDay;
+  const current = getFinancialPeriod(today, msd);
+  const period = month ? periodStartingIn(month, msd) : current;
+  const isCurrent = period.start === current.start;
+
+  const [t, summary, spend, previousSpend, planned] = await Promise.all([
     getTranslations("Dashboard"),
-    getTranslations("Transactions"),
-    currentMonth().then((month) => listTransactions({ month })),
+    getMonthSummary(period),
+    getCategorySpend(period),
+    getCategorySpend(shiftPeriod(period, msd, -1)),
     listPlanned(period.start, period.end),
   ]);
+
   const primary = profile.primaryCurrency;
-  // Totals count only what was actually paid or received (PLAN.md section 6).
-  const confirmed = rows.filter((r) => r.status === "confirmed");
-  const income = confirmed
-    .filter((r) => r.type === "income")
-    .reduce((s, r) => s + r.amountPrimaryCents, 0);
-  const expenses = confirmed
-    .filter((r) => r.type === "expense")
-    .reduce((s, r) => s + r.amountPrimaryCents, 0);
-  const toPay = planned.filter((p) => p.type === "expense");
-  const toPayTotal = toPay.reduce((s, p) => s + p.amountPrimaryCents, 0);
+  const m = computeMetrics(summary, isCurrent ? daysLeft(period, today) : 0);
+  const previousById = new Map(previousSpend.map((c) => [c.id, c.spentCents]));
+  const budgets = spend.filter((c) => c.budgetCents);
+  const top = spend.filter((c) => c.spentCents > 0).slice(0, 5);
+  const upcoming = planned.filter((p) => p.type === "expense").slice(0, 5);
+  const isEmpty = summary.incomeCents === 0 && summary.expenseCents === 0 && planned.length === 0;
+
+  const monthLink = (count: number) =>
+    `/app?month=${shiftPeriod(period, msd, count).start.slice(0, 7)}`;
 
   return (
     <>
@@ -57,65 +79,245 @@ async function Dashboard() {
         <h1 className="text-2xl font-semibold tracking-tight">
           {profile.displayName ? t("greeting", { name: profile.displayName }) : t("greetingNoName")}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {t("summary", { currency: profile.primaryCurrency, day: profile.monthStartDay })}
-        </p>
+        <nav
+          className="flex items-center justify-between gap-2"
+          aria-label={t("period", { start: dayMonth(period.start), end: dayMonth(period.end) })}
+        >
+          <Button asChild variant="ghost" size="icon">
+            <Link href={monthLink(-1)} aria-label={t("previousPeriod")}>
+              <ChevronLeft aria-hidden />
+            </Link>
+          </Button>
+          <p className="text-sm font-medium" aria-live="polite">
+            {t("period", { start: dayMonth(period.start), end: dayMonth(period.end) })}
+            {!isCurrent && (
+              <>
+                {" · "}
+                <Link href="/app" className="underline-offset-4 hover:underline">
+                  {t("current")}
+                </Link>
+              </>
+            )}
+          </p>
+          <Button asChild variant="ghost" size="icon">
+            <Link href={monthLink(1)} aria-label={t("nextPeriod")}>
+              <ChevronRight aria-hidden />
+            </Link>
+          </Button>
+        </nav>
       </div>
 
-      {toPay.length > 0 && (
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4">
-          <p className="flex items-center gap-2 text-sm">
-            <CalendarClock className="size-4 text-muted-foreground" aria-hidden />
-            {t("pending", { count: toPay.length, amount: formatMoney(toPayTotal, primary) })}
-          </p>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/app/fixed">{t("seeFixed")}</Link>
-          </Button>
-        </section>
-      )}
-
-      {rows.length === 0 ? (
+      {isEmpty ? (
         <section className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-12 text-center">
           <ReceiptText className="size-10 text-muted-foreground" aria-hidden />
           <h2 className="text-lg font-medium">{t("emptyTitle")}</h2>
           <p className="max-w-sm text-sm text-pretty text-muted-foreground">
             {t("emptyDescription")}
           </p>
-        </section>
-      ) : (
-        // Placeholder until the phase 4 dashboard: this month's totals in the primary currency.
-        <section className="flex flex-col gap-3 rounded-xl border p-4">
-          <dl className="grid grid-cols-3 gap-2 text-sm">
-            <Total label={tTx("summary.income")} cents={income} currency={primary} />
-            <Total label={tTx("summary.expenses")} cents={expenses} currency={primary} />
-            <Total label={tTx("summary.balance")} cents={income - expenses} currency={primary} />
-          </dl>
-          <Button asChild variant="outline" className="self-start">
-            <Link href="/app/transactions">{t("seeTransactions")}</Link>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/app/fixed">{t("seeFixed")}</Link>
           </Button>
         </section>
+      ) : (
+        <>
+          <section className="flex flex-col gap-1 rounded-xl border p-4" aria-labelledby="free">
+            <h2 id="free" className="text-sm text-muted-foreground">
+              {t("freeToSpend")}
+            </h2>
+            <p
+              className={cn(
+                "text-3xl font-semibold tracking-tight tabular-nums",
+                m.freeToSpendCents < 0 && "text-destructive",
+              )}
+            >
+              {formatMoney(m.freeToSpendCents, primary)}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {isCurrent && m.freePerDayCents !== null
+                ? t("perDay", {
+                    amount: formatMoney(m.freePerDayCents, primary),
+                    days: daysLeft(period, today),
+                  })
+                : t("freeToSpendHint")}
+            </p>
+          </section>
+
+          <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <Metric label={t("income")} value={formatMoney(m.incomeCents, primary)} />
+            <Metric label={t("expenses")} value={formatMoney(m.expenseCents, primary)} />
+            <Metric
+              label={t("balance")}
+              value={formatMoney(m.balanceCents, primary)}
+              negative={m.balanceCents < 0}
+            />
+            <Metric label={t("fixed")} value={formatMoney(m.fixedPlannedCents, primary)} />
+            <Metric
+              label={t("savingsRate")}
+              value={m.savingsRate === null ? t("noRate") : percent.format(m.savingsRate)}
+              negative={(m.savingsRate ?? 0) < 0}
+            />
+          </dl>
+          <p className="-mt-3 text-xs text-muted-foreground">
+            {t("inPrimary", { currency: primary })}
+          </p>
+
+          <Section
+            title={t("upcoming")}
+            action={
+              <Link href="/app/fixed" className="text-sm underline-offset-4 hover:underline">
+                {t("seeFixed")}
+              </Link>
+            }
+          >
+            {upcoming.length === 0 ? (
+              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CalendarClock className="size-4" aria-hidden />
+                {t("noUpcoming")}
+              </p>
+            ) : (
+              <ul className="divide-y rounded-xl border">
+                {upcoming.map((bill) => (
+                  <li
+                    key={bill.id}
+                    className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm"
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={cn(
+                          "w-11 shrink-0 tabular-nums",
+                          bill.occurredOn < today ? "text-destructive" : "text-muted-foreground",
+                        )}
+                      >
+                        {dayMonth(bill.occurredOn)}
+                      </span>
+                      <span className="truncate">{bill.description}</span>
+                    </span>
+                    <span className="shrink-0 tabular-nums">
+                      {formatMoney(bill.amountCents, bill.currency)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+
+          <Section
+            title={t("budgets")}
+            action={
+              <Link href="/app/budget" className="text-sm underline-offset-4 hover:underline">
+                {t("editBudgets")}
+              </Link>
+            }
+          >
+            {budgets.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("noBudgets")}</p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {budgets.map((c) => (
+                  <li key={c.id} className="flex flex-col gap-1.5">
+                    <div className="flex items-baseline justify-between gap-2 text-sm">
+                      <span className="truncate">{c.name}</span>
+                      <span className="shrink-0 text-muted-foreground tabular-nums">
+                        {t("budgetLine", {
+                          spent: formatMoney(c.spentCents, primary),
+                          budget: formatMoney(c.budgetCents!, primary),
+                        })}
+                      </span>
+                    </div>
+                    <BudgetBar
+                      spentCents={c.spentCents}
+                      budgetCents={c.budgetCents!}
+                      label={c.name}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+
+          {top.length > 0 && (
+            <Section title={t("topCategories")}>
+              <ul className="divide-y rounded-xl border">
+                {top.map((c) => {
+                  const change = variation(c.spentCents, previousById.get(c.id) ?? 0);
+                  return (
+                    <li key={c.id} className="flex items-center gap-3 px-3 py-2.5">
+                      <CategoryIcon icon={c.icon} color={c.color} />
+                      <span className="min-w-0 flex-1 truncate">{c.name}</span>
+                      <span className="flex shrink-0 flex-col items-end">
+                        <span className="font-medium tabular-nums">
+                          {formatMoney(c.spentCents, primary)}
+                        </span>
+                        {change !== null && (
+                          <span
+                            className={cn(
+                              "text-xs tabular-nums",
+                              change > 0
+                                ? "text-destructive"
+                                : "text-emerald-600 dark:text-emerald-400",
+                            )}
+                          >
+                            {t("vsPrevious", { change: signedPercent.format(change) })}
+                          </span>
+                        )}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Section>
+          )}
+        </>
       )}
     </>
   );
 }
 
-function Total({ label, cents, currency }: { label: string; cents: number; currency: Currency }) {
+function Metric({ label, value, negative }: { label: string; value: string; negative?: boolean }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5">
+    <div className="flex min-w-0 flex-col gap-0.5 rounded-xl border p-3">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="truncate font-medium tabular-nums">{formatMoney(cents, currency)}</dd>
+      <dd className={cn("truncate font-medium tabular-nums", negative && "text-destructive")}>
+        {value}
+      </dd>
     </div>
+  );
+}
+
+function Section({
+  title,
+  action,
+  children,
+}: {
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="flex flex-col gap-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className="text-base font-medium">{title}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
   );
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="flex flex-col gap-8" aria-hidden>
+    <div className="flex flex-col gap-6" aria-hidden>
       <div className="flex flex-col gap-2">
         <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-64" />
+        <Skeleton className="h-9 w-full" />
       </div>
-      <Skeleton className="h-52 w-full rounded-xl" />
+      <Skeleton className="h-28 w-full rounded-xl" />
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {Array.from({ length: 5 }, (_, i) => (
+          <Skeleton key={i} className="h-16 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-40 w-full rounded-xl" />
     </div>
   );
 }

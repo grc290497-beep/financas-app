@@ -4,7 +4,6 @@ import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { addMonths, format, parse } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,10 +21,13 @@ const ALL = "all";
 
 export function TransactionFiltersBar({
   month,
+  periodLabel,
   filters,
   categories,
 }: {
+  /** yyyy-MM the shown financial month starts in. */
   month: string;
+  periodLabel: string;
   filters: TransactionFilters;
   categories: Category[];
 }) {
@@ -69,7 +71,7 @@ export function TransactionFiltersBar({
           <ChevronLeft aria-hidden />
         </Button>
         <p className="text-base font-medium first-letter:uppercase" aria-live="polite">
-          {format(monthDate, "MMMM 'de' yyyy", { locale: ptBR })}
+          {periodLabel}
         </p>
         <Button
           variant="ghost"

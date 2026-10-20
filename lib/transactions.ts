@@ -1,8 +1,10 @@
 import "server-only";
 import { cache } from "react";
 import { connection } from "next/server";
-import { endOfMonth, format, parse, subDays } from "date-fns";
+import { format, subDays } from "date-fns";
 import type { Category, CategoryKind } from "@/lib/categories";
+import type { MonthSummary } from "@/lib/dashboard";
+import type { Period } from "@/lib/period";
 import { createClient } from "@/lib/supabase/server";
 import type { Currency, TransactionFilters, TransactionType } from "@/lib/validators";
 
@@ -29,16 +31,45 @@ export async function currentDate(): Promise<string> {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** The current calendar month (yyyy-MM). Request time only. */
-export async function currentMonth(): Promise<string> {
-  await connection();
-  return format(new Date(), "yyyy-MM");
+/** Totals for the dashboard (month_summary in SQL), in the primary currency. */
+export async function getMonthSummary(period: Period): Promise<MonthSummary> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .rpc("month_summary", { p_start: period.start, p_end: period.end })
+    .single<Record<string, number>>();
+  if (error) throw error;
+  return {
+    incomeCents: Number(data.income_cents),
+    expenseCents: Number(data.expense_cents),
+    fixedPlannedCents: Number(data.fixed_planned_cents),
+    variableSpentCents: Number(data.variable_spent_cents),
+  };
 }
 
-/** Calendar month for now; the financial month (month_start_day) arrives with lib/period.ts in phase 4. */
-export function monthRange(month: string): { from: string; to: string } {
-  const start = parse(`${month}-01`, "yyyy-MM-dd", new Date());
-  return { from: format(start, "yyyy-MM-dd"), to: format(endOfMonth(start), "yyyy-MM-dd") };
+export type CategorySpend = Category & {
+  budgetCents: number | null;
+  spentCents: number;
+  plannedCents: number;
+};
+
+/** Every active expense category with what was paid and planned in the period. */
+export async function getCategorySpend(period: Period): Promise<CategorySpend[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("category_spend", {
+    p_start: period.start,
+    p_end: period.end,
+  });
+  if (error) throw error;
+  return (data as Record<string, string | number | null>[]).map((row) => ({
+    id: String(row.category_id),
+    name: String(row.name),
+    kind: row.kind as CategoryKind,
+    icon: row.icon as string | null,
+    color: row.color as string | null,
+    budgetCents: row.budget_cents === null ? null : Number(row.budget_cents),
+    spentCents: Number(row.spent_cents),
+    plannedCents: Number(row.planned_cents),
+  }));
 }
 
 export const getCategories = cache(async (): Promise<Category[]> => {
@@ -70,10 +101,10 @@ export const getCategoryUsage = cache(async (): Promise<Record<string, number>> 
 });
 
 export async function listTransactions(
-  filters: TransactionFilters & { month: string },
+  filters: TransactionFilters,
+  { start: from, end: to }: Period,
 ): Promise<TransactionRow[]> {
   const supabase = await createClient();
-  const { from, to } = monthRange(filters.month);
 
   let query = supabase
     .from("transactions")

@@ -8,10 +8,10 @@ import { TransactionFiltersBar } from "@/components/transactions/transaction-fil
 import { TransactionItem } from "@/components/transactions/transaction-item";
 import { requireProfile } from "@/lib/auth";
 import { formatMoney } from "@/lib/money";
+import { getFinancialPeriod, periodStartingIn } from "@/lib/period";
 import { ensureRecurringGenerated } from "@/lib/recurring-store";
 import {
   currentDate,
-  currentMonth,
   getCategories,
   getCategoryUsage,
   listTransactions,
@@ -43,14 +43,23 @@ async function Transactions({
       Object.entries(raw).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value]),
     ),
   );
-  const month = filters.month ?? (await currentMonth());
-  await ensureRecurringGenerated(await currentDate());
+  const today = await currentDate();
+  await ensureRecurringGenerated(today);
+  const profile = await requireProfile();
+  // Months are financial months (month_start_day), keyed by the month they start in.
+  const period = filters.month
+    ? periodStartingIn(filters.month, profile.monthStartDay)
+    : getFinancialPeriod(today, profile.monthStartDay);
+  const month = period.start.slice(0, 7);
+  const periodLabel =
+    profile.monthStartDay === 1
+      ? format(parseISO(period.start), "MMMM 'de' yyyy", { locale: ptBR })
+      : `${format(parseISO(period.start), "dd/MM")} a ${format(parseISO(period.end), "dd/MM")}`;
 
-  const [profile, categories, usage, rows, t] = await Promise.all([
-    requireProfile(),
+  const [categories, usage, rows, t] = await Promise.all([
     getCategories(),
     getCategoryUsage(),
-    listTransactions({ ...filters, month }),
+    listTransactions(filters, period),
     getTranslations("Transactions"),
   ]);
 
@@ -61,7 +70,12 @@ async function Transactions({
 
   return (
     <>
-      <TransactionFiltersBar month={month} filters={filters} categories={categories} />
+      <TransactionFiltersBar
+        month={month}
+        periodLabel={periodLabel}
+        filters={filters}
+        categories={categories}
+      />
 
       <section
         aria-label={t("summary.inPrimary", { currency: primary })}

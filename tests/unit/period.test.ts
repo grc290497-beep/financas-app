@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { daysLeft, getFinancialPeriod, shiftPeriod } from "@/lib/period";
+import { daysLeft, getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/lib/period";
+
+describe("periodStartingIn", () => {
+  it("is the period whose first day falls in that month", () => {
+    expect(periodStartingIn("2026-10", 25)).toEqual({ start: "2026-10-25", end: "2026-11-24" });
+    expect(periodStartingIn("2026-10", 1)).toEqual({ start: "2026-10-01", end: "2026-10-31" });
+    expect(periodStartingIn("2027-02", 28)).toEqual({ start: "2027-02-28", end: "2027-03-27" });
+  });
+});
 
 describe("getFinancialPeriod", () => {
   it("is the calendar month when the month starts on day 1", () => {

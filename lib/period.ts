@@ -18,6 +18,11 @@ export function getFinancialPeriod(date: string, monthStartDay: number): Period 
   };
 }
 
+/** The period that starts in `month` (yyyy-MM): how periods appear in URLs. */
+export function periodStartingIn(month: string, monthStartDay: number): Period {
+  return getFinancialPeriod(`${month}-${String(monthStartDay).padStart(2, "0")}`, monthStartDay);
+}
+
 /** The period `count` periods before (negative) or after the given one. */
 export function shiftPeriod(period: Period, monthStartDay: number, count: number): Period {
   const [year, month] = ymd(period.start);
