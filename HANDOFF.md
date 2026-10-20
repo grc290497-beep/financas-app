@@ -93,7 +93,7 @@ Push direto na `main` está aprovado; a Vercel faz o deploy sozinha. Para confer
 | 5 Metas | ✅ testado no navegador |
 | Extra pós-fase 5 | ✅ meses futuros mostram os fixos previstos (até 12 meses à frente, gerados ao abrir o mês); edição de fixo com **"Mudança vale a partir de"** (divide o item: antigo termina na véspera, novo começa na próxima ocorrência; recusa se já há pagamento confirmado a partir da data) |
 | 6 Relatórios + exportação | ✅ `/app/reports` (barras 12 meses, rosca por categoria, tabela) + `/app/reports/export?format=csv\|json`; testado no navegador com dados de teste (já apagados) |
-| 7 PWA, polimento, E2E, privacidade + passe de design | pendente |
+| 7 PWA, polimento, E2E, privacidade + passe de design | 🟡 feito: Ajustes (`/app/settings`), excluir conta, `/privacy` e `/terms`, manifest + ícones (`app/icon.tsx`), modo escuro (next-themes), E2E (`npm run test:e2e`, precisa da service role no `.env.local`), passe de design no Início e Lançamentos. Falta: rodar o E2E, contato do responsável na política de privacidade, editar perfil, design das demais telas, testar instalação no iOS/Android |
 
 Último commit: "Resolve the session before goal queries…" (após `c4ac7c2`). 175 testes unitários passando.
 O usuário apagou os próprios dados de teste no app; o banco estava vazio em 20/10.
