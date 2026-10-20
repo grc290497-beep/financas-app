@@ -81,7 +81,7 @@ async function Transactions({
         aria-label={t("summary.inPrimary", { currency: primary })}
         className="flex flex-col gap-2"
       >
-        <dl className="grid grid-cols-3 gap-2 rounded-xl border p-3 text-sm sm:p-4">
+        <dl className="grid grid-cols-3 gap-3 rounded-2xl bg-muted/50 p-4">
           <SummaryItem label={t("summary.income")} value={formatMoney(income, primary)} />
           <SummaryItem label={t("summary.expenses")} value={formatMoney(expenses, primary)} />
           <SummaryItem
@@ -132,7 +132,7 @@ function SummaryItem({ label, value, strong }: { label: string; value: string; s
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className={`truncate tabular-nums ${strong ? "font-semibold" : "font-medium"}`}>
+      <dd className={`truncate text-base tabular-nums ${strong ? "font-semibold" : "font-medium"}`}>
         {value}
       </dd>
     </div>
@@ -157,7 +157,7 @@ function ListSkeleton() {
   return (
     <div className="flex flex-col gap-6" aria-hidden>
       <Skeleton className="h-9 w-full" />
-      <Skeleton className="h-20 w-full rounded-xl" />
+      <Skeleton className="h-20 w-full rounded-2xl" />
       <div className="flex flex-col gap-2">
         <Skeleton className="h-4 w-40" />
         <Skeleton className="h-48 w-full rounded-xl" />

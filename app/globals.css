@@ -127,4 +127,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Browser surfaces follow the theme instead of OS defaults. */
+  html {
+    scrollbar-color: var(--border) transparent;
+    caret-color: var(--foreground);
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--income) 25%, transparent);
+  }
 }

@@ -127,13 +127,13 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
         </section>
       ) : (
         <>
-          <section className="flex flex-col gap-1 rounded-xl border p-4" aria-labelledby="free">
+          <section className="flex flex-col gap-1.5 py-2" aria-labelledby="free">
             <h2 id="free" className="text-sm text-muted-foreground">
               {t("freeToSpend")}
             </h2>
             <p
               className={cn(
-                "text-3xl font-semibold tracking-tight tabular-nums",
+                "text-5xl font-semibold tracking-tight tabular-nums",
                 m.freeToSpendCents < 0 && "text-destructive",
               )}
             >
@@ -154,7 +154,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
             )}
           </section>
 
-          <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-muted/50 p-4 sm:grid-cols-3">
             <Metric label={t("income")} value={formatMoney(m.incomeCents, primary)} />
             <Metric label={t("expenses")} value={formatMoney(m.expenseCents, primary)} />
             <Metric
@@ -315,9 +315,11 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
 
 function Metric({ label, value, negative }: { label: string; value: string; negative?: boolean }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5 rounded-xl border p-3">
+    <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className={cn("truncate font-medium tabular-nums", negative && "text-destructive")}>
+      <dd
+        className={cn("truncate text-lg font-medium tabular-nums", negative && "text-destructive")}
+      >
         {value}
       </dd>
     </div>
@@ -351,12 +353,12 @@ function DashboardSkeleton() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-9 w-full" />
       </div>
-      <Skeleton className="h-28 w-full rounded-xl" />
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {Array.from({ length: 5 }, (_, i) => (
-          <Skeleton key={i} className="h-16 rounded-xl" />
-        ))}
+      <div className="flex flex-col gap-2 py-2">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-12 w-56" />
+        <Skeleton className="h-4 w-44" />
       </div>
+      <Skeleton className="h-40 w-full rounded-2xl" />
       <Skeleton className="h-40 w-full rounded-xl" />
     </div>
   );
