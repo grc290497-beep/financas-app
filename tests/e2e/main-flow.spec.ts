@@ -37,15 +37,21 @@ test.afterAll(async () => {
 
 test("sign in, set up, log an expense and create a goal", async ({ page }) => {
   await page.goto("/login");
+  await page.waitForLoadState("networkidle");
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel("Senha").fill(password);
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
 
   await expect(page).toHaveURL(/\/onboarding/);
+  // Clicks before hydration do nothing in the client-side wizard: wait for the network to settle.
+  await page.waitForLoadState("networkidle");
   await page.getByText("Euro", { exact: true }).click();
   await page.getByRole("button", { name: "Continuar" }).click();
+  // Step 2 must be shown, not skipped by an early submit (the bug this caught).
+  await expect(page.getByText("Em que dia começa o seu mês?")).toBeVisible();
   await page.getByRole("button", { name: "Concluir" }).click();
   await expect(page).toHaveURL(/\/app$/);
+  await page.waitForLoadState("networkidle");
 
   await page.getByRole("button", { name: "Novo lançamento" }).first().click();
   await page.getByLabel("Valor").fill("12,50");
@@ -55,10 +61,11 @@ test("sign in, set up, log an expense and create a goal", async ({ page }) => {
   await expect(page.getByText("Lançamento salvo.")).toBeVisible();
 
   await page.goto("/app/transactions");
-  await expect(page.getByText("Pão")).toBeVisible();
+  await expect(page.getByText("Pão", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("€ 12,50").first()).toBeVisible();
 
   await page.goto("/app/goals");
+  await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: "Nova meta" }).first().click();
   await page.getByLabel("Nome").fill("Reserva de emergência");
   await page.getByLabel("Quanto quer juntar").fill("6000");

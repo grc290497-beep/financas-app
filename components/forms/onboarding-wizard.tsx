@@ -155,12 +155,20 @@ export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingD
             {tCommon("back")}
           </Button>
         )}
+        {/* Distinct keys: if React reused one <button> and flipped it to type="submit"
+            inside the click, the browser would submit the form on "Continuar". */}
         {isLast ? (
-          <Button type="submit" size="lg" className="flex-1" disabled={pending}>
+          <Button key="finish" type="submit" size="lg" className="flex-1" disabled={pending}>
             {pending ? t("saving") : t("finish")}
           </Button>
         ) : (
-          <Button type="button" size="lg" className="flex-1" onClick={() => setStep(step + 1)}>
+          <Button
+            key="continue"
+            type="button"
+            size="lg"
+            className="flex-1"
+            onClick={() => setStep(step + 1)}
+          >
             {tCommon("continue")}
           </Button>
         )}
