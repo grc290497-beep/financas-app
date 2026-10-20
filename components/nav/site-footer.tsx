@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
 
-/** One footer for every page; globals.css lifts it above the mobile tab bar when there is one. */
+/** One footer for every page; globals.css lifts it above the mobile tab bar when there's one. */
 export async function SiteFooter() {
   const t = await getTranslations("Footer");
 
@@ -30,6 +30,12 @@ export async function SiteFooter() {
             >
               {t("terms")}
             </Link>
+            <a
+              href={`mailto:${t("contactEmail")}`}
+              className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              {t("contact")}
+            </a>
           </nav>
           <p className="text-xs text-muted-foreground">{t("data")}</p>
         </div>

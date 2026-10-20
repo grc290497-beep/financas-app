@@ -17,7 +17,9 @@
     "legal": "Privacidade e termos",
     "privacy": "Privacidade",
     "terms": "Termos de uso",
-    "data": "Seus dados ficam na União Europeia e nunca são vendidos."
+    "data": "Seus dados ficam na União Europeia e nunca são vendidos.",
+    "contact": "Contato",
+    "contactEmail": "grc290497@gmail.com"
   },
   "Settings": {
     "title": "Ajustes",
@@ -107,6 +109,12 @@
           "paragraphs": [
             "Você pode ver e corrigir seus dados no próprio app, baixar uma cópia completa em Ajustes → Seus dados e excluir a conta em Ajustes → Excluir conta. A exclusão apaga tudo na hora e não pode ser desfeita.",
             "Pelo Regulamento Geral de Proteção de Dados (RGPD) e pela LGPD, você também pode pedir informações sobre o tratamento dos seus dados ou apresentar reclamação à autoridade de proteção de dados do seu país."
+          ]
+        },
+        {
+          "title": "Contato",
+          "paragraphs": [
+            "O app é mantido por uma pessoa física, responsável pelo tratamento dos seus dados. Para dúvidas, correções ou qualquer pedido sobre seus dados, escreva para grc290497@gmail.com."
           ]
         },
         {
