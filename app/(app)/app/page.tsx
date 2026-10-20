@@ -3,7 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
-import { CalendarClock, ChevronLeft, ChevronRight, ReceiptText } from "lucide-react";
+import { CalendarClock, ReceiptText } from "lucide-react";
+import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { BudgetBar } from "@/components/budget/budget-bar";
 import { GoalProgress, GoalStatusBadge } from "@/components/goals/goal-status";
 import { CategoryIcon } from "@/components/transactions/category-icon";
@@ -86,32 +87,16 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
         <h1 className="text-2xl font-semibold tracking-tight">
           {profile.displayName ? t("greeting", { name: profile.displayName }) : t("greetingNoName")}
         </h1>
-        <nav
-          className="flex items-center justify-between gap-2"
-          aria-label={t("period", { start: dayMonth(period.start), end: dayMonth(period.end) })}
-        >
-          <Button asChild variant="ghost" size="icon">
-            <Link href={monthLink(-1)} aria-label={t("previousPeriod")}>
-              <ChevronLeft aria-hidden />
-            </Link>
-          </Button>
-          <p className="text-sm font-medium" aria-live="polite">
-            {t("period", { start: dayMonth(period.start), end: dayMonth(period.end) })}
-            {!isCurrent && (
-              <>
-                {" · "}
-                <Link href="/app" className="underline-offset-4 hover:underline">
-                  {t("current")}
-                </Link>
-              </>
-            )}
-          </p>
-          <Button asChild variant="ghost" size="icon">
-            <Link href={monthLink(1)} aria-label={t("nextPeriod")}>
-              <ChevronRight aria-hidden />
-            </Link>
-          </Button>
-        </nav>
+        <MonthSwitcher
+          className="mt-2"
+          label={periodLabel(period, msd)}
+          previousHref={monthLink(-1)}
+          nextHref={monthLink(1)}
+          previousLabel={t("previousPeriod")}
+          nextLabel={t("nextPeriod")}
+          currentHref={isCurrent ? undefined : "/app"}
+          currentLabel={t("current")}
+        />
       </div>
 
       {isEmpty ? (
@@ -181,12 +166,15 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
             <Section
               title={t("goals")}
               action={
-                <Link href="/app/goals" className="text-sm underline-offset-4 hover:underline">
+                <Link
+                  href="/app/goals"
+                  className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
                   {t("seeGoals")}
                 </Link>
               }
             >
-              <ul className="flex flex-col gap-3">
+              <ul className="surface flex flex-col gap-4 p-4">
                 {highlightedGoals.map((goal) => {
                   const g = goalMetrics(goal, goal.contributions, today);
                   return (
@@ -208,13 +196,16 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
           <Section
             title={t("upcoming")}
             action={
-              <Link href="/app/fixed" className="text-sm underline-offset-4 hover:underline">
+              <Link
+                href="/app/fixed"
+                className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
                 {t("seeFixed")}
               </Link>
             }
           >
             {upcoming.length === 0 ? (
-              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <p className="surface flex items-center gap-2 px-4 py-3.5 text-sm text-muted-foreground">
                 <CalendarClock className="size-4" aria-hidden />
                 {t("noUpcoming")}
               </p>
@@ -223,7 +214,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                 {upcoming.map((bill) => (
                   <li
                     key={bill.id}
-                    className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm"
+                    className="flex items-center justify-between gap-3 px-4 py-3 text-sm"
                   >
                     <span className="flex min-w-0 items-center gap-3">
                       <span
@@ -248,15 +239,18 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
           <Section
             title={t("budgets")}
             action={
-              <Link href="/app/budget" className="text-sm underline-offset-4 hover:underline">
+              <Link
+                href="/app/budget"
+                className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
                 {t("editBudgets")}
               </Link>
             }
           >
             {budgets.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("noBudgets")}</p>
+              <p className="surface px-4 py-3.5 text-sm text-muted-foreground">{t("noBudgets")}</p>
             ) : (
-              <ul className="flex flex-col gap-3">
+              <ul className="surface flex flex-col gap-4 p-4">
                 {budgets.map((c) => (
                   <li key={c.id} className="flex flex-col gap-1.5">
                     <div className="flex items-baseline justify-between gap-2 text-sm">
@@ -285,7 +279,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                 {top.map((c) => {
                   const change = variation(c.spentCents, previousById.get(c.id) ?? 0);
                   return (
-                    <li key={c.id} className="flex items-center gap-3 px-3 py-2.5">
+                    <li key={c.id} className="flex items-center gap-3 px-4 py-3">
                       <CategoryIcon icon={c.icon} color={c.color} />
                       <span className="min-w-0 flex-1 truncate">{c.name}</span>
                       <span className="flex shrink-0 flex-col items-end">

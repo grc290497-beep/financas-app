@@ -175,7 +175,7 @@
     "toPay": "A pagar",
     "toReceive": "A receber",
     "dueOn": "vence {date}",
-    "receiveOn": "previsto para {date}",
+    "receiveOn": "entra {date}",
     "overdue": "atrasado · {date}",
     "markPaid": "Pagar",
     "markReceived": "Recebi",
@@ -569,7 +569,7 @@
   },
   "Budget": {
     "title": "Orçamento",
-    "description": "Limite mensal por categoria, em {currency}. A barra fica amarela em 80% e vermelha ao estourar.",
+    "description": "Limite mensal por categoria, em {currency}. A barra fica ocre a partir de 80% e cobre ao estourar.",
     "period": "{start} a {end}",
     "spent": "{spent} gastos",
     "planned": "+ {planned} previstos",

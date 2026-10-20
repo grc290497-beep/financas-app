@@ -27,25 +27,29 @@ export function TransactionItem({
   const [open, setOpen] = useState(false);
   const sign = row.type === "income" ? "+" : "−";
   const planned = row.status === "planned";
+  // "Salario · Salário" says the same thing twice; only name the category when it adds something.
+  const showCategory =
+    !!row.description &&
+    row.description.localeCompare(row.category.name, "pt-BR", { sensitivity: "base" }) !== 0;
 
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none"
+        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-accent/60 focus-visible:bg-accent/60 focus-visible:outline-none"
       >
         <CategoryIcon icon={row.category.icon} color={row.category.color} />
-        <span className="flex min-w-0 flex-1 flex-col">
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="truncate font-medium">{row.description || row.category.name}</span>
-          {(row.description || planned) && (
-            <span className="truncate text-sm text-muted-foreground">
+          {(showCategory || planned) && (
+            <span className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
               {planned && (
-                <span className="mr-1.5 rounded-sm border border-dashed px-1 text-xs">
+                <span className="shrink-0 rounded-full bg-muted px-2 py-px text-[11px] font-medium">
                   {t("planned")}
                 </span>
               )}
-              {row.description && row.category.name}
+              {showCategory && <span className="truncate">{row.category.name}</span>}
             </span>
           )}
         </span>

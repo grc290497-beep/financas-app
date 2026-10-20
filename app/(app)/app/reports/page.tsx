@@ -1,14 +1,12 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { MonthSwitcher } from "@/components/nav/month-switcher";
 import { CategoryPie, type CategorySlice } from "@/components/reports/category-pie";
 import { MonthBars } from "@/components/reports/month-bars";
 import { ExportLinks } from "@/components/settings/export-links";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile } from "@/lib/auth";
 import { computeMetrics } from "@/lib/dashboard";
@@ -81,31 +79,17 @@ async function Reports({
 
   return (
     <>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        <nav className="flex items-center justify-between gap-2" aria-label={t("navigate")}>
-          <Button asChild variant="ghost" size="icon">
-            <Link href={monthLink(-1)} aria-label={t("previous")}>
-              <ChevronLeft aria-hidden />
-            </Link>
-          </Button>
-          <p className="text-sm font-medium" aria-live="polite">
-            {t("range", { from: months[0].label, to: months[MONTHS - 1].label })}
-            {!isCurrent && (
-              <>
-                {" · "}
-                <Link href="/app/reports" className="underline-offset-4 hover:underline">
-                  {t("current")}
-                </Link>
-              </>
-            )}
-          </p>
-          <Button asChild variant="ghost" size="icon">
-            <Link href={monthLink(1)} aria-label={t("next")}>
-              <ChevronRight aria-hidden />
-            </Link>
-          </Button>
-        </nav>
+        <MonthSwitcher
+          label={t("range", { from: months[0].label, to: months[MONTHS - 1].label })}
+          previousHref={monthLink(-1)}
+          nextHref={monthLink(1)}
+          previousLabel={t("previous")}
+          nextLabel={t("next")}
+          currentHref={isCurrent ? undefined : "/app/reports"}
+          currentLabel={t("current")}
+        />
       </div>
 
       {hasData ? (

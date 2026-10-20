@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ReceiptText, SearchX } from "lucide-react";
+import { periodLabel } from "@/components/nav/month-switcher";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TransactionFiltersBar } from "@/components/transactions/transaction-filters";
 import { TransactionItem } from "@/components/transactions/transaction-item";
@@ -17,6 +18,7 @@ import {
   listTransactions,
   type TransactionRow,
 } from "@/lib/transactions";
+import { cn } from "@/lib/utils";
 import { transactionFiltersSchema } from "@/lib/validators";
 
 export default async function TransactionsPage({ searchParams }: PageProps<"/app/transactions">) {
@@ -51,10 +53,6 @@ async function Transactions({
     ? periodStartingIn(filters.month, profile.monthStartDay)
     : getFinancialPeriod(today, profile.monthStartDay);
   const month = period.start.slice(0, 7);
-  const periodLabel =
-    profile.monthStartDay === 1
-      ? format(parseISO(period.start), "MMMM 'de' yyyy", { locale: ptBR })
-      : `${format(parseISO(period.start), "dd/MM")} a ${format(parseISO(period.end), "dd/MM")}`;
 
   const [categories, usage, rows, t] = await Promise.all([
     getCategories(),
@@ -72,25 +70,24 @@ async function Transactions({
     <>
       <TransactionFiltersBar
         month={month}
-        periodLabel={periodLabel}
+        periodLabel={periodLabel(period, profile.monthStartDay)}
         filters={filters}
         categories={categories}
       />
 
-      <section
-        aria-label={t("summary.inPrimary", { currency: primary })}
-        className="flex flex-col gap-2"
-      >
-        <dl className="grid grid-cols-3 gap-3 surface p-4">
+      <section aria-label={t("summary.inPrimary", { currency: primary })} className="surface">
+        <dl className="grid grid-cols-3 gap-3 p-4">
           <SummaryItem label={t("summary.income")} value={formatMoney(income, primary)} />
           <SummaryItem label={t("summary.expenses")} value={formatMoney(expenses, primary)} />
           <SummaryItem
             label={t("summary.balance")}
             value={formatMoney(income - expenses, primary)}
-            strong
+            tone={
+              income - expenses < 0 ? "negative" : income - expenses > 0 ? "positive" : undefined
+            }
           />
         </dl>
-        <p className="text-xs text-muted-foreground">
+        <p className="border-t px-4 py-2.5 text-xs text-muted-foreground">
           {t("summary.inPrimary", { currency: primary })}
           {rows.some((r) => r.status === "planned") && <> · {t("plannedHint")}</>}
         </p>
@@ -99,40 +96,65 @@ async function Transactions({
       {rows.length === 0 ? (
         <EmptyState filtered={hasFilters} />
       ) : (
-        <div className="flex flex-col gap-6">
-          {groupByDay(rows).map(([day, items]) => (
-            <section key={day} aria-labelledby={`day-${day}`}>
-              <h2
-                id={`day-${day}`}
-                className="mb-2 text-sm font-medium text-muted-foreground first-letter:uppercase"
-              >
-                {format(parseISO(day), "EEEE, d 'de' MMMM", { locale: ptBR })}
-              </h2>
-              <ul className="surface divide-y">
-                {items.map((row) => (
-                  <li key={row.id}>
-                    <TransactionItem
-                      row={row}
-                      primaryCurrency={primary}
-                      categories={categories}
-                      usage={usage}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
+        // One card for the month; each day is a labelled band inside it.
+        <div className="surface overflow-hidden">
+          {groupByDay(rows).map(([day, items]) => {
+            const net = sum(items, "income") - sum(items, "expense");
+            return (
+              <section key={day} aria-labelledby={`day-${day}`}>
+                <div className="flex items-baseline justify-between gap-3 border-y bg-muted/40 px-4 py-2 first:border-t-0">
+                  <h2
+                    id={`day-${day}`}
+                    className="text-xs font-medium text-muted-foreground first-letter:uppercase"
+                  >
+                    {format(parseISO(day), "EEEE, d 'de' MMMM", { locale: ptBR })}
+                  </h2>
+                  {net !== 0 && (
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {net > 0 ? "+" : "−"} {formatMoney(Math.abs(net), primary)}
+                    </span>
+                  )}
+                </div>
+                <ul className="divide-y">
+                  {items.map((row) => (
+                    <li key={row.id}>
+                      <TransactionItem
+                        row={row}
+                        primaryCurrency={primary}
+                        categories={categories}
+                        usage={usage}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
         </div>
       )}
     </>
   );
 }
 
-function SummaryItem({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+function SummaryItem({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone?: "positive" | "negative";
+}) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className={`truncate text-base tabular-nums ${strong ? "font-semibold" : "font-medium"}`}>
+      <dd
+        className={cn(
+          "truncate text-base font-medium tabular-nums",
+          tone === "positive" && "text-positive",
+          tone === "negative" && "text-negative",
+        )}
+      >
         {value}
       </dd>
     </div>
