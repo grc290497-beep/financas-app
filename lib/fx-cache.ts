@@ -1,4 +1,5 @@
 import "server-only";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { fetchFrankfurterEurBrl, type FxCache, type FxDeps } from "@/lib/fx";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -6,8 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 // Wires lib/fx.ts to the fx_rates table. Reads are public; writes need the
 // service role, and are skipped (not fatal) when it is not configured.
 
-async function supabaseFxCache(): Promise<FxCache> {
-  const supabase = await createClient();
+async function supabaseFxCache(reader?: SupabaseClient): Promise<FxCache> {
+  const supabase = reader ?? (await createClient());
   const admin = createAdminClient();
   const pair = { base: "EUR", quote: "BRL" } as const;
 
@@ -39,9 +40,10 @@ async function supabaseFxCache(): Promise<FxCache> {
   };
 }
 
-export async function serverFxDeps(): Promise<FxDeps> {
+/** `reader` defaults to the request's client; the cron passes the service-role one. */
+export async function serverFxDeps(reader?: SupabaseClient): Promise<FxDeps> {
   return {
-    cache: await supabaseFxCache(),
+    cache: await supabaseFxCache(reader),
     fetchEurBrl: (date) => fetchFrankfurterEurBrl(date),
     today: () => new Date().toISOString().slice(0, 10),
   };

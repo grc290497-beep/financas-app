@@ -18,16 +18,24 @@ export type TransactionRow = {
   fxRate: string;
   amountPrimaryCents: number;
   occurredOn: string;
+  status: "planned" | "confirmed";
+  recurringItemId: string | null;
   category: Pick<Category, "name" | "icon" | "color">;
 };
 
-/** Calendar month for now; the financial month (month_start_day) arrives with lib/period.ts in phase 4. */
+/** Today (yyyy-MM-dd, UTC). Request time only. */
+export async function currentDate(): Promise<string> {
+  await connection();
+  return new Date().toISOString().slice(0, 10);
+}
+
 /** The current calendar month (yyyy-MM). Request time only. */
 export async function currentMonth(): Promise<string> {
   await connection();
   return format(new Date(), "yyyy-MM");
 }
 
+/** Calendar month for now; the financial month (month_start_day) arrives with lib/period.ts in phase 4. */
 export function monthRange(month: string): { from: string; to: string } {
   const start = parse(`${month}-01`, "yyyy-MM-dd", new Date());
   return { from: format(start, "yyyy-MM-dd"), to: format(endOfMonth(start), "yyyy-MM-dd") };
@@ -70,7 +78,7 @@ export async function listTransactions(
   let query = supabase
     .from("transactions")
     .select(
-      "id, type, category_id, description, amount_cents, currency, fx_rate, amount_primary_cents, occurred_on, categories (name, icon, color)",
+      "id, type, category_id, description, amount_cents, currency, fx_rate, amount_primary_cents, occurred_on, status, recurring_item_id, categories (name, icon, color)",
     )
     .gte("occurred_on", from)
     .lte("occurred_on", to)
@@ -96,6 +104,8 @@ export async function listTransactions(
     fxRate: String(t.fx_rate),
     amountPrimaryCents: Number(t.amount_primary_cents),
     occurredOn: t.occurred_on,
+    status: t.status as TransactionRow["status"],
+    recurringItemId: t.recurring_item_id,
     category: t.categories as unknown as TransactionRow["category"],
   }));
 }

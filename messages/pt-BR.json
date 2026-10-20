@@ -35,11 +35,101 @@
     "categoryRequired": "Escolha uma categoria.",
     "dateInvalid": "Escolha uma data válida.",
     "descriptionTooLong": "Use no máximo 140 caracteres.",
-    "rateInvalid": "Digite uma cotação maior que zero, por exemplo 5,6339."
+    "rateInvalid": "Digite uma cotação maior que zero, por exemplo 5,6339.",
+    "recurringNameRequired": "Dê um nome, por exemplo Aluguel.",
+    "recurringNameTooLong": "Use no máximo 60 caracteres.",
+    "dayOfMonthInvalid": "Escolha um dia entre 1 e 31.",
+    "endBeforeStart": "O fim precisa ser depois do início."
+  },
+  "Fixed": {
+    "title": "Fixos",
+    "add": "Novo fixo",
+    "edit": "Editar fixo",
+    "thisMonth": "Este mês",
+    "period": "{start} a {end}",
+    "toPay": "A pagar",
+    "toReceive": "A receber",
+    "dueOn": "vence {date}",
+    "receiveOn": "previsto para {date}",
+    "overdue": "atrasado · {date}",
+    "markPaid": "Pagar",
+    "markReceived": "Recebi",
+    "allDone": "Tudo pago neste mês.",
+    "remaining": "Falta {amount}",
+    "expenses": "Custos fixos",
+    "incomes": "Entradas recorrentes",
+    "next": "Próximo: {date}",
+    "ended": "Encerrado",
+    "schedule": {
+      "monthly": "Todo dia {day}",
+      "weekly": "Toda semana ({weekday})",
+      "yearly": "Todo ano em {date}"
+    },
+    "empty": {
+      "title": "Nenhum custo fixo ainda",
+      "description": "Cadastre aluguel, contas e assinaturas uma vez. Eles aparecem como previstos todo mês, e você só marca como pago."
+    },
+    "form": {
+      "expense": "Custo fixo",
+      "income": "Entrada",
+      "name": "Nome",
+      "namePlaceholder": "Ex.: Aluguel, Netflix, Salário",
+      "amount": "Valor",
+      "currency": "Moeda",
+      "category": "Categoria",
+      "frequency": "Repete",
+      "frequencies": {
+        "monthly": "Todo mês",
+        "weekly": "Toda semana",
+        "yearly": "Todo ano"
+      },
+      "dayOfMonth": "Dia do vencimento",
+      "day": "Dia {day}",
+      "dayHint": "Em meses mais curtos, cai no último dia.",
+      "startOn": "Começa em",
+      "startOnHintWeekly": "Repete nesse dia da semana.",
+      "startOnHintYearly": "Repete nessa data todo ano.",
+      "endOn": "Termina em",
+      "endOnPlaceholder": "Sem data de fim",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "delete": "Excluir",
+      "saved": "Fixo salvo. Os previstos deste mês já foram criados.",
+      "updated": "Fixo atualizado.",
+      "deleted": "Fixo excluído. Os pagamentos já feitos continuam nos lançamentos."
+    },
+    "delete": {
+      "title": "Excluir este fixo?",
+      "description": "Os previstos ainda não pagos somem. O que você já pagou continua nos lançamentos.",
+      "confirm": "Excluir",
+      "cancel": "Cancelar"
+    },
+    "pay": {
+      "title": "Confirmar pagamento",
+      "titleIncome": "Confirmar recebimento",
+      "description": "{name} · {date}. Ajuste o valor se a conta veio diferente.",
+      "amount": "Valor pago",
+      "amountIncome": "Valor recebido",
+      "confirm": "Confirmar",
+      "saving": "Salvando…",
+      "cancel": "Cancelar",
+      "done": "Pagamento registrado.",
+      "doneIncome": "Recebimento registrado."
+    },
+    "errors": {
+      "invalidInput": "Confira os campos destacados.",
+      "categoryInvalid": "Essa categoria não serve para esse tipo.",
+      "fxUnavailable": "Sem cotação disponível agora. Tente de novo em instantes.",
+      "saveFailed": "Não conseguimos salvar. Tente de novo.",
+      "deleteFailed": "Não conseguimos excluir. Tente de novo.",
+      "notFound": "Esse item não existe mais.",
+      "unexpected": "Algo deu errado. Tente de novo."
+    }
   },
   "Nav": {
     "home": "Início",
     "transactions": "Lançamentos",
+    "fixed": "Fixos",
     "main": "Navegação principal"
   },
   "Transactions": {
@@ -103,6 +193,8 @@
       "filteredDescription": "Nenhum lançamento combina com esses filtros."
     },
     "originalAmount": "Valor original",
+    "planned": "Previsto",
+    "plannedHint": "Totais contam só o que já foi pago ou recebido.",
     "errors": {
       "invalidInput": "Confira os campos destacados.",
       "categoryInvalid": "Essa categoria não serve para esse tipo de lançamento.",
@@ -110,6 +202,7 @@
       "saveFailed": "Não conseguimos salvar. Tente de novo.",
       "deleteFailed": "Não conseguimos excluir. Tente de novo.",
       "notFound": "Esse lançamento não existe mais.",
+      "recurringDateLocked": "A data de um fixo é o vencimento e não pode mudar. Ajuste o dia no cadastro do fixo.",
       "unexpected": "Algo deu errado. Tente de novo."
     }
   },
@@ -188,6 +281,8 @@
     "summary": "Moeda principal: {currency} · Mês começa no dia {day}",
     "emptyTitle": "Nenhum lançamento ainda",
     "emptyDescription": "Toque em + para registrar seu primeiro gasto ou entrada. Os totais do mês chegam na próxima etapa.",
-    "seeTransactions": "Ver lançamentos"
+    "seeTransactions": "Ver lançamentos",
+    "pending": "{count, plural, one {# conta a pagar} other {# contas a pagar}} este mês · {amount}",
+    "seeFixed": "Ver fixos"
   }
 }

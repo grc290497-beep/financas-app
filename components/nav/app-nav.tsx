@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { House, ReceiptText } from "lucide-react";
+import { CalendarClock, House, ReceiptText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Metas, Relatórios and Ajustes join as their phases land (PLAN.md section 5).
 const ITEMS = [
   { href: "/app", label: "home", icon: House, exact: true },
   { href: "/app/transactions", label: "transactions", icon: ReceiptText, exact: false },
+  // Not in PLAN.md's tab list; placement gets revisited in the final layout pass.
+  { href: "/app/fixed", label: "fixed", icon: CalendarClock, exact: false },
 ] as const;
 
 /** Bottom tab bar on mobile, a top bar from md up. */

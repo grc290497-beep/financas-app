@@ -55,21 +55,23 @@ export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 /** 999.999.999,99: far above any personal amount, well inside safe integers. */
 export const MAX_AMOUNT_CENTS = 99_999_999_999;
 
+/** Typed text ("12,50") in, positive integer cents out. */
+const amountSchema = z.string().transform((value, ctx) => {
+  const cents = parseAmount(value);
+  if (cents === null || cents <= 0) {
+    ctx.addIssue({ code: "custom", message: "amountInvalid" });
+    return z.NEVER;
+  }
+  if (cents > MAX_AMOUNT_CENTS) {
+    ctx.addIssue({ code: "custom", message: "amountTooLarge" });
+    return z.NEVER;
+  }
+  return cents;
+});
+
 export const transactionSchema = z.object({
   type: z.enum(TRANSACTION_TYPES),
-  // Typed text ("12,50") in, integer cents out.
-  amount: z.string().transform((value, ctx) => {
-    const cents = parseAmount(value);
-    if (cents === null || cents <= 0) {
-      ctx.addIssue({ code: "custom", message: "amountInvalid" });
-      return z.NEVER;
-    }
-    if (cents > MAX_AMOUNT_CENTS) {
-      ctx.addIssue({ code: "custom", message: "amountTooLarge" });
-      return z.NEVER;
-    }
-    return cents;
-  }),
+  amount: amountSchema,
   currency: z.enum(CURRENCIES, { error: "currencyRequired" }),
   categoryId: z.uuid({ error: "categoryRequired" }),
   occurredOn: z.iso.date({ error: "dateInvalid" }),
@@ -110,3 +112,55 @@ export const transactionFiltersSchema = z.object({
   q: z.string().trim().max(60).optional().catch(undefined),
 });
 export type TransactionFilters = z.output<typeof transactionFiltersSchema>;
+
+export const FREQUENCIES = ["monthly", "weekly", "yearly"] as const;
+export type Frequency = (typeof FREQUENCIES)[number];
+
+export const recurringItemSchema = z
+  .object({
+    type: z.enum(TRANSACTION_TYPES),
+    name: z
+      .string()
+      .trim()
+      .min(1, { error: "recurringNameRequired" })
+      .max(60, { error: "recurringNameTooLong" }),
+    amount: amountSchema,
+    currency: z.enum(CURRENCIES, { error: "currencyRequired" }),
+    categoryId: z.uuid({ error: "categoryRequired" }),
+    frequency: z.enum(FREQUENCIES),
+    // Form strings in; only used (and required) for monthly items.
+    dayOfMonth: z.string().optional(),
+    startOn: z.iso.date({ error: "dateInvalid" }),
+    endOn: z
+      .string()
+      .optional()
+      .transform((value) => value || null)
+      .pipe(z.iso.date({ error: "dateInvalid" }).nullable()),
+  })
+  .transform((item, ctx) => {
+    let dayOfMonth: number | null = null;
+    if (item.frequency === "monthly") {
+      dayOfMonth = Number(item.dayOfMonth);
+      if (!Number.isInteger(dayOfMonth) || dayOfMonth < 1 || dayOfMonth > 31) {
+        ctx.addIssue({ code: "custom", message: "dayOfMonthInvalid", path: ["dayOfMonth"] });
+        return z.NEVER;
+      }
+    }
+    if (item.endOn && item.endOn < item.startOn) {
+      ctx.addIssue({ code: "custom", message: "endBeforeStart", path: ["endOn"] });
+      return z.NEVER;
+    }
+    return { ...item, dayOfMonth };
+  });
+export type RecurringItemInput = z.input<typeof recurringItemSchema>;
+export type RecurringItemData = z.output<typeof recurringItemSchema>;
+
+/**
+ * Confirms a planned transaction with the amount actually paid. The date
+ * stays the due date: it is half of the (recurring_item_id, occurred_on) key
+ * that keeps generation from recreating an occurrence that was already paid.
+ */
+export const markPaidSchema = z.object({
+  amount: amountSchema,
+});
+export type MarkPaidInput = z.input<typeof markPaidSchema>;

@@ -43,10 +43,16 @@ export async function updateTransaction(
   const supabase = await createClient();
   const { data: existing } = await supabase
     .from("transactions")
-    .select("currency, occurred_on, fx_rate")
+    .select("currency, occurred_on, fx_rate, recurring_item_id")
     .eq("id", parsedId.data)
     .maybeSingle();
   if (!existing) return { status: "error", error: "notFound" };
+
+  // A fixed cost's date is its due date and half of the key that stops it
+  // being generated twice; moving it would bring the original date back.
+  if (existing.recurring_item_id && existing.occurred_on !== parsed.data.occurredOn) {
+    return { status: "error", error: "recurringDateLocked" };
+  }
 
   // The rate stays frozen unless what it depends on (currency, date) changes.
   const keepRate =

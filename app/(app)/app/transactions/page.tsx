@@ -8,7 +8,9 @@ import { TransactionFiltersBar } from "@/components/transactions/transaction-fil
 import { TransactionItem } from "@/components/transactions/transaction-item";
 import { requireProfile } from "@/lib/auth";
 import { formatMoney } from "@/lib/money";
+import { ensureRecurringGenerated } from "@/lib/recurring-store";
 import {
+  currentDate,
   currentMonth,
   getCategories,
   getCategoryUsage,
@@ -42,6 +44,7 @@ async function Transactions({
     ),
   );
   const month = filters.month ?? (await currentMonth());
+  await ensureRecurringGenerated(await currentDate());
 
   const [profile, categories, usage, rows, t] = await Promise.all([
     requireProfile(),
@@ -75,6 +78,7 @@ async function Transactions({
         </dl>
         <p className="text-xs text-muted-foreground">
           {t("summary.inPrimary", { currency: primary })}
+          {rows.some((r) => r.status === "planned") && <> · {t("plannedHint")}</>}
         </p>
       </section>
 
@@ -148,8 +152,11 @@ function ListSkeleton() {
   );
 }
 
+/** Paid or received only: planned fixed costs are not money that moved yet. */
 function sum(rows: TransactionRow[], type: TransactionRow["type"]) {
-  return rows.filter((r) => r.type === type).reduce((total, r) => total + r.amountPrimaryCents, 0);
+  return rows
+    .filter((r) => r.type === type && r.status === "confirmed")
+    .reduce((total, r) => total + r.amountPrimaryCents, 0);
 }
 
 function groupByDay(rows: TransactionRow[]): [string, TransactionRow[]][] {

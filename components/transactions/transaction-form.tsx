@@ -26,6 +26,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Segmented } from "@/components/forms/segmented";
 import { useValidationMessage } from "@/components/forms/use-validation-message";
 import {
   createTransaction,
@@ -36,7 +37,6 @@ import {
 } from "@/lib/actions/transactions";
 import { sortForQuickAdd, type Category } from "@/lib/categories";
 import { convertCents, formatMoney, parseAmount, parseRate } from "@/lib/money";
-import { cn } from "@/lib/utils";
 import {
   CURRENCIES,
   TRANSACTION_TYPES,
@@ -46,7 +46,7 @@ import {
   type TransactionInput,
 } from "@/lib/validators";
 import { zodResolver } from "@/lib/zod-resolver";
-import { CategoryIcon } from "./category-icon";
+import { CategoryChips } from "./category-chips";
 
 export type TransactionFormInitial = {
   id: string;
@@ -234,29 +234,12 @@ export function TransactionForm({
 
         <FieldSet>
           <FieldLegend variant="label">{t("form.category")}</FieldLegend>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("form.category")}>
-            {chips.map((category) => {
-              const selected = category.id === categoryId;
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => setValue("categoryId", category.id, { shouldValidate: true })}
-                  className={cn(
-                    "flex h-10 items-center gap-2 rounded-full border pr-3 pl-1 text-sm transition-colors",
-                    selected
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "bg-background hover:bg-muted",
-                  )}
-                >
-                  <CategoryIcon icon={category.icon} color={category.color} className="size-8" />
-                  {category.name}
-                </button>
-              );
-            })}
-          </div>
+          <CategoryChips
+            label={t("form.category")}
+            categories={chips}
+            value={categoryId}
+            onChange={(id) => setValue("categoryId", id, { shouldValidate: true })}
+          />
           <FieldError errors={validationMessage(errors.categoryId)} />
         </FieldSet>
 
@@ -361,46 +344,6 @@ function FxLine({
         </button>
       )}
     </FieldDescription>
-  );
-}
-
-function Segmented<T extends string>({
-  label,
-  options,
-  value,
-  onChange,
-  className,
-}: {
-  label: string;
-  options: { value: T; label: string }[];
-  value: T;
-  onChange: (value: T) => void;
-  className?: string;
-}) {
-  return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className={cn("inline-flex h-10 shrink-0 rounded-lg bg-muted p-1", className)}
-    >
-      {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          role="radio"
-          aria-checked={option.value === value}
-          onClick={() => onChange(option.value)}
-          className={cn(
-            "flex-1 rounded-md px-3 text-sm font-medium transition-colors",
-            option.value === value
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground",
-          )}
-        >
-          {option.label}
-        </button>
-      ))}
-    </div>
   );
 }
 

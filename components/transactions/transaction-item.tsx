@@ -26,6 +26,7 @@ export function TransactionItem({
   const t = useTranslations("Transactions");
   const [open, setOpen] = useState(false);
   const sign = row.type === "income" ? "+" : "−";
+  const planned = row.status === "planned";
 
   return (
     <>
@@ -37,8 +38,15 @@ export function TransactionItem({
         <CategoryIcon icon={row.category.icon} color={row.category.color} />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="truncate font-medium">{row.description || row.category.name}</span>
-          {row.description && (
-            <span className="truncate text-sm text-muted-foreground">{row.category.name}</span>
+          {(row.description || planned) && (
+            <span className="truncate text-sm text-muted-foreground">
+              {planned && (
+                <span className="mr-1.5 rounded-sm border border-dashed px-1 text-xs">
+                  {t("planned")}
+                </span>
+              )}
+              {row.description && row.category.name}
+            </span>
           )}
         </span>
         <span className="flex shrink-0 flex-col items-end">
@@ -46,6 +54,7 @@ export function TransactionItem({
             className={cn(
               "font-medium tabular-nums",
               row.type === "income" && "text-emerald-600 dark:text-emerald-400",
+              planned && "text-muted-foreground",
             )}
           >
             {sign} {formatMoney(row.amountCents, row.currency)}

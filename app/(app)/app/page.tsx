@@ -2,12 +2,14 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ReceiptText } from "lucide-react";
+import { CalendarClock, ReceiptText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile } from "@/lib/auth";
 import { formatMoney } from "@/lib/money";
-import { currentMonth, listTransactions } from "@/lib/transactions";
+import { getFinancialPeriod } from "@/lib/period";
+import { ensureRecurringGenerated, listPlanned } from "@/lib/recurring-store";
+import { currentDate, currentMonth, listTransactions } from "@/lib/transactions";
 import type { Currency } from "@/lib/validators";
 
 export default function DashboardPage() {
@@ -26,18 +28,28 @@ async function Dashboard() {
     redirect("/onboarding");
   }
 
-  const [t, tTx, rows] = await Promise.all([
+  // Plan this month's fixed costs before reading anything (PLAN.md 3.4).
+  const today = await currentDate();
+  await ensureRecurringGenerated(today);
+  const period = getFinancialPeriod(today, profile.monthStartDay);
+
+  const [t, tTx, rows, planned] = await Promise.all([
     getTranslations("Dashboard"),
     getTranslations("Transactions"),
     currentMonth().then((month) => listTransactions({ month })),
+    listPlanned(period.start, period.end),
   ]);
   const primary = profile.primaryCurrency;
-  const income = rows
+  // Totals count only what was actually paid or received (PLAN.md section 6).
+  const confirmed = rows.filter((r) => r.status === "confirmed");
+  const income = confirmed
     .filter((r) => r.type === "income")
     .reduce((s, r) => s + r.amountPrimaryCents, 0);
-  const expenses = rows
+  const expenses = confirmed
     .filter((r) => r.type === "expense")
     .reduce((s, r) => s + r.amountPrimaryCents, 0);
+  const toPay = planned.filter((p) => p.type === "expense");
+  const toPayTotal = toPay.reduce((s, p) => s + p.amountPrimaryCents, 0);
 
   return (
     <>
@@ -49,6 +61,18 @@ async function Dashboard() {
           {t("summary", { currency: profile.primaryCurrency, day: profile.monthStartDay })}
         </p>
       </div>
+
+      {toPay.length > 0 && (
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4">
+          <p className="flex items-center gap-2 text-sm">
+            <CalendarClock className="size-4 text-muted-foreground" aria-hidden />
+            {t("pending", { count: toPay.length, amount: formatMoney(toPayTotal, primary) })}
+          </p>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/app/fixed">{t("seeFixed")}</Link>
+          </Button>
+        </section>
+      )}
 
       {rows.length === 0 ? (
         <section className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-12 text-center">

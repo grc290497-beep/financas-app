@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   onboardingSchema,
+  recurringItemSchema,
   signInSchema,
   signUpSchema,
   transactionFiltersSchema,
@@ -149,5 +150,49 @@ describe("transactionFiltersSchema", () => {
       category: undefined,
       q: "pão",
     });
+  });
+});
+
+describe("recurringItemSchema", () => {
+  const valid = {
+    type: "expense",
+    name: "Aluguel",
+    amount: "1.200,00",
+    currency: "EUR",
+    categoryId: "3f1c2a9e-5b7d-4c8e-9a1b-2c3d4e5f6a7b",
+    frequency: "monthly",
+    dayOfMonth: "1",
+    startOn: "2026-10-01",
+    endOn: "",
+  } as const;
+
+  it("parses a monthly item into cents and a numeric day", () => {
+    expect(recurringItemSchema.safeParse(valid).data).toMatchObject({
+      amount: 120000,
+      dayOfMonth: 1,
+      endOn: null,
+    });
+  });
+
+  it("requires a valid day for monthly items only", () => {
+    expect(firstMessage(recurringItemSchema.safeParse({ ...valid, dayOfMonth: "32" }))).toBe(
+      "dayOfMonthInvalid",
+    );
+    expect(
+      recurringItemSchema.safeParse({ ...valid, frequency: "weekly", dayOfMonth: "" }).data
+        ?.dayOfMonth,
+    ).toBeNull();
+  });
+
+  it("rejects an end date before the start", () => {
+    expect(firstMessage(recurringItemSchema.safeParse({ ...valid, endOn: "2026-09-30" }))).toBe(
+      "endBeforeStart",
+    );
+  });
+
+  it("requires a name", () => {
+    expect(firstMessage(recurringItemSchema.safeParse({ ...valid, name: "  " }))).toBe(
+      "recurringNameRequired",
+    );
   });
 });
