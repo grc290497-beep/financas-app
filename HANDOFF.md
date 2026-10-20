@@ -93,7 +93,7 @@ Push direto na `main` está aprovado; a Vercel faz o deploy sozinha. Para confer
 | 5 Metas | ✅ testado no navegador |
 | Extra pós-fase 5 | ✅ meses futuros mostram os fixos previstos (até 12 meses à frente, gerados ao abrir o mês); edição de fixo com **"Mudança vale a partir de"** (divide o item: antigo termina na véspera, novo começa na próxima ocorrência; recusa se já há pagamento confirmado a partir da data) |
 | 6 Relatórios + exportação | ✅ `/app/reports` (barras 12 meses, rosca por categoria, tabela) + `/app/reports/export?format=csv\|json`; testado no navegador com dados de teste (já apagados) |
-| 7 PWA, polimento, E2E, privacidade + passe de design | 🟡 quase: Ajustes com edição de perfil, excluir conta, `/privacy` e `/terms`, PWA (`app/manifest.ts`, ícones de `components/brand/mark.ts`), escuro por padrão, paleta esmeralda+latão (positivo latão, negativo cobre), logo, rodapé, E2E escrito. Falta: rodar o E2E (service role no `.env.local`), e-mail de contato na privacidade, testar "Adicionar à tela inicial" no celular, domínio próprio (opcional) |
+| 7 PWA, polimento, E2E, privacidade + passe de design | ✅ Ajustes (perfil editável, exportar, excluir conta), `/privacy` e `/terms` com contato, PWA instalado e testado no celular pelo usuário, escuro por padrão, paleta esmeralda+latão, logo, rodapé, E2E passando (`npm run test:e2e`). Opcional: domínio próprio; `npm run test:rls` precisa de `npx supabase login` + `link` |
 
 Último commit: "Resolve the session before goal queries…" (após `c4ac7c2`). 175 testes unitários passando.
 O usuário apagou os próprios dados de teste no app; o banco estava vazio em 20/10.
