@@ -4,6 +4,8 @@ import {
   generateRecurringForPeriod,
   nextOccurrence,
   occurrencesInRange,
+  periodsToPlan,
+  splitDates,
   type PlannedTransaction,
   type RecurringItem,
   type RecurringSchedule,
@@ -239,5 +241,52 @@ describe("generateRecurringForPeriod", () => {
     expect(
       await generateRecurringForPeriod("user-1", october, "EUR", { store, fx: fx("5.6339") }),
     ).toEqual({ created: 0, skipped: 0 });
+  });
+});
+
+describe("splitDates (a change from a date, e.g. a raise)", () => {
+  // Weekly salary on Fridays since 02/01/2026.
+  const fridays: RecurringSchedule = {
+    frequency: "weekly",
+    dayOfMonth: null,
+    startOn: "2026-01-02",
+    endOn: null,
+  };
+
+  it("ends the old item the day before and keeps the weekday for the new one", () => {
+    // 2026-11-01 is a Sunday; the first Friday from then is 2026-11-06.
+    expect(splitDates("2026-01-02", fridays, "2026-11-01")).toEqual({
+      oldEndOn: "2026-10-31",
+      newStartOn: "2026-11-06",
+    });
+  });
+
+  it("keeps the due day for monthly items", () => {
+    expect(splitDates("2026-01-01", monthly(5), "2026-11-10")).toEqual({
+      oldEndOn: "2026-11-09",
+      newStartOn: "2026-12-05",
+    });
+  });
+
+  it("does not split when the change starts on or before the item", () => {
+    expect(splitDates("2026-01-02", fridays, "2026-01-02")).toBeNull();
+    expect(splitDates("2026-01-02", fridays, "2025-12-01")).toBeNull();
+  });
+});
+
+describe("periodsToPlan", () => {
+  it("plans only the current month by default or for past months", () => {
+    expect(periodsToPlan("2026-10-20", 1)).toEqual([{ start: "2026-10-01", end: "2026-10-31" }]);
+    expect(periodsToPlan("2026-10-20", 1, "2026-08")).toHaveLength(1);
+    expect(periodsToPlan("2026-10-20", 1, "2026-10")).toHaveLength(1);
+  });
+
+  it("adds a future month being viewed, follows month_start_day, and stops 12 months ahead", () => {
+    expect(periodsToPlan("2026-10-20", 25, "2027-01")).toEqual([
+      { start: "2026-09-25", end: "2026-10-24" },
+      { start: "2027-01-25", end: "2027-02-24" },
+    ]);
+    expect(periodsToPlan("2026-10-20", 1, "2027-10")).toHaveLength(2);
+    expect(periodsToPlan("2026-10-20", 1, "2027-11")).toHaveLength(1);
   });
 });

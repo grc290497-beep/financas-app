@@ -155,6 +155,13 @@ export const recurringItemSchema = z
 export type RecurringItemInput = z.input<typeof recurringItemSchema>;
 export type RecurringItemData = z.output<typeof recurringItemSchema>;
 
+/** When an edit to a recurring item takes effect; empty means all open occurrences. */
+export const effectiveFromSchema = z
+  .string()
+  .optional()
+  .transform((value) => value || null)
+  .pipe(z.iso.date({ error: "dateInvalid" }).nullable());
+
 /**
  * Confirms a planned transaction with the amount actually paid. The date
  * stays the due date: it is half of the (recurring_item_id, occurred_on) key

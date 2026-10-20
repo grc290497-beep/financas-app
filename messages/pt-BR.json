@@ -92,6 +92,8 @@
       "startOnHintYearly": "Repete nessa data todo ano.",
       "endOn": "Termina em",
       "endOnPlaceholder": "Sem data de fim",
+      "effectiveFrom": "Mudança vale a partir de",
+      "effectiveFromHint": "Para um aumento ou troca de emprego: antes dessa data fica o valor antigo. Vazio muda todos os previstos em aberto.",
       "save": "Salvar",
       "saving": "Salvando…",
       "delete": "Excluir",
@@ -120,6 +122,8 @@
     "errors": {
       "invalidInput": "Confira os campos destacados.",
       "categoryInvalid": "Essa categoria não serve para esse tipo.",
+      "paidAfterEffective": "Já há um pagamento confirmado a partir dessa data. Escolha uma data depois dele.",
+      "endBeforeEffective": "A data de fim é anterior à data da mudança.",
       "fxUnavailable": "Sem cotação disponível agora. Tente de novo em instantes.",
       "saveFailed": "Não conseguimos salvar. Tente de novo.",
       "deleteFailed": "Não conseguimos excluir. Tente de novo.",

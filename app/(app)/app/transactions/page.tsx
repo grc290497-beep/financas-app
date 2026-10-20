@@ -44,7 +44,7 @@ async function Transactions({
     ),
   );
   const today = await currentDate();
-  await ensureRecurringGenerated(today);
+  await ensureRecurringGenerated(today, filters.month);
   const profile = await requireProfile();
   // Months are financial months (month_start_day), keyed by the month they start in.
   const period = filters.month

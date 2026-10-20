@@ -3,9 +3,9 @@ import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireProfile } from "@/lib/auth";
 import { serverFxDeps } from "@/lib/fx-cache";
-import { getFinancialPeriod } from "@/lib/period";
 import {
   generateRecurringForPeriod,
+  periodsToPlan,
   type Frequency,
   type RecurringItem,
   type RecurringStore,
@@ -72,19 +72,18 @@ export function supabaseRecurringStore(client: SupabaseClient, userId: string): 
 
 /**
  * Makes sure the signed-in user's recurring items are planned for the
- * current financial month. Runs when the app's pages open (the daily cron is
- * the backstop); cached so one request only does it once.
+ * current financial month, and for `viewedMonth` (yyyy-MM) when it is a
+ * future month being opened. Runs when the app's pages open (the daily cron
+ * is the backstop); cached so one request only does it once.
  */
-export const ensureRecurringGenerated = cache(async (today: string) => {
+export const ensureRecurringGenerated = cache(async (today: string, viewedMonth?: string) => {
   const profile = await requireProfile();
   if (!profile.onboardingDone) return;
   const supabase = await createClient();
-  await generateRecurringForPeriod(
-    profile.id,
-    getFinancialPeriod(today, profile.monthStartDay),
-    profile.primaryCurrency,
-    { store: supabaseRecurringStore(supabase, profile.id), fx: await serverFxDeps() },
-  );
+  const deps = { store: supabaseRecurringStore(supabase, profile.id), fx: await serverFxDeps() };
+  for (const period of periodsToPlan(today, profile.monthStartDay, viewedMonth)) {
+    await generateRecurringForPeriod(profile.id, period, profile.primaryCurrency, deps);
+  }
 });
 
 export const listRecurringItems = cache(async (): Promise<RecurringItem[]> => {

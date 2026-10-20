@@ -44,14 +44,14 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
     redirect("/onboarding");
   }
 
-  // Plan this month's fixed costs before reading anything (PLAN.md 3.4).
-  const today = await currentDate();
-  await ensureRecurringGenerated(today);
-
   const raw = await searchParams;
   const { month } = transactionFiltersSchema.parse({
     month: Array.isArray(raw.month) ? raw.month[0] : raw.month,
   });
+
+  // Plan fixed costs (this month, or the future month being viewed) before reading anything (PLAN.md 3.4).
+  const today = await currentDate();
+  await ensureRecurringGenerated(today, month);
   const msd = profile.monthStartDay;
   const current = getFinancialPeriod(today, msd);
   const period = month ? periodStartingIn(month, msd) : current;

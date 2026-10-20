@@ -85,6 +85,7 @@ export function RecurringForm({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [effectiveFrom, setEffectiveFrom] = useState("");
 
   const {
     register,
@@ -121,7 +122,7 @@ export function RecurringForm({
       setError(null);
       const values = getValues();
       const result = initial
-        ? await updateRecurringItem(initial.id, values)
+        ? await updateRecurringItem(initial.id, values, effectiveFrom)
         : await createRecurringItem(values);
       if (result.status === "error") {
         setError(result.error);
@@ -276,6 +277,22 @@ export function RecurringForm({
             <FieldError errors={validationMessage(errors.endOn)} />
           </Field>
         </div>
+
+        {initial && (
+          <Field>
+            <FieldLabel htmlFor="effectiveFrom">{t("form.effectiveFrom")}</FieldLabel>
+            <Input
+              id="effectiveFrom"
+              type="date"
+              aria-describedby="effectiveFrom-hint"
+              value={effectiveFrom}
+              onChange={(event) => setEffectiveFrom(event.target.value)}
+            />
+            <FieldDescription id="effectiveFrom-hint">
+              {t("form.effectiveFromHint")}
+            </FieldDescription>
+          </Field>
+        )}
       </FieldGroup>
 
       <div className="flex gap-3">

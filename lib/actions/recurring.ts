@@ -7,10 +7,11 @@ import { kindsForType } from "@/lib/categories";
 import { FxUnavailableError, convertToPrimary, getRate } from "@/lib/fx";
 import { serverFxDeps } from "@/lib/fx-cache";
 import { getFinancialPeriod } from "@/lib/period";
-import { generateRecurringForPeriod } from "@/lib/recurring";
+import { generateRecurringForPeriod, splitDates } from "@/lib/recurring";
 import { supabaseRecurringStore } from "@/lib/recurring-store";
 import { createClient } from "@/lib/supabase/server";
 import {
+  effectiveFromSchema,
   markPaidSchema,
   recurringItemSchema,
   type MarkPaidInput,
@@ -42,13 +43,27 @@ export async function createRecurringItem(
 export async function updateRecurringItem(
   id: string,
   input: RecurringItemInput,
+  effectiveFrom?: string,
 ): Promise<RecurringActionResult> {
   const parsedId = z.uuid().safeParse(id);
   const parsed = recurringItemSchema.safeParse(input);
-  if (!parsedId.success || !parsed.success) return { status: "error", error: "invalidInput" };
+  const parsedFrom = effectiveFromSchema.safeParse(effectiveFrom);
+  if (!parsedId.success || !parsed.success || !parsedFrom.success) {
+    return { status: "error", error: "invalidInput" };
+  }
   if (!(await categoryFits(parsed.data))) return { status: "error", error: "categoryInvalid" };
 
   const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("recurring_items")
+    .select("start_on")
+    .eq("id", parsedId.data)
+    .maybeSingle();
+  if (!existing) return { status: "error", error: "notFound" };
+
+  const split = parsedFrom.data && splitDates(existing.start_on, parsed.data, parsedFrom.data);
+  if (split) return splitRecurringItem(parsedId.data, parsed.data, parsedFrom.data!, split);
+
   const { data: updated, error } = await supabase
     .from("recurring_items")
     .update(toRow(parsed.data))
@@ -147,6 +162,62 @@ export async function markAsPaid(
     .eq("id", parsedId.data);
   if (error) return { status: "error", error: "saveFailed" };
 
+  revalidateViews();
+  return { status: "ok" };
+}
+
+/**
+ * Applies an edit from `effectiveFrom` on: the item ends the day before and a
+ * new item with the new settings takes over. Earlier occurrences, paid or not,
+ * keep the old settings.
+ */
+async function splitRecurringItem(
+  id: string,
+  data: RecurringItemData,
+  effectiveFrom: string,
+  split: { oldEndOn: string; newStartOn: string },
+): Promise<RecurringActionResult> {
+  if (data.endOn && data.endOn < split.newStartOn) {
+    return { status: "error", error: "endBeforeEffective" };
+  }
+
+  const supabase = await createClient();
+  // A confirmed occurrence on or after the date would be planned again by the new item.
+  const { data: paid, error: paidError } = await supabase
+    .from("transactions")
+    .select("id")
+    .eq("recurring_item_id", id)
+    .eq("status", "confirmed")
+    .gte("occurred_on", effectiveFrom)
+    .limit(1);
+  if (paidError) return { status: "error", error: "saveFailed" };
+  if (paid.length) return { status: "error", error: "paidAfterEffective" };
+
+  const { data: created, error } = await supabase
+    .from("recurring_items")
+    .insert({ ...toRow(data), start_on: split.newStartOn })
+    .select("id")
+    .single();
+  if (error) return { status: "error", error: "saveFailed" };
+
+  const { error: endError } = await supabase
+    .from("recurring_items")
+    .update({ end_on: split.oldEndOn })
+    .eq("id", id);
+  if (endError) {
+    // Undo, so the old and the new item don't both run.
+    await supabase.from("recurring_items").delete().eq("id", created.id);
+    return { status: "error", error: "saveFailed" };
+  }
+
+  await supabase
+    .from("transactions")
+    .delete()
+    .eq("recurring_item_id", id)
+    .eq("status", "planned")
+    .gte("occurred_on", effectiveFrom);
+
+  await planCurrentPeriod();
   revalidateViews();
   return { status: "ok" };
 }

@@ -1,6 +1,6 @@
 import { addDays, daysBetween, daysInMonth, makeDate, ymd } from "@/lib/dates";
 import { FxUnavailableError, convertToPrimary, getRate, type FxDeps } from "@/lib/fx";
-import type { Period } from "@/lib/period";
+import { getFinancialPeriod, periodStartingIn, shiftPeriod, type Period } from "@/lib/period";
 import type { Currency, Frequency, TransactionType } from "@/lib/validators";
 
 // When a recurring item (rent, salary, subscriptions) falls due.
@@ -58,6 +58,38 @@ export function occurrencesInRange(item: RecurringSchedule, from: string, to: st
 /** First due date on or after `from`, or null if the item has ended. */
 export function nextOccurrence(item: RecurringSchedule, from: string): string | null {
   return occurrencesInRange(item, from, addDays(from, 400))[0] ?? null;
+}
+
+/**
+ * A change that takes effect on a date (a raise, a new job) splits the item:
+ * the old one ends the day before, the new one starts at its first due date
+ * from then on (same weekday / day of month). Null when the change covers the
+ * whole item, i.e. it takes effect on or before the item started.
+ */
+export function splitDates(oldStartOn: string, next: RecurringSchedule, effectiveFrom: string) {
+  if (effectiveFrom <= oldStartOn) return null;
+  return {
+    oldEndOn: addDays(effectiveFrom, -1),
+    newStartOn: nextOccurrence(next, effectiveFrom) ?? effectiveFrom,
+  };
+}
+
+/** How far ahead a future month can be planned by opening it. */
+export const PLAN_AHEAD_MONTHS = 12;
+
+/** The current period, plus the viewed one when it is a future month within reach. */
+export function periodsToPlan(
+  today: string,
+  monthStartDay: number,
+  viewedMonth?: string,
+): Period[] {
+  const current = getFinancialPeriod(today, monthStartDay);
+  if (!viewedMonth) return [current];
+  const viewed = periodStartingIn(viewedMonth, monthStartDay);
+  const limit = shiftPeriod(current, monthStartDay, PLAN_AHEAD_MONTHS);
+  return viewed.start > current.start && viewed.start <= limit.start
+    ? [current, viewed]
+    : [current];
 }
 
 export type RecurringItem = RecurringSchedule & {
