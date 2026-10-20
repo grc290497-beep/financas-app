@@ -36,7 +36,7 @@ export function Mark({ size, rounded }: { size: number; rounded: boolean }) {
         alignItems: "center",
         justifyContent: "center",
         // --hero → --hero-2 from globals.css, in sRGB for next/og.
-        background: "linear-gradient(135deg, #24206e, #4b33b0)",
+        background: "linear-gradient(135deg, #2e0a4f, #6a14a8)",
         color: "#fafafa",
         borderRadius: rounded ? size * 0.22 : 0,
         fontSize: size * (rounded ? 0.34 : 0.26),
