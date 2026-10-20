@@ -3,6 +3,13 @@
     "title": "Finanças",
     "description": "Controle suas finanças pessoais em euro e real: entradas, custos fixos, gastos e metas."
   },
+  "Common": {
+    "appName": "Finanças",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "signOut": "Sair",
+    "loading": "Carregando…"
+  },
   "Landing": {
     "title": "Seu dinheiro em euro e real, sem planilha",
     "subtitle": "Registre o que entra e o que sai, acompanhe o mês e veja se suas metas estão no ritmo. Tudo convertido para a sua moeda principal.",
@@ -13,5 +20,91 @@
       "monthly": "Tracker mensal com orçamento por categoria",
       "goals": "Metas de economia com projeção"
     }
+  },
+  "Validation": {
+    "emailInvalid": "Digite um e-mail válido.",
+    "nameRequired": "Diga como podemos te chamar.",
+    "nameTooLong": "Use no máximo 80 caracteres.",
+    "passwordTooShort": "A senha precisa ter pelo menos 8 caracteres.",
+    "passwordTooLong": "A senha pode ter no máximo 72 caracteres.",
+    "passwordRequired": "Digite sua senha.",
+    "currencyRequired": "Escolha sua moeda principal.",
+    "monthStartDayInvalid": "Escolha um dia entre 1 e 28."
+  },
+  "Auth": {
+    "login": {
+      "title": "Entrar",
+      "subtitle": "Bom te ver de novo.",
+      "email": "E-mail",
+      "password": "Senha",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "useMagicLink": "Prefiro receber um link por e-mail",
+      "usePassword": "Prefiro entrar com senha",
+      "sendLink": "Enviar link de acesso",
+      "sendingLink": "Enviando…",
+      "linkSentTitle": "Confira seu e-mail",
+      "linkSent": "Se existir uma conta com {email}, enviamos um link de acesso. Abra no mesmo navegador.",
+      "noAccount": "Ainda não tem conta?",
+      "signUpLink": "Criar conta"
+    },
+    "signup": {
+      "title": "Criar conta",
+      "subtitle": "Leva menos de um minuto.",
+      "name": "Como podemos te chamar?",
+      "email": "E-mail",
+      "password": "Senha",
+      "passwordHint": "Pelo menos 8 caracteres.",
+      "submit": "Criar conta",
+      "submitting": "Criando conta…",
+      "checkEmailTitle": "Confirme seu e-mail",
+      "checkEmail": "Enviamos um link de confirmação para {email}. Clique nele para ativar sua conta.",
+      "hasAccount": "Já tem conta?",
+      "loginLink": "Entrar"
+    },
+    "errors": {
+      "invalidInput": "Confira os campos destacados.",
+      "invalidCredentials": "E-mail ou senha incorretos.",
+      "emailNotConfirmed": "Confirme seu e-mail antes de entrar. Procure o link na sua caixa de entrada.",
+      "weakPassword": "Essa senha é fácil de adivinhar. Tente uma mais forte.",
+      "rateLimited": "Muitas tentativas seguidas. Espere alguns minutos e tente de novo.",
+      "signUpFailed": "Não foi possível criar a conta. Tente de novo.",
+      "link": "Esse link expirou ou já foi usado. Peça um novo.",
+      "unexpected": "Algo deu errado. Tente de novo."
+    }
+  },
+  "Onboarding": {
+    "title": "Vamos configurar",
+    "step": "Passo {current} de {total}",
+    "currency": {
+      "title": "Qual é a sua moeda principal?",
+      "description": "Todos os totais aparecem nela. Você ainda pode lançar valores na outra moeda.",
+      "EUR": "Euro",
+      "EURHint": "€ 12,50",
+      "BRL": "Real",
+      "BRLHint": "R$ 80,00"
+    },
+    "monthStart": {
+      "title": "Em que dia começa o seu mês?",
+      "description": "Use o dia em que cai o seu salário. O tracker mensal segue esse período.",
+      "label": "Dia de início",
+      "day": "Dia {day}",
+      "exampleFirst": "Seu mês vai do dia 1 até o último dia do mês.",
+      "exampleOther": "Seu mês vai do dia {day} até o dia {previousDay} do mês seguinte."
+    },
+    "finish": "Concluir",
+    "saving": "Salvando…",
+    "errors": {
+      "invalidInput": "Confira as escolhas e tente de novo.",
+      "saveFailed": "Não conseguimos salvar. Tente de novo.",
+      "unexpected": "Algo deu errado. Tente de novo."
+    }
+  },
+  "Dashboard": {
+    "greeting": "Olá, {name}!",
+    "greetingNoName": "Olá!",
+    "summary": "Moeda principal: {currency} · Mês começa no dia {day}",
+    "emptyTitle": "Nenhum lançamento ainda",
+    "emptyDescription": "Logo você vai poder registrar entradas e gastos por aqui. Os totais do mês aparecem assim que houver lançamentos."
   }
 }

@@ -1,0 +1,49 @@
+import "server-only";
+import { cache } from "react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import type { Currency } from "@/lib/validators";
+
+// Data Access Layer: the only place pages read the session and profile.
+
+export type Profile = {
+  id: string;
+  displayName: string | null;
+  primaryCurrency: Currency;
+  monthStartDay: number;
+  onboardingDone: boolean;
+};
+
+/** The signed-in user's id and email, or a redirect to /login. */
+export const requireUser = cache(async () => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  if (!claims?.sub) {
+    redirect("/login");
+  }
+  return { id: claims.sub, email: claims.email as string | undefined };
+});
+
+/** The signed-in user's profile (RLS limits the query to their own row). */
+export const requireProfile = cache(async (): Promise<Profile> => {
+  const user = await requireUser();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, display_name, primary_currency, month_start_day, onboarding_done")
+    .eq("id", user.id)
+    .single();
+
+  if (error || !data) {
+    throw new Error("Profile not found for the signed-in user.");
+  }
+
+  return {
+    id: data.id,
+    displayName: data.display_name,
+    primaryCurrency: data.primary_currency as Currency,
+    monthStartDay: data.month_start_day,
+    onboardingDone: data.onboarding_done,
+  };
+});
