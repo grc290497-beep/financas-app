@@ -33,8 +33,9 @@ export default async function GoalsPage() {
 }
 
 async function Goals() {
-  const [profile, today, goals, t] = await Promise.all([
-    requireProfile(),
+  // Profile first: it resolves the session (request time) before the goal query.
+  const profile = await requireProfile();
+  const [today, goals, t] = await Promise.all([
     currentDate(),
     listGoals(),
     getTranslations("Goals"),

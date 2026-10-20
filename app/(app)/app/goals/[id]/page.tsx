@@ -38,8 +38,9 @@ async function GoalDetail({ params }: { params: PageProps<"/app/goals/[id]">["pa
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
 
-  const [profile, today, goal, t] = await Promise.all([
-    requireProfile(),
+  // Profile first: it resolves the session (request time) before the goal query.
+  const profile = await requireProfile();
+  const [today, goal, t] = await Promise.all([
     currentDate(),
     getGoal(id),
     getTranslations("Goals"),
