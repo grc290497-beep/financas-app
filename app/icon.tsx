@@ -1,13 +1,13 @@
 import { ImageResponse } from "next/og";
+import { markDataUri } from "@/components/brand/mark";
 
-// App icons drawn at build time: a rounded tile with a euro and a real sign.
-// "maskable" fills the square and keeps the glyphs inside Android's safe zone.
-// shortcut: placeholder mark until the design pass picks a real one.
+// App icons drawn at build time from the same SVG as the in-app logo.
+// "maskable" fills the square and pulls the rings into Android's safe zone.
 
 const VARIANTS = {
-  "192": { size: 192, rounded: true },
-  "512": { size: 512, rounded: true },
-  maskable: { size: 512, rounded: false },
+  "192": { size: 192, rounded: true, inset: 0 },
+  "512": { size: 512, rounded: true, inset: 0 },
+  maskable: { size: 512, rounded: false, inset: 0.25 },
 } as const;
 
 export function generateImageMetadata() {
@@ -19,32 +19,22 @@ export function generateImageMetadata() {
 }
 
 export default async function Icon({ id }: { id: Promise<string> }) {
-  const { size, rounded } = VARIANTS[(await id) as keyof typeof VARIANTS];
-  return new ImageResponse(<Mark size={size} rounded={rounded} />, {
+  const { size, rounded, inset } = VARIANTS[(await id) as keyof typeof VARIANTS];
+  return new ImageResponse(<Mark size={size} rounded={rounded} inset={inset} />, {
     width: size,
     height: size,
   });
 }
 
-export function Mark({ size, rounded }: { size: number; rounded: boolean }) {
-  return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        // Emerald --hero → --hero-2 with brass glyphs (globals.css), in sRGB for next/og.
-        background: "linear-gradient(135deg, #0b3328, #1a5642)",
-        color: "#e3c47e",
-        borderRadius: rounded ? size * 0.22 : 0,
-        fontSize: size * (rounded ? 0.34 : 0.26),
-        fontWeight: 700,
-        letterSpacing: -size * 0.01,
-      }}
-    >
-      €R$
-    </div>
-  );
+export function Mark({
+  size,
+  rounded,
+  inset = 0,
+}: {
+  size: number;
+  rounded: boolean;
+  inset?: number;
+}) {
+  // eslint-disable-next-line @next/next/no-img-element -- next/og renders plain <img>
+  return <img src={markDataUri({ rounded, inset })} width={size} height={size} alt="" />;
 }

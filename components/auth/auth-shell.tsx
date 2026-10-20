@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
+import { Logo } from "@/components/brand/logo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export async function AuthShell({
@@ -18,8 +19,8 @@ export async function AuthShell({
 
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 px-4 py-12">
-      <Link href="/" className="text-center text-lg font-semibold tracking-tight">
-        {t("appName")}
+      <Link href="/" className="self-center text-lg">
+        <Logo name={t("appName")} size={36} />
       </Link>
       <Card>
         <CardHeader>

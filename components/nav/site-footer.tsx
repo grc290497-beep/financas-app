@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { Logo } from "@/components/brand/logo";
 
 /** One footer for every page; globals.css lifts it above the mobile tab bar when there is one. */
 export async function SiteFooter() {
@@ -10,9 +11,8 @@ export async function SiteFooter() {
       {/* pr-20 on phones keeps the text clear of the floating "+" button. */}
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 py-8 pr-20 pl-4 text-sm sm:flex-row sm:items-end sm:justify-between sm:px-4">
         <div className="flex flex-col gap-1">
-          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="metal-brass size-5 rounded-md" aria-hidden />
-            {t("appName")}
+          <Link href="/" className="self-start">
+            <Logo name={t("appName")} size={24} />
           </Link>
           <p className="text-muted-foreground">{t("tagline")}</p>
         </div>

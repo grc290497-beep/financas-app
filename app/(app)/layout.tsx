@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { LogOut, Settings } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/actions/auth";
 
@@ -11,8 +12,8 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     <div className="flex flex-1 flex-col">
       <header className="border-b bg-card/60 backdrop-blur-sm">
         <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between px-4">
-          <Link href="/app" className="font-semibold tracking-tight">
-            {t("appName")}
+          <Link href="/app">
+            <Logo name={t("appName")} />
           </Link>
           <div className="flex items-center gap-1">
             {/* Ajustes sits here instead of a sixth tab; revisited in the design pass. */}

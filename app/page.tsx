@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeftRight, CalendarRange, Target } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 
 export default async function Home() {
-  const t = await getTranslations("Landing");
+  const [t, common] = await Promise.all([getTranslations("Landing"), getTranslations("Common")]);
 
   const features = [
     { icon: ArrowLeftRight, label: t("features.currencies") },
@@ -14,6 +15,7 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-10 px-4 py-16 sm:px-6">
+      <Logo name={common("appName")} size={40} className="text-lg" />
       <div className="flex flex-col gap-4">
         <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
           {t("title")}
