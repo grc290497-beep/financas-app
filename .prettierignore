@@ -1,0 +1,9 @@
+.next
+node_modules
+package-lock.json
+supabase/.temp
+next-env.d.ts
+# Hand-written project docs
+PLAN.md
+CLAUDE.md
+AGENTS.md

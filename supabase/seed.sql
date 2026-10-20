@@ -1,0 +1,2 @@
+-- Local development seed, applied by `supabase db reset`.
+-- Default categories are created per user by the signup trigger (Phase 1), not here.

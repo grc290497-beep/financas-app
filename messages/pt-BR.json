@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "title": "Finanças",
+    "description": "Controle suas finanças pessoais em euro e real: entradas, custos fixos, gastos e metas."
+  },
+  "Landing": {
+    "title": "Seu dinheiro em euro e real, sem planilha",
+    "subtitle": "Registre o que entra e o que sai, acompanhe o mês e veja se suas metas estão no ritmo. Tudo convertido para a sua moeda principal.",
+    "cta": "Criar conta",
+    "login": "Já tenho conta",
+    "features": {
+      "currencies": "EUR e BRL com conversão automática",
+      "monthly": "Tracker mensal com orçamento por categoria",
+      "goals": "Metas de economia com projeção"
+    }
+  }
+}
