@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { safeNextPath } from "@/lib/redirect";
+import { resolveSiteOrigin } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import {
   magicLinkSchema,
@@ -21,7 +22,14 @@ async function siteOrigin() {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host");
   const proto = h.get("x-forwarded-proto") ?? "https";
-  return `${proto}://${host}`;
+  return resolveSiteOrigin(
+    {
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+      VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    },
+    `${proto}://${host}`,
+  );
 }
 
 export async function signUp(input: SignUpInput): Promise<AuthActionResult> {
