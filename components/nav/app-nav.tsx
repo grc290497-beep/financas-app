@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CalendarClock, House, ReceiptText, Target } from "lucide-react";
+import { CalendarClock, ChartColumn, House, ReceiptText, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Relatórios and Ajustes join as their phases land (PLAN.md section 5).
+// Ajustes joins when its phase lands (PLAN.md section 5).
 const ITEMS = [
   { href: "/app", label: "home", icon: House, exact: true },
   { href: "/app/transactions", label: "transactions", icon: ReceiptText, exact: false },
   // Not in PLAN.md's tab list; placement gets revisited in the final layout pass.
   { href: "/app/fixed", label: "fixed", icon: CalendarClock, exact: false },
   { href: "/app/goals", label: "goals", icon: Target, exact: false },
+  { href: "/app/reports", label: "reports", icon: ChartColumn, exact: false },
 ] as const;
 
 /** Bottom tab bar on mobile, a top bar from md up. */
