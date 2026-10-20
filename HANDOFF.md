@@ -75,7 +75,7 @@ SUPABASE_SERVICE_ROLE_KEY=            # opcional no local; sem ele o cache de c�
 
 Comandos: `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`,
 `npm run format`. Para testes RLS via CLI: `npx supabase login` e
-`npx supabase link --project-ref nbaetpofofagcogzykhv` (ainda não foi feito).
+`npx supabase link --project-ref nbaetpofofagcogzykhv` (o login já foi feito; o `supabase test db` precisa de Docker, que não está instalado). Sem Docker, os 6 arquivos de `supabase/tests/database/` rodam pelo MCP `execute_sql`: trocar o `select * from finish(); rollback;` final por `do $$ begin raise exception 'TAP_RESULT run=% failed=%', extensions._get('curr_test'), extensions.num_failed(); end $$;` — o erro proposital desfaz tudo e traz o placar. Última execução (20/10): 63/63.
 
 Git: autor `grc290497@gmail.com`; `core.autocrlf false` (há `.gitattributes` com `eol=lf`).
 Push direto na `main` está aprovado; a Vercel faz o deploy sozinha. Para conferir o deploy:
