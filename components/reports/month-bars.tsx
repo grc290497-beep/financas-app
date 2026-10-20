@@ -7,8 +7,8 @@ import type { Currency } from "@/lib/validators";
 
 export type MonthBar = { label: string; incomeCents: number; expenseCents: number };
 
-// Blue/orange instead of green/red: separable with colour blindness (dataviz
-// validator), with a light and a dark step in globals.css.
+// Brass (in) and slate blue (out): on-palette and separable with colour
+// blindness (dataviz validator), with a light and a dark step in globals.css.
 const SERIES = [
   { key: "incomeCents", color: "var(--income)", label: "income" },
   { key: "expenseCents", color: "var(--expense)", label: "expenses" },

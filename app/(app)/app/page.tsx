@@ -290,7 +290,11 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                           <span
                             className={cn(
                               "text-xs tabular-nums",
-                              change > 0 ? "text-negative" : "text-positive",
+                              change > 0
+                                ? "text-negative"
+                                : change < 0
+                                  ? "text-positive"
+                                  : "text-muted-foreground",
                             )}
                           >
                             {t("vsPrevious", { change: signedPercent.format(change) })}

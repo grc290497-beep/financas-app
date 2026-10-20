@@ -103,8 +103,8 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --income: #2563eb;
-  --expense: #ea580c;
+  --income: #9a7a2a;
+  --expense: #5866b8;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -156,8 +156,8 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --income: #3b82f6;
-  --expense: #ea580c;
+  --income: #b38c35;
+  --expense: #6676d0;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -168,7 +168,7 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* A raised card: replaces flat bordered boxes so content sits above the page. */
+/* A raised card: replaces flat bordered boxes so content sits above the page */
 @utility surface {
   background-color: var(--card);
   border-radius: calc(var(--radius) * 1.8);

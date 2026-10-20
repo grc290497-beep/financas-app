@@ -49,7 +49,7 @@ export function GoalChart({
             minTickGap={24}
           />
           <YAxis
-            width={56}
+            width={68}
             domain={[0, (max: number) => Math.max(max, targetCents)]}
             tickFormatter={(cents: number) => formatMoney(cents, currency).replace(/,\d\d$/, "")}
             tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}

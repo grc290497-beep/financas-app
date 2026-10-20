@@ -148,6 +148,12 @@ O usuário apagou os próprios dados de teste no app; o banco estava vazio em 20
 
 ## 5. Pendências que dependem do usuário
 
+- **Dados de teste na conta do usuário (pedido dele, NÃO apagar sem ele pedir):** 96 lançamentos
+  confirmados de mai–out/2026 (todos com `created_at` de 2026-10-20 ~20:23 UTC), 6 aportes na meta
+  "Casa" e limites de orçamento em Mercado, Restaurantes/Delivery, Lazer e Compras. Para remover:
+  `delete from transactions where status = 'confirmed' and created_at between '2026-10-20 20:23' and '2026-10-20 20:24'`
+  (e os aportes/limites à parte).
+
 - Variáveis de ambiente de Preview na Vercel ainda só estão em Production.
 - Supabase: ativar "leaked password protection" (aviso do advisor).
 - SMTP próprio no Supabase (o padrão tem limite baixo de e-mails) — Fase 7.

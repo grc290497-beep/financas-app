@@ -124,12 +124,14 @@ async function GoalDetail({ params }: { params: PageProps<"/app/goals/[id]">["pa
 
       <section className="flex flex-col gap-2">
         <h2 className="text-base font-medium">{t("chart")}</h2>
-        <GoalChart
-          points={evolutionSeries(goal, goal.contributions, today)}
-          targetCents={goal.targetCents}
-          currency={goal.currency}
-          color={color}
-        />
+        <div className="surface p-4">
+          <GoalChart
+            points={evolutionSeries(goal, goal.contributions, today)}
+            targetCents={goal.targetCents}
+            currency={goal.currency}
+            color={color}
+          />
+        </div>
       </section>
 
       <section className="flex flex-col gap-2">

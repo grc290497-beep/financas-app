@@ -95,19 +95,23 @@ async function Reports({
       {hasData ? (
         <>
           <Section title={t("evolution")} hint={t("inPrimary", { currency: primary })}>
-            <MonthBars
-              data={months.map((m) => ({
-                label: m.label,
-                incomeCents: m.incomeCents,
-                expenseCents: m.expenseCents,
-              }))}
-              currency={primary}
-            />
+            <div className="surface p-4">
+              <MonthBars
+                data={months.map((m) => ({
+                  label: m.label,
+                  incomeCents: m.incomeCents,
+                  expenseCents: m.expenseCents,
+                }))}
+                currency={primary}
+              />
+            </div>
           </Section>
 
           <Section title={t("byCategory", { month: months[MONTHS - 1].label })}>
             {slices.length ? (
-              <CategoryPie slices={slices} currency={primary} />
+              <div className="surface p-4">
+                <CategoryPie slices={slices} currency={primary} />
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground">{t("noSpend")}</p>
             )}
@@ -115,22 +119,26 @@ async function Reports({
 
           <Section title={t("comparison")}>
             <div className="surface overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs sm:text-sm">
                 <thead className="text-xs text-muted-foreground">
                   <tr className="border-b">
-                    <th scope="col" className="px-3 py-2 text-left font-medium">
+                    <th scope="col" className="px-2.5 py-2.5 text-left font-medium sm:px-3">
                       {t("month")}
                     </th>
-                    <th scope="col" className="px-3 py-2 text-right font-medium">
+                    {/* Phones drop the income column; the bar chart above already shows it. */}
+                    <th
+                      scope="col"
+                      className="hidden px-3 py-2.5 text-right font-medium sm:table-cell"
+                    >
                       {t("income")}
                     </th>
-                    <th scope="col" className="px-3 py-2 text-right font-medium">
+                    <th scope="col" className="px-2.5 py-2.5 text-right font-medium sm:px-3">
                       {t("expenses")}
                     </th>
-                    <th scope="col" className="px-3 py-2 text-right font-medium">
+                    <th scope="col" className="px-2.5 py-2.5 text-right font-medium sm:px-3">
                       {t("balance")}
                     </th>
-                    <th scope="col" className="px-3 py-2 text-right font-medium">
+                    <th scope="col" className="px-2.5 py-2.5 text-right font-medium sm:px-3">
                       {t("savingsRate")}
                     </th>
                   </tr>
@@ -138,18 +146,18 @@ async function Reports({
                 <tbody className="divide-y tabular-nums">
                   {[...months].reverse().map((m) => (
                     <tr key={m.start}>
-                      <th scope="row" className="px-3 py-2 text-left font-normal">
+                      <th scope="row" className="px-2.5 py-2.5 text-left font-normal sm:px-3">
                         {m.label}
                       </th>
-                      <td className="px-3 py-2 text-right">
+                      <td className="hidden px-3 py-2.5 text-right sm:table-cell">
                         {formatMoney(m.incomeCents, primary)}
                       </td>
-                      <td className="px-3 py-2 text-right">
+                      <td className="px-2.5 py-2.5 text-right sm:px-3">
                         {formatMoney(m.expenseCents, primary)}
                       </td>
                       <td
                         className={cn(
-                          "px-3 py-2 text-right",
+                          "px-2.5 py-2.5 text-right sm:px-3",
                           m.balanceCents < 0 && "text-negative",
                         )}
                       >
@@ -157,7 +165,7 @@ async function Reports({
                       </td>
                       <td
                         className={cn(
-                          "px-3 py-2 text-right",
+                          "px-2.5 py-2.5 text-right sm:px-3",
                           (m.savingsRate ?? 0) < 0 && "text-negative",
                         )}
                       >
