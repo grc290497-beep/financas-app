@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 Personal finance tracker (web app / PWA). Multi-user, EUR + BRL. **Full spec and roadmap: `PLAN.md`. Read it before starting any phase.**
+**Current status, setup on a new machine and required skills/plugins: `HANDOFF.md`. Read it first.**
 
 ## Working rules
 - Work **one phase at a time**, in the order of PLAN.md §8. Don't start the next phase without being asked.
