@@ -2,12 +2,13 @@ import { budgetLevel } from "@/lib/dashboard";
 import { cn } from "@/lib/utils";
 
 const LEVEL_CLASS = {
-  ok: "bg-emerald-500",
-  warning: "bg-amber-500",
-  over: "bg-red-500",
+  // Spending is not a gain, so "ok" stays neutral; brass/copper are reserved for +/-.
+  ok: "bg-foreground/35",
+  warning: "bg-warning",
+  over: "bg-negative",
 } as const;
 
-/** Spent against a budget: amber from 80%, red from 100% (PLAN.md 3.6). */
+/** Spent against a budget: ochre from 80%, copper from 100% (PLAN.md 3.6). */
 export function BudgetBar({
   spentCents,
   budgetCents,

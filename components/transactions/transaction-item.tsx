@@ -53,7 +53,7 @@ export function TransactionItem({
           <span
             className={cn(
               "font-medium tabular-nums",
-              row.type === "income" && "text-emerald-600 dark:text-emerald-400",
+              row.type === "income" && "text-positive",
               planned && "text-muted-foreground",
             )}
           >

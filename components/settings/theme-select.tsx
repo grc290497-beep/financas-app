@@ -12,7 +12,7 @@ const subscribe = () => () => {};
 export function ThemeSelect() {
   const t = useTranslations("Settings.theme");
   const { theme, setTheme } = useTheme();
-  // The stored theme is only known in the browser; render "system" until hydrated.
+  // The stored theme is only known in the browser; render the default (dark) until hydrated.
   const hydrated = useSyncExternalStore(
     subscribe,
     () => true,
@@ -22,7 +22,7 @@ export function ThemeSelect() {
   return (
     <Segmented<Theme>
       label={t("label")}
-      value={hydrated ? ((theme as Theme | undefined) ?? "system") : "system"}
+      value={hydrated ? ((theme as Theme | undefined) ?? "dark") : "dark"}
       onChange={setTheme}
       options={[
         { value: "system", label: t("system") },

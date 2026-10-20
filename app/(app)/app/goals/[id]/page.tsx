@@ -148,9 +148,7 @@ async function GoalDetail({ params }: { params: PageProps<"/app/goals/[id]">["pa
                   <span
                     className={cn(
                       "font-medium tabular-nums",
-                      c.amountGoalCents > 0
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-destructive",
+                      c.amountGoalCents > 0 ? "text-positive" : "text-negative",
                     )}
                   >
                     {c.amountGoalCents > 0 ? "+" : "−"}{" "}
@@ -188,7 +186,7 @@ function Metric({
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className={cn("truncate font-medium tabular-nums", negative && "text-destructive")}>
+      <dd className={cn("truncate font-medium tabular-nums", negative && "text-negative")}>
         {value}
       </dd>
       {hint && <dd className="text-xs text-muted-foreground">{hint}</dd>}

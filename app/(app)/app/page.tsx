@@ -229,7 +229,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                       <span
                         className={cn(
                           "w-11 shrink-0 tabular-nums",
-                          bill.occurredOn < today ? "text-destructive" : "text-muted-foreground",
+                          bill.occurredOn < today ? "text-negative" : "text-muted-foreground",
                         )}
                       >
                         {dayMonth(bill.occurredOn)}
@@ -296,9 +296,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                           <span
                             className={cn(
                               "text-xs tabular-nums",
-                              change > 0
-                                ? "text-destructive"
-                                : "text-emerald-600 dark:text-emerald-400",
+                              change > 0 ? "text-negative" : "text-positive",
                             )}
                           >
                             {t("vsPrevious", { change: signedPercent.format(change) })}
@@ -321,9 +319,7 @@ function Metric({ label, value, negative }: { label: string; value: string; nega
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd
-        className={cn("truncate text-lg font-medium tabular-nums", negative && "text-destructive")}
-      >
+      <dd className={cn("truncate text-lg font-medium tabular-nums", negative && "text-negative")}>
         {value}
       </dd>
     </div>

@@ -96,7 +96,7 @@ async function Fixed() {
 
         {planned.length === 0 ? (
           <p className="flex items-center gap-2 surface px-4 py-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="size-4 text-emerald-600" aria-hidden />
+            <CheckCircle2 className="size-4 text-positive" aria-hidden />
             {t("allDone")}
           </p>
         ) : (
@@ -187,7 +187,7 @@ async function PlannedList({
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">{row.description}</span>
                 <span
-                  className={cn("text-sm", overdue ? "text-destructive" : "text-muted-foreground")}
+                  className={cn("text-sm", overdue ? "text-negative" : "text-muted-foreground")}
                 >
                   {overdue
                     ? t("overdue", { date: due })

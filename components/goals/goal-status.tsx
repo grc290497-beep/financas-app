@@ -4,9 +4,9 @@ import type { GoalStatus } from "@/lib/goals";
 import { cn } from "@/lib/utils";
 
 const STYLE = {
-  on_track: { icon: CircleCheck, className: "text-emerald-700 dark:text-emerald-400" },
-  behind: { icon: CircleAlert, className: "text-amber-700 dark:text-amber-400" },
-  done: { icon: Trophy, className: "text-sky-700 dark:text-sky-400" },
+  on_track: { icon: CircleCheck, className: "text-positive" },
+  behind: { icon: CircleAlert, className: "text-negative" },
+  done: { icon: Trophy, className: "text-primary" },
 } as const;
 
 /** Status always shown as icon + label, never colour alone. */

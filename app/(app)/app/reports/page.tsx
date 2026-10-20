@@ -166,7 +166,7 @@ async function Reports({
                       <td
                         className={cn(
                           "px-3 py-2 text-right",
-                          m.balanceCents < 0 && "text-destructive",
+                          m.balanceCents < 0 && "text-negative",
                         )}
                       >
                         {formatMoney(m.balanceCents, primary)}
@@ -174,7 +174,7 @@ async function Reports({
                       <td
                         className={cn(
                           "px-3 py-2 text-right",
-                          (m.savingsRate ?? 0) < 0 && "text-destructive",
+                          (m.savingsRate ?? 0) < 0 && "text-negative",
                         )}
                       >
                         {m.savingsRate === null ? "—" : percent.format(m.savingsRate)}
