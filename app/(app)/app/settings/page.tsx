@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { ExportLinks } from "@/components/settings/export-links";
+import { ThemeSelect } from "@/components/settings/theme-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile, requireUser } from "@/lib/auth";
 
@@ -43,6 +44,10 @@ async function Settings() {
             </div>
           ))}
         </dl>
+      </Section>
+
+      <Section title={t("theme.label")}>
+        <ThemeSelect />
       </Section>
 
       <Section title={t("data")} hint={t("dataHint")}>

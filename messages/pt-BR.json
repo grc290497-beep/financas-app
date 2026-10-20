@@ -19,6 +19,12 @@
     "currency": "Moeda principal",
     "monthStartDay": "Mês financeiro começa",
     "dayValue": "dia {day}",
+    "theme": {
+      "label": "Aparência",
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Escuro"
+    },
     "data": "Seus dados",
     "dataHint": "Baixe uma cópia de tudo o que está guardado na sua conta.",
     "legal": "Privacidade e termos",
