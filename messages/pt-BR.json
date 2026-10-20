@@ -157,6 +157,12 @@
     "title": "Seu dinheiro em euro e real, sem planilha",
     "subtitle": "Registre o que entra e o que sai, acompanhe o mês e veja se suas metas estão no ritmo. Tudo convertido para a sua moeda principal.",
     "cta": "Criar conta",
+    "preview": {
+      "label": "Exemplo do painel: quanto ainda dá para gastar no mês",
+      "title": "Livre para gastar",
+      "sample": "Exemplo",
+      "perDay": "€ 92,39 por dia · 12 dias restantes"
+    },
     "login": "Já tenho conta",
     "features": {
       "currencies": "EUR e BRL com conversão automática",

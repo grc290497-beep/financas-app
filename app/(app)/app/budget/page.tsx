@@ -43,8 +43,8 @@ async function Budget() {
       </p>
       <ul className="surface divide-y">
         {categories.map((c) => (
-          <li key={c.id} className="flex flex-col gap-2 p-3">
-            <div className="flex items-center gap-3">
+          <li key={c.id} className="flex flex-col gap-2.5 px-4 py-3.5">
+            <div className="flex items-start gap-3">
               <CategoryIcon icon={c.icon} color={c.color} />
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">{c.name}</span>
@@ -52,16 +52,18 @@ async function Budget() {
                   {t("spent", { spent: formatMoney(c.spentCents, primary) })}
                   {c.plannedCents > 0 &&
                     ` ${t("planned", { planned: formatMoney(c.plannedCents, primary) })}`}
-                  {c.budgetCents
-                    ? ` ${t("of", { budget: formatMoney(c.budgetCents, primary) })}`
-                    : ""}
                 </span>
               </div>
+              <BudgetLimitInput
+                categoryId={c.id}
+                name={c.name}
+                budgetCents={c.budgetCents}
+                symbol={primary === "EUR" ? "€" : "R$"}
+              />
             </div>
             {c.budgetCents ? (
               <BudgetBar spentCents={c.spentCents} budgetCents={c.budgetCents} label={c.name} />
             ) : null}
-            <BudgetLimitInput categoryId={c.id} name={c.name} budgetCents={c.budgetCents} />
           </li>
         ))}
       </ul>
