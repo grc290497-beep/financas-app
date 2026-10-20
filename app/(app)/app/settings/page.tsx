@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { ExportLinks } from "@/components/settings/export-links";
+import { ProfileForm } from "@/components/settings/profile-form";
 import { ThemeSelect } from "@/components/settings/theme-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile, requireUser } from "@/lib/auth";
@@ -22,23 +23,29 @@ async function Settings() {
   const profile = await requireProfile();
   const [user, t] = await Promise.all([requireUser(), getTranslations("Settings")]);
 
-  // shortcut: profile is read-only here; editing name, currency and start day
-  // (which would re-price every transaction) comes with the design pass.
+  // The currency stays read-only: changing it would have to re-price every transaction.
   const rows = [
-    { label: t("name"), value: profile.displayName ?? "—" },
     { label: t("email"), value: user.email ?? "—" },
     { label: t("currency"), value: profile.primaryCurrency },
-    { label: t("monthStartDay"), value: t("dayValue", { day: profile.monthStartDay }) },
   ];
 
   return (
     <>
       <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
 
-      <Section title={t("account")}>
+      <Section title={t("profile.title")}>
+        <ProfileForm
+          defaultValues={{
+            displayName: profile.displayName ?? "",
+            monthStartDay: profile.monthStartDay,
+          }}
+        />
+      </Section>
+
+      <Section title={t("account")} hint={t("currencyHint")}>
         <dl className="surface divide-y text-sm">
           {rows.map((row) => (
-            <div key={row.label} className="flex items-baseline justify-between gap-3 px-3 py-2.5">
+            <div key={row.label} className="flex items-baseline justify-between gap-3 px-4 py-3">
               <dt className="text-muted-foreground">{row.label}</dt>
               <dd className="min-w-0 truncate">{row.value}</dd>
             </div>

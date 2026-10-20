@@ -27,6 +27,19 @@
     "currency": "Moeda principal",
     "monthStartDay": "Mês financeiro começa",
     "dayValue": "dia {day}",
+    "currencyHint": "A moeda principal não muda depois do cadastro, para não alterar o valor dos lançamentos já feitos.",
+    "profile": {
+      "title": "Perfil",
+      "name": "Como podemos te chamar",
+      "monthStartDay": "Dia em que começa o seu mês",
+      "save": "Salvar alterações",
+      "saving": "Salvando…",
+      "saved": "Perfil atualizado.",
+      "errors": {
+        "invalidInput": "Confira os campos e tente de novo.",
+        "saveFailed": "Não conseguimos salvar. Tente de novo."
+      }
+    },
     "theme": {
       "label": "Aparência",
       "system": "Sistema",

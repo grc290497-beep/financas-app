@@ -13,12 +13,20 @@ const email = z
   .toLowerCase()
   .pipe(z.email({ error: "emailInvalid" }));
 
+const displayName = z
+  .string()
+  .trim()
+  .min(1, { error: "nameRequired" })
+  .max(80, { error: "nameTooLong" });
+
+const monthStartDay = z.coerce
+  .number({ error: "monthStartDayInvalid" })
+  .int({ error: "monthStartDayInvalid" })
+  .min(1, { error: "monthStartDayInvalid" })
+  .max(28, { error: "monthStartDayInvalid" });
+
 export const signUpSchema = z.object({
-  displayName: z
-    .string()
-    .trim()
-    .min(1, { error: "nameRequired" })
-    .max(80, { error: "nameTooLong" }),
+  displayName,
   email,
   // Supabase/bcrypt ignores bytes beyond 72.
   password: z.string().min(8, { error: "passwordTooShort" }).max(72, { error: "passwordTooLong" }),
@@ -40,13 +48,14 @@ export type MagicLinkInput = z.infer<typeof magicLinkSchema>;
 
 export const onboardingSchema = z.object({
   primaryCurrency: z.enum(CURRENCIES, { error: "currencyRequired" }),
-  monthStartDay: z.coerce
-    .number({ error: "monthStartDayInvalid" })
-    .int({ error: "monthStartDayInvalid" })
-    .min(1, { error: "monthStartDayInvalid" })
-    .max(28, { error: "monthStartDayInvalid" }),
+  monthStartDay,
 });
 export type OnboardingInput = z.input<typeof onboardingSchema>;
+
+/** Ajustes: what can change after onboarding (the currency would re-price history). */
+export const profileSchema = z.object({ displayName, monthStartDay });
+export type ProfileInput = z.input<typeof profileSchema>;
+export type ProfileData = z.output<typeof profileSchema>;
 
 /** The user types this word to confirm deleting their account. */
 export const DELETE_ACCOUNT_WORD = "EXCLUIR";
