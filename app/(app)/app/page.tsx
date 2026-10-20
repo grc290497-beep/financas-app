@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { CalendarClock, ChevronLeft, ChevronRight, ReceiptText } from "lucide-react";
 import { BudgetBar } from "@/components/budget/budget-bar";
+import { GoalProgress, GoalStatusBadge } from "@/components/goals/goal-status";
 import { CategoryIcon } from "@/components/transactions/category-icon";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,6 +13,8 @@ import { requireProfile } from "@/lib/auth";
 import { computeMetrics, variation } from "@/lib/dashboard";
 import { formatMoney } from "@/lib/money";
 import { daysLeft, getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/lib/period";
+import { goalMetrics } from "@/lib/goals";
+import { goalsPlannedThisMonth, listGoals } from "@/lib/goals-store";
 import { ensureRecurringGenerated, listPlanned } from "@/lib/recurring-store";
 import { currentDate, getCategorySpend, getMonthSummary } from "@/lib/transactions";
 import { cn } from "@/lib/utils";
@@ -54,16 +57,20 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
   const period = month ? periodStartingIn(month, msd) : current;
   const isCurrent = period.start === current.start;
 
-  const [t, summary, spend, previousSpend, planned] = await Promise.all([
+  const [t, summary, spend, previousSpend, planned, goals] = await Promise.all([
     getTranslations("Dashboard"),
     getMonthSummary(period),
     getCategorySpend(period),
     getCategorySpend(shiftPeriod(period, msd, -1)),
     listPlanned(period.start, period.end),
+    listGoals(),
   ]);
 
   const primary = profile.primaryCurrency;
-  const m = computeMetrics(summary, isCurrent ? daysLeft(period, today) : 0);
+  // Goals only set money aside in the current month; past months are history.
+  const goalsPlannedCents = isCurrent ? await goalsPlannedThisMonth(goals, primary, today) : 0;
+  const m = computeMetrics(summary, isCurrent ? daysLeft(period, today) : 0, goalsPlannedCents);
+  const highlightedGoals = goals.filter((g) => g.status === "active").slice(0, 3);
   const previousById = new Map(previousSpend.map((c) => [c.id, c.spentCents]));
   const budgets = spend.filter((c) => c.budgetCents);
   const top = spend.filter((c) => c.spentCents > 0).slice(0, 5);
@@ -140,6 +147,11 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                   })
                 : t("freeToSpendHint")}
             </p>
+            {goalsPlannedCents > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {t("goalsHint", { amount: formatMoney(goalsPlannedCents, primary) })}
+              </p>
+            )}
           </section>
 
           <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -160,6 +172,34 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
           <p className="-mt-3 text-xs text-muted-foreground">
             {t("inPrimary", { currency: primary })}
           </p>
+
+          {highlightedGoals.length > 0 && (
+            <Section
+              title={t("goals")}
+              action={
+                <Link href="/app/goals" className="text-sm underline-offset-4 hover:underline">
+                  {t("seeGoals")}
+                </Link>
+              }
+            >
+              <ul className="flex flex-col gap-3">
+                {highlightedGoals.map((goal) => {
+                  const g = goalMetrics(goal, goal.contributions, today);
+                  return (
+                    <li key={goal.id}>
+                      <Link href={`/app/goals/${goal.id}`} className="flex flex-col gap-1.5">
+                        <span className="flex items-baseline justify-between gap-2 text-sm">
+                          <span className="truncate">{goal.name}</span>
+                          <GoalStatusBadge status={g.status} />
+                        </span>
+                        <GoalProgress progress={g.progress} color={goal.color ?? "#64748b"} />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Section>
+          )}
 
           <Section
             title={t("upcoming")}

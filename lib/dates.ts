@@ -34,3 +34,19 @@ export function addDays(date: string, days: number): string {
 export function daysBetween(from: string, to: string): number {
   return Math.round((toUtc(to) - toUtc(from)) / DAY_MS);
 }
+
+/** Same day `count` months later, on the month's last day when it is shorter (31/01 + 1 = 28/02). */
+export function addMonths(date: string, count: number): string {
+  const [y, m, d] = ymd(date);
+  const target = new Date(Date.UTC(y, m - 1 + count, 1));
+  const year = target.getUTCFullYear();
+  const month = target.getUTCMonth() + 1;
+  return makeDate(year, month, Math.min(d, daysInMonth(year, month)));
+}
+
+/** Calendar months from `from`'s month to `to`'s month (Oct -> Dec = 2). */
+export function monthsUntil(from: string, to: string): number {
+  const [fy, fm] = ymd(from);
+  const [ty, tm] = ymd(to);
+  return (ty - fy) * 12 + (tm - fm);
+}

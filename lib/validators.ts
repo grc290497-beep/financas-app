@@ -182,3 +182,63 @@ export const budgetSchema = z.object({
     }),
 });
 export type BudgetInput = z.input<typeof budgetSchema>;
+
+export const GOAL_ICONS = [
+  "piggy-bank",
+  "shield-check",
+  "plane",
+  "house",
+  "car",
+  "graduation-cap",
+] as const;
+export const GOAL_COLORS = [
+  "#10b981",
+  "#0ea5e9",
+  "#6366f1",
+  "#f59e0b",
+  "#ef4444",
+  "#ec4899",
+] as const;
+
+export const goalSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, { error: "goalNameRequired" })
+    .max(60, { error: "recurringNameTooLong" }),
+  target: amountSchema,
+  currency: z.enum(CURRENCIES, { error: "currencyRequired" }),
+  // Already saved before tracking it here; empty means zero.
+  initial: z
+    .string()
+    .optional()
+    .transform((value, ctx) => {
+      if (!value?.trim()) return 0;
+      const cents = parseAmount(value);
+      if (cents === null || cents > MAX_AMOUNT_CENTS) {
+        ctx.addIssue({ code: "custom", message: "amountInvalid" });
+        return z.NEVER;
+      }
+      return cents;
+    }),
+  deadline: z.iso.date({ error: "dateInvalid" }),
+  icon: z.enum(GOAL_ICONS),
+  color: z.enum(GOAL_COLORS),
+});
+export type GoalInput = z.input<typeof goalSchema>;
+export type GoalData = z.output<typeof goalSchema>;
+
+export const contributionSchema = z.object({
+  kind: z.enum(["deposit", "withdrawal"]),
+  amount: amountSchema,
+  currency: z.enum(CURRENCIES, { error: "currencyRequired" }),
+  contributedOn: z.iso.date({ error: "dateInvalid" }),
+  note: z
+    .string()
+    .trim()
+    .max(140, { error: "descriptionTooLong" })
+    .optional()
+    .transform((value) => value || null),
+});
+export type ContributionInput = z.input<typeof contributionSchema>;
+export type ContributionData = z.output<typeof contributionSchema>;

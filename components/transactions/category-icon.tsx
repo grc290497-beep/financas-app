@@ -1,6 +1,8 @@
 import {
   Banknote,
   Bus,
+  Car,
+  GraduationCap,
   CircleDashed,
   CirclePlus,
   HandCoins,
@@ -22,10 +24,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Icon names stored in categories.icon (seeded by the signup trigger).
+// Icon names stored in categories.icon (seeded by the signup trigger) and goals.icon.
 const ICONS: Record<string, LucideIcon> = {
   banknote: Banknote,
   bus: Bus,
+  car: Car,
+  "graduation-cap": GraduationCap,
   "circle-plus": CirclePlus,
   "hand-coins": HandCoins,
   "heart-pulse": HeartPulse,

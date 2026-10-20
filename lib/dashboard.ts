@@ -11,9 +11,8 @@ export type MonthSummary = {
   variableSpentCents: number;
 };
 
-export function computeMetrics(summary: MonthSummary, daysLeft: number) {
-  // shortcut: planned goal contributions count as 0 until goals exist (phase 5).
-  const goalsPlannedCents = 0;
+/** `goalsPlannedCents`: this month's required contributions to active goals, in the primary currency. */
+export function computeMetrics(summary: MonthSummary, daysLeft: number, goalsPlannedCents = 0) {
   const freeToSpendCents =
     summary.incomeCents -
     summary.fixedPlannedCents -

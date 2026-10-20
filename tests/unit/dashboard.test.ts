@@ -22,6 +22,13 @@ describe("computeMetrics", () => {
     });
   });
 
+  it("sets aside the month's planned goal contributions", () => {
+    const m = computeMetrics(summary, 10, 40000);
+    expect(m.freeToSpendCents).toBe(90000); // 130000 - 40000
+    expect(m.freePerDayCents).toBe(9000);
+    expect(m.balanceCents).toBe(150000); // the balance is money that moved, goals aside
+  });
+
   it("has no per-day figure once the period is over", () => {
     expect(computeMetrics(summary, 0).freePerDayCents).toBeNull();
   });

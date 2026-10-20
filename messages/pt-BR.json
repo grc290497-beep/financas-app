@@ -39,6 +39,7 @@
     "recurringNameRequired": "Dê um nome, por exemplo Aluguel.",
     "recurringNameTooLong": "Use no máximo 60 caracteres.",
     "dayOfMonthInvalid": "Escolha um dia entre 1 e 31.",
+    "goalNameRequired": "Dê um nome à meta, por exemplo Reserva de emergência.",
     "endBeforeStart": "O fim precisa ser depois do início."
   },
   "Fixed": {
@@ -130,6 +131,7 @@
     "home": "Início",
     "transactions": "Lançamentos",
     "fixed": "Fixos",
+    "goals": "Metas",
     "main": "Navegação principal"
   },
   "Transactions": {
@@ -304,7 +306,110 @@
     "vsPrevious": "{change} vs. mês anterior",
     "upcoming": "Próximas contas",
     "noUpcoming": "Nenhuma conta prevista até o fim do mês.",
-    "inPrimary": "Valores em {currency}. Totais contam só o que já foi pago ou recebido."
+    "inPrimary": "Valores em {currency}. Totais contam só o que já foi pago ou recebido.",
+    "goals": "Metas",
+    "seeGoals": "Ver metas",
+    "goalsHint": "O livre para gastar já reserva {amount} para suas metas este mês."
+  },
+  "Goals": {
+    "title": "Metas",
+    "add": "Nova meta",
+    "edit": "Editar meta",
+    "of": "{saved} de {target}",
+    "plan": "Guardar {amount}/mês até {deadline}",
+    "planDone": "Meta atingida",
+    "status": {
+      "on_track": "No ritmo",
+      "behind": "Atrasada",
+      "done": "Concluída"
+    },
+    "empty": {
+      "title": "Nenhuma meta ainda",
+      "description": "Crie uma meta, como uma reserva de emergência, e veja quanto guardar por mês para chegar lá no prazo."
+    },
+    "metrics": {
+      "saved": "Guardado",
+      "remaining": "Falta",
+      "monthly": "Por mês até o prazo",
+      "pace": "Seu ritmo (3 meses)",
+      "perMonth": "{amount}/mês",
+      "forecast": "Previsão",
+      "noForecast": "Sem previsão",
+      "monthsLeft": "{count, plural, =0 {prazo vencido} one {# mês restante} other {# meses restantes}}"
+    },
+    "chart": "Evolução",
+    "chartTarget": "Alvo",
+    "history": "Aportes e retiradas",
+    "noHistory": "Nenhum aporte ainda.",
+    "deposit": "Aportar",
+    "withdraw": "Retirar",
+    "deleteContribution": "Excluir aporte de {date}",
+    "contributionDeleted": "Aporte excluído.",
+    "markDone": "Marcar como concluída",
+    "reopen": "Reabrir",
+    "archive": "Arquivar",
+    "archived": "Meta arquivada.",
+    "back": "Metas",
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Ex.: Reserva de emergência",
+      "target": "Quanto quer juntar",
+      "currency": "Moeda",
+      "currencyLocked": "A moeda não muda depois de criada.",
+      "initial": "Já tenho guardado",
+      "initialPlaceholder": "0,00",
+      "deadline": "Até quando",
+      "icon": "Ícone",
+      "icons": {
+        "piggy-bank": "Cofrinho",
+        "shield-check": "Escudo",
+        "plane": "Avião",
+        "house": "Casa",
+        "car": "Carro",
+        "graduation-cap": "Formatura"
+      },
+      "color": "Cor",
+      "colors": {
+        "#10b981": "Verde",
+        "#0ea5e9": "Azul-claro",
+        "#6366f1": "Índigo",
+        "#f59e0b": "Âmbar",
+        "#ef4444": "Vermelho",
+        "#ec4899": "Rosa"
+      },
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "delete": "Excluir meta",
+      "saved": "Meta criada.",
+      "updated": "Meta atualizada."
+    },
+    "contribution": {
+      "depositTitle": "Novo aporte",
+      "withdrawTitle": "Nova retirada",
+      "amount": "Valor",
+      "date": "Data",
+      "note": "Observação",
+      "notePlaceholder": "Opcional",
+      "converted": "Valores em outra moeda são convertidos para {currency} pela cotação do dia.",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "saved": "Aporte registrado.",
+      "withdrawn": "Retirada registrada."
+    },
+    "delete": {
+      "title": "Excluir esta meta?",
+      "description": "A meta e todo o histórico de aportes serão apagados.",
+      "confirm": "Excluir",
+      "cancel": "Cancelar"
+    },
+    "errors": {
+      "invalidInput": "Confira os campos destacados.",
+      "fxUnavailable": "Sem cotação disponível para essa data. Tente de novo em instantes.",
+      "saveFailed": "Não conseguimos salvar. Tente de novo.",
+      "deleteFailed": "Não conseguimos excluir. Tente de novo.",
+      "notFound": "Essa meta não existe mais.",
+      "unexpected": "Algo deu errado. Tente de novo."
+    }
   },
   "Budget": {
     "title": "Orçamento",
