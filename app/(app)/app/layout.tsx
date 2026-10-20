@@ -6,7 +6,7 @@ import { getCategories, getCategoryUsage } from "@/lib/transactions";
 
 export default function AppSectionLayout({ children }: LayoutProps<"/app">) {
   return (
-    <div className="flex flex-1 flex-col pb-24 md:pb-0">
+    <div className="flex flex-1 flex-col">
       {/* Dynamic routes (/app/goals/[id]) only know the pathname at request time. */}
       <Suspense fallback={null}>
         <AppNav />

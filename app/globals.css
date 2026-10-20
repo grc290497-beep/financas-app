@@ -223,3 +223,11 @@
     background: color-mix(in oklch, var(--brass) 35%, transparent);
   }
 }
+
+/* On phones the tab bar is fixed to the bottom: keep the footer clear of it.
+   Unlayered so no layered rule can override it. */
+@media (width < 48rem) {
+  body:has([data-bottom-nav]) .site-footer {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  }
+}

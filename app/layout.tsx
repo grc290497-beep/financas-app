@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "next-themes";
 import { getLocale, getTranslations } from "next-intl/server";
+import { SiteFooter } from "@/components/nav/site-footer";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -49,6 +50,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <NextIntlClientProvider>
             {children}
+            <SiteFooter />
             <Toaster />
           </NextIntlClientProvider>
         </ThemeProvider>

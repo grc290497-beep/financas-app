@@ -23,6 +23,7 @@ export function AppNav() {
 
   return (
     <nav
+      data-bottom-nav
       aria-label={t("main")}
       className="fixed inset-x-0 bottom-0 z-30 border-t bg-card/90 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_28px_-20px_oklch(0_0_0/0.35)] backdrop-blur md:static md:order-first md:border-t-0 md:border-b md:bg-card/60 md:pb-0 md:shadow-none"
     >

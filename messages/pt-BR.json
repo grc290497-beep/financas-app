@@ -11,6 +11,14 @@
     "settings": "Ajustes",
     "loading": "Carregando…"
   },
+  "Footer": {
+    "appName": "Finanças",
+    "tagline": "Euro e real, sem planilha.",
+    "legal": "Privacidade e termos",
+    "privacy": "Privacidade",
+    "terms": "Termos de uso",
+    "data": "Seus dados ficam na União Europeia e nunca são vendidos."
+  },
   "Settings": {
     "title": "Ajustes",
     "account": "Conta",
@@ -137,8 +145,6 @@
     "subtitle": "Registre o que entra e o que sai, acompanhe o mês e veja se suas metas estão no ritmo. Tudo convertido para a sua moeda principal.",
     "cta": "Criar conta",
     "login": "Já tenho conta",
-    "privacy": "Privacidade",
-    "terms": "Termos",
     "features": {
       "currencies": "EUR e BRL com conversão automática",
       "monthly": "Tracker mensal com orçamento por categoria",

@@ -38,15 +38,6 @@ export default async function Home() {
           <Link href="/login">{t("login")}</Link>
         </Button>
       </div>
-
-      <footer className="flex gap-4 text-sm text-muted-foreground">
-        <Link href="/privacy" className="underline-offset-4 hover:underline">
-          {t("privacy")}
-        </Link>
-        <Link href="/terms" className="underline-offset-4 hover:underline">
-          {t("terms")}
-        </Link>
-      </footer>
     </main>
   );
 }
