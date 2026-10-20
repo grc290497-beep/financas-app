@@ -11,10 +11,21 @@ export type MonthSummary = {
   variableSpentCents: number;
 };
 
-/** `goalsPlannedCents`: this month's required contributions to active goals, in the primary currency. */
-export function computeMetrics(summary: MonthSummary, daysLeft: number, goalsPlannedCents = 0) {
+/**
+ * `goalsPlannedCents`: this month's required contributions to active goals.
+ * `plannedIncomeCents`: income expected this month but not received yet (a
+ * salary still to come), so the month doesn't start "in the red" before payday.
+ * Both in the primary currency.
+ */
+export function computeMetrics(
+  summary: MonthSummary,
+  daysLeft: number,
+  goalsPlannedCents = 0,
+  plannedIncomeCents = 0,
+) {
   const freeToSpendCents =
-    summary.incomeCents -
+    summary.incomeCents +
+    plannedIncomeCents -
     summary.fixedPlannedCents -
     goalsPlannedCents -
     summary.variableSpentCents;

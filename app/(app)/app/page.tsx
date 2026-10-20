@@ -70,7 +70,17 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
   const primary = profile.primaryCurrency;
   // Goals only set money aside in the current month; past months are history.
   const goalsPlannedCents = isCurrent ? await goalsPlannedThisMonth(goals, primary, today) : 0;
-  const m = computeMetrics(summary, isCurrent ? daysLeft(period, today) : 0, goalsPlannedCents);
+  // Expected income counts for this month and future ones; in a past month it simply never came.
+  const plannedIncomeCents =
+    period.end >= today
+      ? planned.filter((p) => p.type === "income").reduce((sum, p) => sum + p.amountPrimaryCents, 0)
+      : 0;
+  const m = computeMetrics(
+    summary,
+    isCurrent ? daysLeft(period, today) : 0,
+    goalsPlannedCents,
+    plannedIncomeCents,
+  );
   const highlightedGoals = goals.filter((g) => g.status === "active").slice(0, 3);
   const previousById = new Map(previousSpend.map((c) => [c.id, c.spentCents]));
   const budgets = spend.filter((c) => c.budgetCents);

@@ -452,7 +452,7 @@
     "nextPeriod": "Próximo mês",
     "current": "Mês atual",
     "freeToSpend": "Livre para gastar",
-    "freeToSpendHint": "Entradas menos fixos previstos e gastos variáveis.",
+    "freeToSpendHint": "Entradas recebidas e previstas, menos fixos, metas e gastos variáveis.",
     "perDay": "{amount} por dia · {days, plural, one {# dia restante} other {# dias restantes}}",
     "income": "Entradas",
     "expenses": "Gastos",

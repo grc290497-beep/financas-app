@@ -55,35 +55,52 @@ export function goalMetrics(goal: GoalPlan, contributions: GoalContribution[], t
     requiredMonthlyCents,
     pacePerMonthCents,
     forecastDate,
-    status: goalStatus(
-      goal,
+    status: goalStatus(goal, contributions, {
       accumulatedCents,
       remainingCents,
-      pacePerMonthCents,
-      requiredMonthlyCents,
+      paceCents: pacePerMonthCents,
+      requiredCents: requiredMonthlyCents,
+      forecastDate,
+      windowStart,
       today,
-    ),
+    }),
   };
 }
 
 function goalStatus(
   goal: GoalPlan,
-  accumulatedCents: number,
-  remainingCents: number,
-  paceCents: number,
-  requiredCents: number,
-  today: string,
+  contributions: GoalContribution[],
+  m: {
+    accumulatedCents: number;
+    remainingCents: number;
+    paceCents: number;
+    requiredCents: number;
+    forecastDate: string | null;
+    windowStart: string;
+    today: string;
+  },
 ): GoalStatus {
-  if (goal.status === "done" || remainingCents === 0) return "done";
-  // On track if the recent pace covers what is needed, or if the amount saved
-  // keeps up with a straight line from the start to the target by the deadline
-  // (which also keeps a brand-new goal from showing as behind on day one).
-  if (paceCents > 0 && paceCents >= requiredCents) return "on_track";
-  const totalDays = Math.max(daysBetween(goal.createdOn, goal.deadline), 1);
-  const elapsedDays = Math.min(Math.max(daysBetween(goal.createdOn, today), 0), totalDays);
+  if (goal.status === "done" || m.remainingCents === 0) return "done";
+  if (m.paceCents > 0 && m.paceCents >= m.requiredCents) return "on_track";
+
+  // History starts at creation or at the first contribution, whichever is earlier.
+  const start = contributions.reduce(
+    (first, c) => (c.contributedOn < first ? c.contributedOn : first),
+    goal.createdOn,
+  );
+  // With a full pace window, a pace that finishes after the deadline is behind:
+  // status must never contradict the forecast shown next to it.
+  if (start <= m.windowStart && m.forecastDate && m.forecastDate > goal.deadline) {
+    return "behind";
+  }
+
+  // Otherwise (a young goal, or one paused while ahead) compare with a straight
+  // line from the start to the target, so a brand-new goal is not behind on day one.
+  const totalDays = Math.max(daysBetween(start, goal.deadline), 1);
+  const elapsedDays = Math.min(Math.max(daysBetween(start, m.today), 0), totalDays);
   const expectedCents =
     goal.initialCents + ((goal.targetCents - goal.initialCents) * elapsedDays) / totalDays;
-  return accumulatedCents >= expectedCents ? "on_track" : "behind";
+  return m.accumulatedCents >= expectedCents ? "on_track" : "behind";
 }
 
 /** Accumulated amount over time for the chart: start, each contribution date, today. */

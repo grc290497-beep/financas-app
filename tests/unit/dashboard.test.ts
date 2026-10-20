@@ -29,6 +29,13 @@ describe("computeMetrics", () => {
     expect(m.balanceCents).toBe(150000); // the balance is money that moved, goals aside
   });
 
+  it("counts income still expected this month, but not in the income total", () => {
+    const m = computeMetrics(summary, 10, 40000, 150000);
+    expect(m.freeToSpendCents).toBe(240000); // 90000 + 150000 salary still to come
+    expect(m.incomeCents).toBe(300000); // received only
+    expect(m.balanceCents).toBe(150000);
+  });
+
   it("has no per-day figure once the period is over", () => {
     expect(computeMetrics(summary, 0).freePerDayCents).toBeNull();
   });

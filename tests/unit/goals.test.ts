@@ -103,6 +103,43 @@ describe("goalMetrics", () => {
     expect(m.status).toBe("behind");
   });
 
+  it("is behind when the forecast misses the deadline, even for a goal created today", () => {
+    // Contributions logged from May on a goal created in October: history starts in May.
+    const house: GoalPlan = {
+      targetCents: 4000000,
+      initialCents: 0,
+      deadline: "2028-10-20",
+      createdOn: "2026-10-20",
+      status: "active",
+    };
+    const monthly = ["05", "06", "07", "08", "09", "10"].map((month) => ({
+      amountGoalCents: 55000,
+      contributedOn: `2026-${month}-07`,
+    }));
+    const m = goalMetrics(house, monthly, "2026-10-20");
+    expect(m.forecastDate! > house.deadline).toBe(true);
+    expect(m.status).toBe("behind");
+  });
+
+  it("stays on track while paused if it is still ahead of schedule", () => {
+    const m = goalMetrics(
+      year,
+      [{ amountGoalCents: 100000, contributedOn: "2026-02-01" }],
+      "2026-10-20",
+    );
+    expect(m.pacePerMonthCents).toBe(0);
+    expect(m.status).toBe("on_track");
+  });
+
+  it("does not call a young goal behind because its first months look slow", () => {
+    const m = goalMetrics(
+      { ...emergency, createdOn: "2026-10-01" },
+      [{ amountGoalCents: 40000, contributedOn: "2026-10-02" }],
+      "2026-10-20",
+    );
+    expect(m.status).toBe("on_track");
+  });
+
   it("counts the initial amount as saved", () => {
     const m = goalMetrics({ ...emergency, initialCents: 150000 }, [], "2026-10-20");
     expect(m.accumulatedCents).toBe(150000);
