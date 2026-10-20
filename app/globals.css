@@ -43,6 +43,8 @@
   --color-hero-foreground: var(--hero-foreground);
   --color-hero-muted: var(--hero-muted);
   --color-hero-negative: var(--hero-negative);
+  --color-brass: var(--brass);
+  --color-brass-light: var(--brass-light);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,34 +54,43 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Brand: deep green in light (hue ~160), deep purple in dark (hue ~305). It marks
-   the primary action, the hero card, active tab and selection. Neutrals carry a
-   faint tint of the same hue so each theme reads as one. */
+/* Emerald and brass. Emerald (hue ~165) is the ground of the hero card and the
+   light theme's primary action; brushed brass (hue ~82) is the metal: the "+"
+   button, primary actions in dark, the hero figure and its hairline. Neutrals
+   carry a faint emerald tint. Depth comes from layered, soft shadows. */
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.99 0.004 160);
-  --foreground: oklch(0.2 0.03 160);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.03 160);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.03 160);
-  --primary: oklch(0.45 0.12 160);
-  --primary-foreground: oklch(0.99 0.01 160);
-  --secondary: oklch(0.96 0.012 160);
-  --secondary-foreground: oklch(0.3 0.06 160);
-  --muted: oklch(0.96 0.012 160);
-  --muted-foreground: oklch(0.5 0.03 160);
-  --accent: oklch(0.95 0.02 160);
-  --accent-foreground: oklch(0.3 0.06 160);
+  --background: oklch(0.975 0.006 150);
+  --foreground: oklch(0.22 0.03 165);
+  --card: oklch(0.995 0.003 150);
+  --card-foreground: oklch(0.22 0.03 165);
+  --popover: oklch(0.995 0.003 150);
+  --popover-foreground: oklch(0.22 0.03 165);
+  --primary: oklch(0.34 0.07 168);
+  --primary-foreground: oklch(0.97 0.01 150);
+  --secondary: oklch(0.945 0.01 155);
+  --secondary-foreground: oklch(0.3 0.05 168);
+  --muted: oklch(0.945 0.01 155);
+  --muted-foreground: oklch(0.47 0.025 165);
+  --accent: oklch(0.93 0.015 160);
+  --accent-foreground: oklch(0.3 0.05 168);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0.015 160);
-  --input: oklch(0.91 0.015 160);
-  --ring: oklch(0.6 0.12 160);
-  --hero: oklch(0.3 0.07 168);
-  --hero-2: oklch(0.45 0.12 155);
-  --hero-foreground: oklch(0.98 0.01 160);
-  --hero-muted: oklch(0.88 0.04 160);
+  --border: oklch(0.89 0.012 155);
+  --input: oklch(0.88 0.014 155);
+  --ring: oklch(0.7 0.11 82);
+  --hero: oklch(0.29 0.06 170);
+  --hero-2: oklch(0.4 0.08 163);
+  --hero-foreground: oklch(0.97 0.01 150);
+  --hero-muted: oklch(0.84 0.035 160);
   --hero-negative: oklch(0.83 0.11 25);
+  --brass: oklch(0.72 0.11 82);
+  --brass-light: oklch(0.88 0.08 90);
+  --brass-dark: oklch(0.52 0.09 72);
+  --brass-ink: oklch(0.2 0.04 75);
+  --shadow-card:
+    0 0 0 1px oklch(0.25 0.04 165 / 7%), 0 1px 2px oklch(0.25 0.04 165 / 6%),
+    0 12px 28px -16px oklch(0.25 0.06 165 / 30%);
+  --page-glow: oklch(0.4 0.08 163 / 9%);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -98,29 +109,37 @@
 }
 
 .dark {
-  --background: oklch(0.15 0.015 305);
-  --foreground: oklch(0.96 0.008 305);
-  --card: oklch(0.19 0.02 305);
-  --card-foreground: oklch(0.96 0.008 305);
-  --popover: oklch(0.19 0.02 305);
-  --popover-foreground: oklch(0.96 0.008 305);
-  --primary: oklch(0.72 0.15 305);
-  --primary-foreground: oklch(0.16 0.03 305);
-  --secondary: oklch(0.23 0.025 305);
-  --secondary-foreground: oklch(0.96 0.008 305);
-  --muted: oklch(0.23 0.025 305);
-  --muted-foreground: oklch(0.72 0.03 305);
-  --accent: oklch(0.26 0.04 305);
-  --accent-foreground: oklch(0.96 0.008 305);
+  --background: oklch(0.155 0.018 168);
+  --foreground: oklch(0.95 0.01 150);
+  --card: oklch(0.2 0.022 168);
+  --card-foreground: oklch(0.95 0.01 150);
+  --popover: oklch(0.21 0.024 168);
+  --popover-foreground: oklch(0.95 0.01 150);
+  --primary: oklch(0.76 0.1 84);
+  --primary-foreground: oklch(0.2 0.04 75);
+  --secondary: oklch(0.25 0.025 168);
+  --secondary-foreground: oklch(0.95 0.01 150);
+  --muted: oklch(0.25 0.025 168);
+  --muted-foreground: oklch(0.72 0.025 160);
+  --accent: oklch(0.27 0.03 168);
+  --accent-foreground: oklch(0.95 0.01 150);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.6 0.15 305);
-  --hero: oklch(0.26 0.12 302);
-  --hero-2: oklch(0.36 0.17 310);
-  --hero-foreground: oklch(0.98 0.01 305);
-  --hero-muted: oklch(0.85 0.05 305);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.72 0.1 82);
+  --hero: oklch(0.27 0.055 170);
+  --hero-2: oklch(0.36 0.07 163);
+  --hero-foreground: oklch(0.97 0.01 150);
+  --hero-muted: oklch(0.82 0.035 160);
   --hero-negative: oklch(0.83 0.11 25);
+  --brass: oklch(0.74 0.1 82);
+  --brass-light: oklch(0.88 0.08 90);
+  --brass-dark: oklch(0.54 0.09 72);
+  --brass-ink: oklch(0.2 0.04 75);
+  --shadow-card:
+    0 0 0 1px oklch(1 0 0 / 6%), inset 0 1px 0 oklch(1 0 0 / 4%),
+    0 14px 32px -18px oklch(0 0 0 / 75%);
+  --page-glow: oklch(0.45 0.08 163 / 16%);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -138,12 +157,49 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* A raised card: replaces flat bordered boxes so content sits above the page */
+@utility surface {
+  background-color: var(--card);
+  border-radius: calc(var(--radius) * 1.8);
+  box-shadow: var(--shadow-card);
+}
+
+/* Brushed brass: a lit edge on top, a darker fold across the middle. */
+@utility metal-brass {
+  background-image: linear-gradient(
+    135deg,
+    var(--brass-light) 0%,
+    var(--brass) 38%,
+    var(--brass-dark) 64%,
+    var(--brass) 100%
+  );
+  color: var(--brass-ink);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 40%),
+    inset 0 -1px 0 oklch(0 0 0 / 15%),
+    0 8px 18px -8px oklch(0.4 0.08 75 / 60%);
+}
+
+/* The emerald hero: a soft light from the top-left over the gradient, a brass hairline. */
+@utility hero-card {
+  background-image:
+    radial-gradient(120% 90% at 0% 0%, oklch(1 0 0 / 12%), transparent 55%),
+    linear-gradient(135deg, var(--hero), var(--hero-2));
+  color: var(--hero-foreground);
+  box-shadow:
+    inset 0 0 0 1px oklch(0.8 0.09 85 / 35%),
+    inset 0 1px 0 oklch(1 0 0 / 15%),
+    0 24px 40px -24px oklch(0.25 0.06 168 / 70%);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    background-image: radial-gradient(1100px 520px at 50% -12%, var(--page-glow), transparent 70%);
+    background-repeat: no-repeat;
   }
   /* Browser surfaces follow the theme instead of OS defaults. */
   html {
@@ -151,6 +207,6 @@
     caret-color: var(--foreground);
   }
   ::selection {
-    background: color-mix(in oklch, var(--primary) 22%, transparent);
+    background: color-mix(in oklch, var(--brass) 35%, transparent);
   }
 }

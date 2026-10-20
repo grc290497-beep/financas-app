@@ -95,7 +95,7 @@ async function Fixed() {
         </div>
 
         {planned.length === 0 ? (
-          <p className="flex items-center gap-2 rounded-xl border px-4 py-3 text-sm text-muted-foreground">
+          <p className="flex items-center gap-2 surface px-4 py-3 text-sm text-muted-foreground">
             <CheckCircle2 className="size-4 text-emerald-600" aria-hidden />
             {t("allDone")}
           </p>
@@ -174,7 +174,7 @@ async function PlannedList({
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-      <ul className="divide-y rounded-xl border">
+      <ul className="surface divide-y">
         {rows.map((row) => {
           const category = categoryById.get(
             (row.recurringItemId && categoryIdByItem.get(row.recurringItemId)) || "",
@@ -253,7 +253,7 @@ async function ItemList({
   return (
     <section className="flex flex-col gap-2" aria-label={title}>
       <h2 className="text-sm font-medium text-muted-foreground">{title}</h2>
-      <ul className="divide-y rounded-xl border">
+      <ul className="surface divide-y">
         {items.map((item) => {
           const category = categoryById.get(item.categoryId);
           const next = nextOccurrence(item, today);

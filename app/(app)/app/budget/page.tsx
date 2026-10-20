@@ -41,7 +41,7 @@ async function Budget() {
         {t("description", { currency: primary })}{" "}
         {t("period", { start: dayMonth(period.start), end: dayMonth(period.end) })}.
       </p>
-      <ul className="divide-y rounded-xl border">
+      <ul className="surface divide-y">
         {categories.map((c) => (
           <li key={c.id} className="flex flex-col gap-2 p-3">
             <div className="flex items-center gap-3">

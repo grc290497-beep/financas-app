@@ -129,7 +129,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
         <>
           {/* The one coloured region: the number the month is steered by. */}
           <section
-            className="flex flex-col gap-1.5 rounded-3xl bg-linear-135 from-hero to-hero-2 px-5 py-6 text-hero-foreground shadow-lg shadow-hero/25"
+            className="hero-card flex flex-col gap-1.5 rounded-3xl px-5 py-6"
             aria-labelledby="free"
           >
             <h2 id="free" className="text-sm text-hero-muted">
@@ -137,7 +137,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
             </h2>
             <p
               className={cn(
-                "text-5xl font-semibold tracking-tight tabular-nums",
+                "text-5xl font-semibold tracking-tight text-brass-light tabular-nums",
                 m.freeToSpendCents < 0 && "text-hero-negative",
               )}
             >
@@ -158,7 +158,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
             )}
           </section>
 
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-muted/50 p-4 sm:grid-cols-3">
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-5 surface p-4 sm:grid-cols-3">
             <Metric label={t("income")} value={formatMoney(m.incomeCents, primary)} />
             <Metric label={t("expenses")} value={formatMoney(m.expenseCents, primary)} />
             <Metric
@@ -219,7 +219,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                 {t("noUpcoming")}
               </p>
             ) : (
-              <ul className="divide-y rounded-xl border">
+              <ul className="surface divide-y">
                 {upcoming.map((bill) => (
                   <li
                     key={bill.id}
@@ -281,7 +281,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
 
           {top.length > 0 && (
             <Section title={t("topCategories")}>
-              <ul className="divide-y rounded-xl border">
+              <ul className="surface divide-y">
                 {top.map((c) => {
                   const change = variation(c.spentCents, previousById.get(c.id) ?? 0);
                   return (

@@ -130,7 +130,7 @@ async function Reports({
           </Section>
 
           <Section title={t("comparison")}>
-            <div className="overflow-x-auto rounded-xl border">
+            <div className="surface overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-xs text-muted-foreground">
                   <tr className="border-b">

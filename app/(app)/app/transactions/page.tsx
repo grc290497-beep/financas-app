@@ -81,7 +81,7 @@ async function Transactions({
         aria-label={t("summary.inPrimary", { currency: primary })}
         className="flex flex-col gap-2"
       >
-        <dl className="grid grid-cols-3 gap-3 rounded-2xl bg-muted/50 p-4">
+        <dl className="grid grid-cols-3 gap-3 surface p-4">
           <SummaryItem label={t("summary.income")} value={formatMoney(income, primary)} />
           <SummaryItem label={t("summary.expenses")} value={formatMoney(expenses, primary)} />
           <SummaryItem
@@ -108,7 +108,7 @@ async function Transactions({
               >
                 {format(parseISO(day), "EEEE, d 'de' MMMM", { locale: ptBR })}
               </h2>
-              <ul className="divide-y rounded-xl border">
+              <ul className="surface divide-y">
                 {items.map((row) => (
                   <li key={row.id}>
                     <TransactionItem

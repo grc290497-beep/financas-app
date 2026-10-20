@@ -87,7 +87,7 @@ async function GoalDetail({ params }: { params: PageProps<"/app/goals/[id]">["pa
         </div>
       </div>
 
-      <section className="flex flex-col gap-3 rounded-xl border p-4">
+      <section className="flex flex-col gap-3 surface p-4">
         <p className="text-sm text-muted-foreground tabular-nums">
           {t("of", { saved: money(m.accumulatedCents), target: money(goal.targetCents) })}
         </p>
@@ -137,7 +137,7 @@ async function GoalDetail({ params }: { params: PageProps<"/app/goals/[id]">["pa
         {goal.contributions.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("noHistory")}</p>
         ) : (
-          <ul className="divide-y rounded-xl border">
+          <ul className="surface divide-y">
             {goal.contributions.map((c) => (
               <li key={c.id} className="flex items-center gap-3 px-3 py-2.5 text-sm">
                 <span className="w-20 shrink-0 text-muted-foreground tabular-nums">

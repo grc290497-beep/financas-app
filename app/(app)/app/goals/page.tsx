@@ -71,7 +71,7 @@ async function Goals() {
             <li key={goal.id}>
               <Link
                 href={`/app/goals/${goal.id}`}
-                className="flex flex-col gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50"
+                className="flex flex-col gap-3 surface p-4 transition-colors hover:bg-muted/50"
               >
                 <div className="flex items-center gap-3">
                   <CategoryIcon icon={goal.icon} color={color} />

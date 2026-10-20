@@ -36,7 +36,7 @@ async function Settings() {
       <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
 
       <Section title={t("account")}>
-        <dl className="divide-y rounded-xl border text-sm">
+        <dl className="surface divide-y text-sm">
           {rows.map((row) => (
             <div key={row.label} className="flex items-baseline justify-between gap-3 px-3 py-2.5">
               <dt className="text-muted-foreground">{row.label}</dt>
