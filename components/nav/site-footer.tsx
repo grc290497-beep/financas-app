@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
 
-/** One footer for every page; globals.css lifts it above the mobile tab bar when there's one. */
+/** Footer for the public pages; globals.css hides it inside the app. */
 export async function SiteFooter() {
   const t = await getTranslations("Footer");
 

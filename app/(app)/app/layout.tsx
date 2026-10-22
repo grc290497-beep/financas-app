@@ -6,7 +6,8 @@ import { getCategories, getCategoryUsage } from "@/lib/transactions";
 
 export default function AppSectionLayout({ children }: LayoutProps<"/app">) {
   return (
-    <div className="flex flex-1 flex-col">
+    // Bottom padding keeps the last item clear of the fixed tab bar and the "+" button.
+    <div className="flex flex-1 flex-col pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-24">
       {/* Dynamic routes (/app/goals/[id]) only know the pathname at request time. */}
       <Suspense fallback={null}>
         <AppNav />
