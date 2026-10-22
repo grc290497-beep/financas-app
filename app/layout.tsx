@@ -34,6 +34,8 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#0b1512" },
   ],
   viewportFit: "cover",
+  // Android Chrome shrinks the layout for the keyboard, so sheets stay usable.
+  interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

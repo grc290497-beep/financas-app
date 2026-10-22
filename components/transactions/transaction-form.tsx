@@ -187,7 +187,6 @@ export function TransactionForm({
               inputMode="decimal"
               autoComplete="off"
               placeholder="0,00"
-              autoFocus={!initial}
               aria-invalid={!!errors.amount}
               className="h-12 flex-1 text-2xl font-semibold tabular-nums md:text-2xl"
               {...register("amount")}
@@ -243,26 +242,32 @@ export function TransactionForm({
           <FieldError errors={validationMessage(errors.categoryId)} />
         </FieldSet>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Field data-invalid={!!errors.occurredOn}>
-            <FieldLabel htmlFor="occurredOn">{t("form.date")}</FieldLabel>
-            <Input id="occurredOn" type="date" {...register("occurredOn")} />
-            <FieldError errors={validationMessage(errors.occurredOn)} />
-          </Field>
-          <Field data-invalid={!!errors.description}>
-            <FieldLabel htmlFor="description">{t("form.description")}</FieldLabel>
-            <Input
-              id="description"
-              placeholder={t("form.descriptionPlaceholder")}
-              maxLength={140}
-              {...register("description")}
-            />
-            <FieldError errors={validationMessage(errors.description)} />
-          </Field>
-        </div>
+        {/* Stacked, same height: side by side, iOS's taller date control misaligned them. */}
+        <Field data-invalid={!!errors.description}>
+          <FieldLabel htmlFor="description">{t("form.description")}</FieldLabel>
+          <Input
+            id="description"
+            placeholder={t("form.descriptionPlaceholder")}
+            maxLength={140}
+            className="h-11"
+            {...register("description")}
+          />
+          <FieldError errors={validationMessage(errors.description)} />
+        </Field>
+        <Field data-invalid={!!errors.occurredOn}>
+          <FieldLabel htmlFor="occurredOn">{t("form.date")}</FieldLabel>
+          <Input
+            id="occurredOn"
+            type="date"
+            className="h-11 appearance-none text-left [&::-webkit-date-and-time-value]:text-left"
+            {...register("occurredOn")}
+          />
+          <FieldError errors={validationMessage(errors.occurredOn)} />
+        </Field>
       </FieldGroup>
 
-      <div className="flex gap-3">
+      {/* Stays reachable at the bottom of the sheet while the keyboard is open. */}
+      <div className="sticky bottom-0 -mx-4 flex gap-3 border-t bg-background/95 px-4 pt-3 pb-1 backdrop-blur">
         {initial && (
           <Button
             type="button"
