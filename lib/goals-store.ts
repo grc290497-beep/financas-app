@@ -94,7 +94,8 @@ export async function goalsPlannedThisMonth(
   let total = 0;
   for (const goal of goals) {
     if (goal.status !== "active") continue;
-    const required = goalMetrics(goal, goal.contributions, today).requiredMonthlyCents;
+    // What this month still asks for: contributions already made come off it.
+    const required = goalMetrics(goal, goal.contributions, today).dueThisMonthCents;
     if (!required) continue;
     if (goal.currency === primaryCurrency) {
       total += required;

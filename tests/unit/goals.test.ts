@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { addMonths, monthsUntil } from "@/lib/dates";
-import { evolutionSeries, goalMetrics, type GoalPlan } from "@/lib/goals";
+import { evolutionSeries, goalMetrics, goalMonthView, type GoalPlan } from "@/lib/goals";
 
 const emergency: GoalPlan = {
   targetCents: 600000,
@@ -17,137 +17,177 @@ describe("goalMetrics: the phase 5 example", () => {
       remainingCents: 600000,
       progress: 0,
       monthsRemaining: 15, // Oct 2026 .. Dec 2027
-      requiredMonthlyCents: 40000,
+      installmentCents: 40000,
+      contributedThisMonthCents: 0,
+      dueThisMonthCents: 40000,
+      laterMonthlyCents: 40000,
       pacePerMonthCents: 0,
-      forecastDate: null,
+      planEndsOn: "2027-12-31",
       status: "on_track",
     });
   });
 });
 
-describe("goalMetrics", () => {
-  const year: GoalPlan = {
-    targetCents: 120000,
-    initialCents: 0,
-    deadline: "2026-12-31",
-    createdOn: "2026-01-01",
-    status: "active",
-  };
-  const contributions = [
-    { amountGoalCents: 20000, contributedOn: "2026-03-01" }, // outside the 3-month pace window
-    { amountGoalCents: 10000, contributedOn: "2026-08-10" },
-    { amountGoalCents: 10000, contributedOn: "2026-09-10" },
-    { amountGoalCents: 10000, contributedOn: "2026-10-10" },
-  ];
-
-  it("is behind when both the pace and the progress fall short", () => {
-    const m = goalMetrics(year, contributions, "2026-10-20");
-    expect(m.accumulatedCents).toBe(50000);
-    expect(m.remainingCents).toBe(70000);
-    expect(m.monthsRemaining).toBe(3); // Oct, Nov, Dec
-    expect(m.requiredMonthlyCents).toBe(23334); // rounded up so it is enough
-    expect(m.pacePerMonthCents).toBe(10000); // last 3 months only
-    expect(m.forecastDate).toBe("2027-05-20"); // 70000 / 10000 = 7 months
-    expect(m.status).toBe("behind");
-  });
-
-  it("is on track when the recent pace covers what is still needed", () => {
+describe("goalMetrics: the monthly installment", () => {
+  it("takes this month's contributions off this month only", () => {
+    // €6.000, €400/month; €200 put in this month: €200 still due now, later months unchanged.
     const m = goalMetrics(
-      year,
-      [...contributions, { amountGoalCents: 60000, contributedOn: "2026-10-15" }],
-      "2026-10-20",
+      emergency,
+      [{ amountGoalCents: 20000, contributedOn: "2026-10-21" }],
+      "2026-10-22",
     );
-    expect(m.pacePerMonthCents).toBe(30000);
-    expect(m.requiredMonthlyCents).toBe(3334);
+    expect(m.installmentCents).toBe(40000);
+    expect(m.contributedThisMonthCents).toBe(20000);
+    expect(m.dueThisMonthCents).toBe(20000);
+    expect(m.laterMonthlyCents).toBe(40000);
     expect(m.status).toBe("on_track");
   });
 
-  it("counts withdrawals (negative contributions) against the total and the pace", () => {
+  it("spreads what a month left unpaid over the remaining months once the next one starts", () => {
+    // October closed with €200 of €400: from November, 580000 left over 14 months.
     const m = goalMetrics(
-      year,
-      [...contributions, { amountGoalCents: -20000, contributedOn: "2026-10-15" }],
-      "2026-10-20",
+      emergency,
+      [{ amountGoalCents: 20000, contributedOn: "2026-10-21" }],
+      "2026-11-02",
     );
-    expect(m.accumulatedCents).toBe(30000);
-    expect(m.pacePerMonthCents).toBe(3333);
-    expect(m.forecastDate).toBe("2029-02-20"); // ceil(90000 / 3333) = 28 months
+    expect(m.installmentCents).toBe(Math.ceil(580000 / 14)); // 41429
+    expect(m.dueThisMonthCents).toBe(41429);
+    expect(m.status).toBe("behind");
   });
 
-  it("has no forecast when the pace is zero or negative", () => {
+  it("lowers the later months when this month gets more than its installment", () => {
     const m = goalMetrics(
-      year,
-      [{ amountGoalCents: -5000, contributedOn: "2026-10-01" }],
-      "2026-10-20",
+      emergency,
+      [{ amountGoalCents: 100000, contributedOn: "2026-10-21" }],
+      "2026-10-22",
     );
-    expect(m.pacePerMonthCents).toBeLessThan(0);
-    expect(m.forecastDate).toBeNull();
+    expect(m.dueThisMonthCents).toBe(0);
+    expect(m.laterMonthlyCents).toBe(Math.ceil(500000 / 14)); // 35715
+    expect(m.status).toBe("on_track");
   });
 
-  it("is done once the target is reached, with nothing left to save", () => {
-    const m = goalMetrics({ ...year, initialCents: 100000 }, contributions, "2026-10-20");
-    expect(m.status).toBe("done");
-    expect(m.remainingCents).toBe(0);
-    expect(m.requiredMonthlyCents).toBe(0);
-    expect(m.forecastDate).toBeNull();
-    expect(m.progress).toBe(1.25);
+  it("is back on track once the shortfall has been made up", () => {
+    const m = goalMetrics(
+      emergency,
+      [
+        { amountGoalCents: 20000, contributedOn: "2026-10-21" },
+        { amountGoalCents: 60000, contributedOn: "2026-11-05" },
+      ],
+      "2026-12-03",
+    );
+    // 520000 left at the start of December over 13 months = 40000, the original installment.
+    expect(m.installmentCents).toBe(40000);
+    expect(m.status).toBe("on_track");
   });
 
-  it("is done when marked done, even below the target", () => {
-    expect(goalMetrics({ ...year, status: "done" }, [], "2026-10-20").status).toBe("done");
+  it("counts a withdrawal this month against this month", () => {
+    const m = goalMetrics(
+      emergency,
+      [{ amountGoalCents: -10000, contributedOn: "2026-10-21" }],
+      "2026-10-22",
+    );
+    expect(m.accumulatedCents).toBe(-10000);
+    expect(m.dueThisMonthCents).toBe(50000);
   });
 
   it("asks for everything that is left once the deadline has passed", () => {
-    const m = goalMetrics(year, contributions, "2027-01-05");
+    const m = goalMetrics(
+      emergency,
+      [{ amountGoalCents: 100000, contributedOn: "2027-06-01" }],
+      "2028-01-05",
+    );
     expect(m.monthsRemaining).toBe(0);
-    expect(m.requiredMonthlyCents).toBe(70000);
+    expect(m.installmentCents).toBe(500000);
+    expect(m.laterMonthlyCents).toBeNull();
+    expect(m.planEndsOn).toBeNull();
     expect(m.status).toBe("behind");
   });
 
-  it("is behind when the forecast misses the deadline, even for a goal created today", () => {
-    // Contributions logged from May on a goal created in October: history starts in May.
-    const house: GoalPlan = {
-      targetCents: 4000000,
-      initialCents: 0,
-      deadline: "2028-10-20",
-      createdOn: "2026-10-20",
-      status: "active",
-    };
-    const monthly = ["05", "06", "07", "08", "09", "10"].map((month) => ({
-      amountGoalCents: 55000,
-      contributedOn: `2026-${month}-07`,
-    }));
-    const m = goalMetrics(house, monthly, "2026-10-20");
-    expect(m.forecastDate! > house.deadline).toBe(true);
-    expect(m.status).toBe("behind");
+  it("has no later months in the deadline's month", () => {
+    const m = goalMetrics(emergency, [], "2027-12-10");
+    expect(m.monthsRemaining).toBe(1);
+    expect(m.dueThisMonthCents).toBe(600000);
+    expect(m.laterMonthlyCents).toBeNull();
   });
 
-  it("stays on track while paused if it is still ahead of schedule", () => {
-    const m = goalMetrics(
-      year,
-      [{ amountGoalCents: 100000, contributedOn: "2026-02-01" }],
-      "2026-10-20",
-    );
-    expect(m.pacePerMonthCents).toBe(0);
-    expect(m.status).toBe("on_track");
+  it("is done once the target is reached, with nothing left to save", () => {
+    const m = goalMetrics({ ...emergency, initialCents: 700000 }, [], "2026-10-20");
+    expect(m.status).toBe("done");
+    expect(m.remainingCents).toBe(0);
+    expect(m.dueThisMonthCents).toBe(0);
+    expect(m.planEndsOn).toBeNull();
+    expect(m.progress).toBeCloseTo(7 / 6);
   });
 
-  it("does not call a young goal behind because its first months look slow", () => {
-    const m = goalMetrics(
-      { ...emergency, createdOn: "2026-10-01" },
-      [{ amountGoalCents: 40000, contributedOn: "2026-10-02" }],
-      "2026-10-20",
-    );
-    expect(m.status).toBe("on_track");
+  it("is done when marked done, even below the target", () => {
+    expect(goalMetrics({ ...emergency, status: "done" }, [], "2026-10-20").status).toBe("done");
   });
 
   it("counts the initial amount as saved", () => {
     const m = goalMetrics({ ...emergency, initialCents: 150000 }, [], "2026-10-20");
     expect(m.accumulatedCents).toBe(150000);
-    expect(m.requiredMonthlyCents).toBe(30000);
+    expect(m.installmentCents).toBe(30000);
     expect(m.progress).toBe(0.25);
+  });
+
+  it("dates the goal from an earlier first contribution", () => {
+    // Created in October with contributions logged since May at €550: May's
+    // original installment was 600000 / 20 = 30000, so November's is still below it.
+    const monthly = ["05", "06", "07", "08", "09", "10"].map((month) => ({
+      amountGoalCents: 55000,
+      contributedOn: `2026-${month}-07`,
+    }));
+    const m = goalMetrics({ ...emergency, deadline: "2027-12-31" }, monthly, "2026-11-02");
+    expect(m.status).toBe("on_track");
+  });
+
+  it("keeps the 3-month pace as information", () => {
+    const m = goalMetrics(
+      emergency,
+      [
+        { amountGoalCents: 30000, contributedOn: "2026-08-10" },
+        { amountGoalCents: 30000, contributedOn: "2026-09-10" },
+        { amountGoalCents: 30000, contributedOn: "2026-10-10" },
+      ],
+      "2026-10-20",
+    );
+    expect(m.pacePerMonthCents).toBe(30000);
   });
 });
 
+describe("goalMonthView", () => {
+  const contributions = [
+    { amountGoalCents: 15000, contributedOn: "2026-09-12" },
+    { amountGoalCents: 20000, contributedOn: "2026-10-21" },
+  ];
+
+  it("shows what went in during a past month", () => {
+    expect(goalMonthView(emergency, contributions, "2026-10-22", "2026-09-01")).toEqual({
+      kind: "past",
+      contributedCents: 15000,
+    });
+  });
+
+  it("shows what is still due this month", () => {
+    const m = goalMetrics(emergency, contributions, "2026-10-22");
+    expect(goalMonthView(emergency, contributions, "2026-10-22", "2026-10-01")).toEqual({
+      kind: "current",
+      cents: m.dueThisMonthCents,
+    });
+  });
+
+  it("plans a future month at the later-months amount, and nothing after the deadline", () => {
+    const m = goalMetrics(emergency, contributions, "2026-10-22");
+    expect(goalMonthView(emergency, contributions, "2026-10-22", "2026-12-01")).toEqual({
+      kind: "future",
+      cents: m.laterMonthlyCents,
+    });
+    expect(goalMonthView(emergency, contributions, "2026-10-22", "2028-02-01")).toEqual({
+      kind: "future",
+      cents: 0,
+    });
+  });
+});
 describe("evolutionSeries", () => {
   it("starts at the initial amount and accumulates by date, ending today", () => {
     expect(

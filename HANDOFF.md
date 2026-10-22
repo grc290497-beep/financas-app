@@ -110,7 +110,7 @@ O usuário apagou os próprios dados de teste no app; o banco estava vazio em 20
   (cores por tokens CSS, tooltip, sem animação). Ler a skill `dataviz` antes.
 - **Pronto quando:** o usuário consegue baixar os dados e ver a evolução do ano.
 
-### Fase 8 — melhorias pedidas após uso real (22/10/2026), um passo por vez
+### Fase 8 — melhorias pedidas após uso real (22/10/2026) — ✅ concluída (passos 1–7)
 1. Velocidade: medir; região da Vercel perto do banco (eu-west-1); tirar geração de fixos do carregamento.
 2. Formulário de lançamento no celular: data/descrição alinhadas, teclado não abre sozinho.
 3. Fixos quinzenais (entradas e saídas).
