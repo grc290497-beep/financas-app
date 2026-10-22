@@ -265,7 +265,7 @@ export function RecurringForm({
             <Input id="startOn" type="date" {...register("startOn")} />
             {frequency !== "monthly" && (
               <FieldDescription>
-                {frequency === "weekly" ? t("form.startOnHintWeekly") : t("form.startOnHintYearly")}
+                {frequency === "yearly" ? t("form.startOnHintYearly") : t("form.startOnHintWeekly")}
               </FieldDescription>
             )}
             <FieldError errors={validationMessage(errors.startOn)} />

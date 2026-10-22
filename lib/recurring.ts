@@ -11,7 +11,7 @@ export type RecurringSchedule = {
   frequency: Frequency;
   /** Monthly only: 1-31; short months use their last day. */
   dayOfMonth: number | null;
-  /** Weekly items repeat on this weekday; yearly ones on this month and day. */
+  /** Weekly and biweekly items repeat on this weekday; yearly ones on this month and day. */
   startOn: string;
   endOn: string | null;
 };
@@ -27,9 +27,15 @@ export function occurrencesInRange(item: RecurringSchedule, from: string, to: st
     if (date >= lo && date <= hi) dates.push(date);
   };
 
-  if (item.frequency === "weekly") {
-    const weeksToSkip = Math.max(0, Math.ceil(daysBetween(item.startOn, lo) / 7));
-    for (let date = addDays(item.startOn, weeksToSkip * 7); date <= hi; date = addDays(date, 7)) {
+  if (item.frequency === "weekly" || item.frequency === "biweekly") {
+    // Every 7 or 14 days counted from the start date (a fortnightly payday).
+    const step = item.frequency === "weekly" ? 7 : 14;
+    const stepsToSkip = Math.max(0, Math.ceil(daysBetween(item.startOn, lo) / step));
+    for (
+      let date = addDays(item.startOn, stepsToSkip * step);
+      date <= hi;
+      date = addDays(date, step)
+    ) {
       keep(date);
     }
     return dates;

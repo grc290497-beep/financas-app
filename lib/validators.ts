@@ -128,7 +128,7 @@ export const transactionFiltersSchema = z.object({
 });
 export type TransactionFilters = z.output<typeof transactionFiltersSchema>;
 
-export const FREQUENCIES = ["monthly", "weekly", "yearly"] as const;
+export const FREQUENCIES = ["monthly", "biweekly", "weekly", "yearly"] as const;
 export type Frequency = (typeof FREQUENCIES)[number];
 
 export const recurringItemSchema = z

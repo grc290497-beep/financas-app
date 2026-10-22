@@ -88,6 +88,36 @@ describe("occurrencesInRange: weekly", () => {
   });
 });
 
+describe("occurrencesInRange: biweekly", () => {
+  const fortnightly: RecurringSchedule = {
+    frequency: "biweekly",
+    dayOfMonth: null,
+    startOn: "2026-10-09", // a Friday payday
+    endOn: null,
+  };
+
+  it("repeats every 14 days from the start date", () => {
+    expect(occurrencesInRange(fortnightly, "2026-10-01", "2026-11-30")).toEqual([
+      "2026-10-09",
+      "2026-10-23",
+      "2026-11-06",
+      "2026-11-20",
+    ]);
+  });
+
+  it("keeps the fortnight phase when the range starts between paydays", () => {
+    // 2026-10-16 is an off week: the next payday is the 23rd, not the 16th.
+    expect(occurrencesInRange(fortnightly, "2026-10-16", "2026-10-31")).toEqual(["2026-10-23"]);
+    expect(occurrencesInRange(fortnightly, "2026-10-23", "2026-10-23")).toEqual(["2026-10-23"]);
+  });
+
+  it("can fall three times in a 31-day month", () => {
+    expect(
+      occurrencesInRange({ ...fortnightly, startOn: "2026-12-01" }, "2026-12-01", "2026-12-31"),
+    ).toEqual(["2026-12-01", "2026-12-15", "2026-12-29"]);
+  });
+});
+
 describe("occurrencesInRange: yearly", () => {
   it("falls on the start date's month and day", () => {
     const yearly: RecurringSchedule = {

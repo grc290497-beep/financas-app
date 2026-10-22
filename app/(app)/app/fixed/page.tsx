@@ -262,8 +262,8 @@ async function ItemList({
 
   const schedule = (item: RecurringItem) => {
     if (item.frequency === "monthly") return t("schedule.monthly", { day: item.dayOfMonth ?? 1 });
-    if (item.frequency === "weekly") {
-      return t("schedule.weekly", {
+    if (item.frequency === "weekly" || item.frequency === "biweekly") {
+      return t(`schedule.${item.frequency}`, {
         weekday: format(parseISO(item.startOn), "EEEE", { locale: ptBR }),
       });
     }

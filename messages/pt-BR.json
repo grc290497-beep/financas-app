@@ -223,6 +223,7 @@
     "schedule": {
       "monthly": "Todo dia {day}",
       "weekly": "Toda semana ({weekday})",
+      "biweekly": "A cada duas semanas ({weekday})",
       "yearly": "Todo ano em {date}"
     },
     "empty": {
@@ -241,6 +242,7 @@
       "frequencies": {
         "monthly": "Todo mês",
         "weekly": "Toda semana",
+        "biweekly": "A cada duas semanas",
         "yearly": "Todo ano"
       },
       "dayOfMonth": "Dia do vencimento",
