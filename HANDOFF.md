@@ -110,6 +110,15 @@ O usuário apagou os próprios dados de teste no app; o banco estava vazio em 20
   (cores por tokens CSS, tooltip, sem animação). Ler a skill `dataviz` antes.
 - **Pronto quando:** o usuário consegue baixar os dados e ver a evolução do ano.
 
+### Fase 8 — melhorias pedidas após uso real (22/10/2026), um passo por vez
+1. Velocidade: medir; região da Vercel perto do banco (eu-west-1); tirar geração de fixos do carregamento.
+2. Formulário de lançamento no celular: data/descrição alinhadas, teclado não abre sozinho.
+3. Fixos quinzenais (entradas e saídas).
+4. Previstos confirmam sozinhos no dia **com o valor previsto** (o usuário corrige se diferir); futuros escondidos atrás de "Ver futuros"; Início só até hoje.
+5. Início: disponível agora no topo; previsto até o fim do mês (entradas, saídas, sobra) com gráfico; "Taxa de poupança" → **"Sobra do mês"**.
+6. Pílula de mês (‹ mês ›) também em Fixos, Orçamento e Metas.
+7. Metas: valor do mês = parcela do mês − aportes do mês; no mês seguinte o que faltou é redistribuído; previsão vira **"Seguindo o plano, termina em X"**.
+
 ## 3. Arquitetura e convenções importantes
 
 - **Stack:** Next.js 16 (App Router, Turbopack, `cacheComponents: true`, `proxy.ts` no lugar
