@@ -118,7 +118,7 @@ export function ExchangeView({ series, today }: { series: Point[]; today: string
             type="button"
             onClick={() => setFrom(to)}
             aria-label={t("swap")}
-            className="metal-brass absolute top-0 left-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-95"
+            className="metal-brass absolute top-0 left-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full outline-4 outline-[color-mix(in_oklch,var(--hero)_55%,var(--hero-2))] transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.93]"
           >
             <ArrowDownUp className="size-5" aria-hidden />
           </button>
@@ -153,7 +153,7 @@ export function ExchangeView({ series, today }: { series: Point[]; today: string
               key={value}
               type="button"
               onClick={() => setAmount(String(value))}
-              className="h-9 rounded-full bg-white/10 px-1 text-[13px] whitespace-nowrap text-hero-foreground tabular-nums transition-colors hover:bg-white/15 aria-pressed:bg-brass-light aria-pressed:text-[var(--brass-ink)]"
+              className="raised h-9 rounded-full px-1 text-[13px] font-medium whitespace-nowrap text-hero-foreground tabular-nums transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:translate-y-px active:scale-[0.97] hover:brightness-110 aria-pressed:metal-brass"
               aria-pressed={amount === String(value)}
             >
               {formatMoney(value * 100, from).replace(/,00$/, "")}
