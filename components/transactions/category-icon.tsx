@@ -1,5 +1,17 @@
 import {
+  Baby,
   Banknote,
+  BookOpen,
+  Briefcase,
+  Coffee,
+  Dog,
+  Dumbbell,
+  Fuel,
+  Gamepad2,
+  Gift,
+  Shirt,
+  Smartphone,
+  Wrench,
   Bus,
   Car,
   GraduationCap,
@@ -24,8 +36,20 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Icon names stored in categories.icon (seeded by the signup trigger) and goals.icon.
+// Icon names stored in categories.icon (CATEGORY_ICONS) and goals.icon (GOAL_ICONS).
 const ICONS: Record<string, LucideIcon> = {
+  baby: Baby,
+  "book-open": BookOpen,
+  briefcase: Briefcase,
+  coffee: Coffee,
+  dog: Dog,
+  dumbbell: Dumbbell,
+  fuel: Fuel,
+  gamepad: Gamepad2,
+  gift: Gift,
+  shirt: Shirt,
+  smartphone: Smartphone,
+  wrench: Wrench,
   banknote: Banknote,
   bus: Bus,
   car: Car,

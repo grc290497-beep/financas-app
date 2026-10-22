@@ -16,7 +16,16 @@ import { daysLeft, getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/l
 import { goalMetrics } from "@/lib/goals";
 import { goalsPlannedThisMonth, listGoals } from "@/lib/goals-store";
 import { ensureRecurringGenerated, listPlanned } from "@/lib/recurring-store";
-import { currentDate, getCategorySpend, getMonthSummary } from "@/lib/transactions";
+import { TransactionItem } from "@/components/transactions/transaction-item";
+import {
+  currentDate,
+  getBalanceBefore,
+  getCategories,
+  getCategorySpend,
+  getCategoryUsage,
+  getMonthSummary,
+  listTransactions,
+} from "@/lib/transactions";
 import { cn } from "@/lib/utils";
 import { transactionFiltersSchema, type Currency } from "@/lib/validators";
 
@@ -56,13 +65,41 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
   const period = month ? periodStartingIn(month, msd) : current;
   const isCurrent = period.start === current.start;
 
-  const [t, summary, spend, previousSpend, planned, goals] = await Promise.all([
+  const previous = shiftPeriod(period, msd, -1);
+  const [
+    t,
+    summary,
+    previousSummary,
+    spend,
+    previousSpend,
+    planned,
+    goals,
+    recent,
+    carriedCents,
+    categories,
+    usage,
+  ] = await Promise.all([
     getTranslations("Dashboard"),
     getMonthSummary(period),
+    getMonthSummary(previous),
     getCategorySpend(period),
-    getCategorySpend(shiftPeriod(period, msd, -1)),
+    getCategorySpend(previous),
     listPlanned(period.start, period.end),
     listGoals(),
+    // Up to today: future planned items stay out of sight, as on Lançamentos.
+    period.start <= today
+      ? listTransactions(
+          {},
+          { start: period.start, end: period.end < today ? period.end : today },
+          5,
+        )
+      : [],
+    profile.carryOver
+      ? getBalanceBefore(period.start).then((cents) => cents + profile.openingBalanceCents)
+      : 0,
+    // Same per-request cache as the quick-add sheet: tapping a recent entry edits it.
+    getCategories(),
+    getCategoryUsage(),
   ]);
 
   const primary = profile.primaryCurrency;
@@ -78,12 +115,18 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
     isCurrent ? daysLeft(period, today) : 0,
     goalsPlannedCents,
     plannedIncomeCents,
+    carriedCents,
   );
   const highlightedGoals = goals.filter((g) => g.status === "active").slice(0, 3);
   const previousById = new Map(previousSpend.map((c) => [c.id, c.spentCents]));
   const budgets = spend.filter((c) => c.budgetCents);
   const top = spend.filter((c) => c.spentCents > 0).slice(0, 5);
-  const isEmpty = summary.incomeCents === 0 && summary.expenseCents === 0 && planned.length === 0;
+  const isEmpty =
+    summary.incomeCents === 0 &&
+    summary.expenseCents === 0 &&
+    planned.length === 0 &&
+    carriedCents === 0;
+  const spendChange = variation(summary.expenseCents, previousSummary.expenseCents);
 
   const monthLink = (count: number) =>
     `/app?month=${shiftPeriod(period, msd, count).start.slice(0, 7)}`;
@@ -135,7 +178,11 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
             >
               {formatMoney(m.balanceCents, primary)}
             </p>
-            <p className="text-sm text-hero-muted">{t("availableHint")}</p>
+            <p className="text-sm text-hero-muted">
+              {profile.carryOver
+                ? t("availableHintCarry", { amount: formatMoney(carriedCents, primary) })
+                : t("availableHint")}
+            </p>
           </section>
 
           <MonthProjection
@@ -150,6 +197,34 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                 : null
             }
           />
+
+          {recent.length > 0 && (
+            <Section
+              title={t("recent")}
+              action={
+                <Link
+                  href={isCurrent ? "/app/transactions" : `/app/transactions?month=${month}`}
+                  className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  {t("seeAll")}
+                </Link>
+              }
+            >
+              <ul className="surface divide-y">
+                {recent.map((row) => (
+                  <li key={row.id}>
+                    <TransactionItem
+                      row={row}
+                      primaryCurrency={primary}
+                      categories={categories}
+                      usage={usage}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
           {highlightedGoals.length > 0 && (
             <Section
               title={t("goals")}
@@ -219,7 +294,22 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
           </Section>
 
           {top.length > 0 && (
-            <Section title={t("topCategories")}>
+            <Section
+              title={t("topCategories")}
+              action={
+                <span className="text-sm text-muted-foreground tabular-nums">
+                  {t("spentTotal", { amount: formatMoney(summary.expenseCents, primary) })}
+                  {spendChange !== null && (
+                    <>
+                      {" · "}
+                      <span className={spendChange > 0 ? "text-negative" : "text-positive"}>
+                        {t("vsPrevious", { change: signedPercent.format(spendChange) })}
+                      </span>
+                    </>
+                  )}
+                </span>
+              }
+            >
               <ul className="surface divide-y">
                 {top.map((c) => {
                   const change = variation(c.spentCents, previousById.get(c.id) ?? 0);
@@ -275,9 +365,14 @@ async function MonthProjection({
   const t = await getTranslations("Dashboard");
   const short = m.leftoverCents < 0;
   // When more goes out than comes in, the bar is scaled to the outflow instead.
-  const total = Math.max(m.projectedIncomeCents, m.projectedExpenseCents + m.goalsPlannedCents, 1);
+  const total = Math.max(
+    m.projectedIncomeCents + Math.max(m.carriedCents, 0),
+    m.projectedExpenseCents + m.goalsPlannedCents,
+    1,
+  );
   const width = (cents: number) => `${(Math.max(cents, 0) / total) * 100}%`;
   const rows = [
+    ...(m.carriedCents !== 0 ? [{ label: t("carried"), cents: m.carriedCents, swatch: null }] : []),
     { label: t("projectedIncome"), cents: m.projectedIncomeCents, swatch: null },
     { label: t("projectedExpenses"), cents: m.projectedExpenseCents, swatch: "bg-expense" },
     ...(m.goalsPlannedCents > 0
@@ -356,7 +451,7 @@ function Section({
 }) {
   return (
     <section className="flex flex-col gap-2">
-      <div className="flex items-baseline justify-between gap-2">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
         <h2 className="text-base font-medium">{title}</h2>
         {action}
       </div>

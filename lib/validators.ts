@@ -54,6 +54,26 @@ export type OnboardingInput = z.input<typeof onboardingSchema>;
 
 /** Ajustes: what can change after onboarding (the currency would re-price history). */
 export const profileSchema = z.object({ displayName, monthStartDay });
+
+export const balanceSettingsSchema = z.object({
+  carryOver: z.boolean(),
+  // What was in the bank before using the app; may be negative, empty means zero.
+  openingBalance: z
+    .string()
+    .trim()
+    .transform((value, ctx) => {
+      if (!value) return 0;
+      const negative = value.startsWith("-");
+      const cents = parseAmount(negative ? value.slice(1) : value);
+      if (cents === null || cents > MAX_AMOUNT_CENTS) {
+        ctx.addIssue({ code: "custom", message: "balanceInvalid" });
+        return z.NEVER;
+      }
+      return negative ? -cents : cents;
+    }),
+});
+export type BalanceSettingsInput = z.input<typeof balanceSettingsSchema>;
+export type BalanceSettingsData = z.output<typeof balanceSettingsSchema>;
 export type ProfileInput = z.input<typeof profileSchema>;
 export type ProfileData = z.output<typeof profileSchema>;
 
@@ -204,6 +224,70 @@ export const budgetSchema = z.object({
     }),
 });
 export type BudgetInput = z.input<typeof budgetSchema>;
+
+export const CATEGORY_KINDS = ["income", "variable", "fixed", "savings"] as const;
+// Includes every icon the signup trigger seeds, so editing a default category validates.
+export const CATEGORY_ICONS = [
+  "shopping-cart",
+  "utensils",
+  "coffee",
+  "party-popper",
+  "shopping-bag",
+  "shirt",
+  "heart-pulse",
+  "dumbbell",
+  "plane",
+  "car",
+  "fuel",
+  "bus",
+  "house",
+  "lightbulb",
+  "wifi",
+  "smartphone",
+  "shield-check",
+  "repeat",
+  "graduation-cap",
+  "book-open",
+  "baby",
+  "dog",
+  "gift",
+  "gamepad",
+  "wrench",
+  "triangle-alert",
+  "banknote",
+  "hand-coins",
+  "briefcase",
+  "circle-plus",
+  "piggy-bank",
+  "trending-up",
+] as const;
+export const CATEGORY_COLORS = [
+  "#f97316",
+  "#ef4444",
+  "#ec4899",
+  "#a855f7",
+  "#6366f1",
+  "#0ea5e9",
+  "#06b6d4",
+  "#14b8a6",
+  "#10b981",
+  "#84cc16",
+  "#eab308",
+  "#64748b",
+] as const;
+
+export const categorySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, { error: "categoryNameRequired" })
+    .max(60, { error: "recurringNameTooLong" }),
+  kind: z.enum(CATEGORY_KINDS),
+  icon: z.enum(CATEGORY_ICONS),
+  // Seeded categories carry colors outside the picker palette.
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+});
+export type CategoryInput = z.input<typeof categorySchema>;
 
 export const GOAL_ICONS = [
   "piggy-bank",

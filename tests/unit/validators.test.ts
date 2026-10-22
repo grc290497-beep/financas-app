@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  balanceSettingsSchema,
+  categorySchema,
   deleteAccountSchema,
   onboardingSchema,
   recurringItemSchema,
@@ -206,5 +208,36 @@ describe("deleteAccountSchema", () => {
         "confirmationMismatch",
       );
     }
+  });
+});
+
+describe("balanceSettingsSchema", () => {
+  const parse = (openingBalance: string) =>
+    balanceSettingsSchema.safeParse({ carryOver: true, openingBalance });
+
+  it("reads positive, negative and empty opening balances", () => {
+    expect(parse("1.250,50").data?.openingBalance).toBe(125050);
+    expect(parse("-80,00").data?.openingBalance).toBe(-8000);
+    expect(parse("").data?.openingBalance).toBe(0);
+  });
+
+  it("rejects anything that is not an amount", () => {
+    expect(firstMessage(parse("abc"))).toBe("balanceInvalid");
+    expect(firstMessage(parse("--5"))).toBe("balanceInvalid");
+  });
+});
+
+describe("categorySchema", () => {
+  const valid = { name: " Pets ", kind: "variable", icon: "dog", color: "#f97316" };
+
+  it("trims the name and accepts any hex color (seeded ones are off-palette)", () => {
+    expect(categorySchema.parse({ ...valid, color: "#16a34a" }).name).toBe("Pets");
+  });
+
+  it("requires a name and a known icon", () => {
+    expect(firstMessage(categorySchema.safeParse({ ...valid, name: " " }))).toBe(
+      "categoryNameRequired",
+    );
+    expect(categorySchema.safeParse({ ...valid, icon: "rocket" }).success).toBe(false);
   });
 });

@@ -46,6 +46,14 @@ export async function getMonthSummary(period: Period): Promise<MonthSummary> {
   };
 }
 
+/** Confirmed income minus expenses before `date` (balance_before in SQL), in the primary currency. */
+export async function getBalanceBefore(date: string): Promise<number> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("balance_before", { p_before: date });
+  if (error) throw error;
+  return Number(data);
+}
+
 export type CategorySpend = Category & {
   budgetCents: number | null;
   spentCents: number;
@@ -84,6 +92,18 @@ export const getCategories = cache(async (): Promise<Category[]> => {
   return data.map((c) => ({ ...c, kind: c.kind as CategoryKind }));
 });
 
+/** Every category, hidden ones included, for the Categorias page. */
+export async function listAllCategories(): Promise<(Category & { archived: boolean })[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("categories")
+    .select("id, name, kind, icon, color, archived")
+    .order("sort_order")
+    .order("name");
+  if (error) throw error;
+  return data.map((c) => ({ ...c, kind: c.kind as CategoryKind }));
+}
+
 /** How often each category was used in the last 90 days. */
 export const getCategoryUsage = cache(async (): Promise<Record<string, number>> => {
   await connection(); // reads the clock: request time only
@@ -104,6 +124,7 @@ export const getCategoryUsage = cache(async (): Promise<Record<string, number>> 
 export async function listTransactions(
   filters: TransactionFilters,
   { start: from, end: to }: Period,
+  limit = 500,
 ): Promise<TransactionRow[]> {
   const supabase = await createClient();
 
@@ -117,7 +138,7 @@ export async function listTransactions(
     .lte("occurred_on", to)
     .order("occurred_on", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(500);
+    .limit(limit);
 
   if (filters.type) query = query.eq("type", filters.type);
   if (filters.currency) query = query.eq("currency", filters.currency);

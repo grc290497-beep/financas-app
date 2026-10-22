@@ -13,6 +13,9 @@ export type Profile = {
   primaryCurrency: Currency;
   monthStartDay: number;
   onboardingDone: boolean;
+  /** Earlier months' leftover counts in "Disponível agora", from the opening balance. */
+  carryOver: boolean;
+  openingBalanceCents: number;
 };
 
 /** The signed-in user's id and email, or a redirect to /login. */
@@ -35,7 +38,9 @@ export const requireProfile = cache(async (): Promise<Profile> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, display_name, primary_currency, month_start_day, onboarding_done")
+    .select(
+      "id, display_name, primary_currency, month_start_day, onboarding_done, carry_over, opening_balance_cents",
+    )
     .eq("id", user.id)
     .single();
 
@@ -49,5 +54,7 @@ export const requireProfile = cache(async (): Promise<Profile> => {
     primaryCurrency: data.primary_currency as Currency,
     monthStartDay: data.month_start_day,
     onboardingDone: data.onboarding_done,
+    carryOver: data.carry_over,
+    openingBalanceCents: Number(data.opening_balance_cents),
   };
 });

@@ -15,6 +15,7 @@ describe("computeMetrics", () => {
       expenseCents: 150000,
       fixedPlannedCents: 120000,
       balanceCents: 150000, // available now: received minus paid
+      carriedCents: 0,
       projectedIncomeCents: 300000,
       projectedExpenseCents: 170000, // 150000 paid + 20000 internet still to pay
       goalsPlannedCents: 0,
@@ -38,6 +39,21 @@ describe("computeMetrics", () => {
     expect(m.leftoverCents).toBe(240000); // 90000 + 150000 salary still to come
     expect(m.incomeCents).toBe(300000); // received only
     expect(m.balanceCents).toBe(150000);
+  });
+
+  it("adds what earlier months left to the balance and the leftover, not to the rate", () => {
+    const m = computeMetrics(summary, 10, 0, 0, 50000);
+    expect(m.balanceCents).toBe(200000); // 150000 + 50000 carried
+    expect(m.leftoverCents).toBe(180000); // 130000 + 50000
+    expect(m.leftoverPerDayCents).toBe(18000);
+    expect(m.leftoverRate).toBe(130000 / 300000); // this month's alone
+  });
+
+  it("carries a negative balance from earlier months too", () => {
+    const m = computeMetrics(summary, 10, 0, 0, -200000);
+    expect(m.balanceCents).toBe(-50000);
+    expect(m.leftoverCents).toBe(-70000);
+    expect(m.leftoverPerDayCents).toBe(0);
   });
 
   it("has no per-day figure once the period is over", () => {

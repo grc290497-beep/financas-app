@@ -42,6 +42,28 @@
         "saveFailed": "Não conseguimos salvar. Tente de novo."
       }
     },
+    "balance": {
+      "title": "Saldo",
+      "mode": "Como contar o disponível",
+      "monthOnly": "Só este mês",
+      "carry": "Somar meses anteriores",
+      "monthOnlyHint": "\"Disponível agora\" mostra só o que entrou menos o que saiu neste mês.",
+      "carryHint": "A sobra (ou falta) dos meses anteriores passa para o mês seguinte, como na sua conta do banco.",
+      "opening": "Saldo inicial",
+      "openingHint": "Quanto você tinha antes do primeiro lançamento no app. Use - para saldo negativo.",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "saved": "Saldo atualizado.",
+      "errors": {
+        "invalidInput": "Confira o saldo inicial e tente de novo.",
+        "saveFailed": "Não conseguimos salvar. Tente de novo."
+      }
+    },
+    "organize": {
+      "title": "Organização",
+      "categories": "Categorias",
+      "budget": "Orçamento por categoria"
+    },
     "theme": {
       "label": "Aparência",
       "system": "Sistema",
@@ -198,6 +220,8 @@
     "recurringNameTooLong": "Use no máximo 60 caracteres.",
     "dayOfMonthInvalid": "Escolha um dia entre 1 e 31.",
     "goalNameRequired": "Dê um nome à meta, por exemplo Reserva de emergência.",
+    "categoryNameRequired": "Dê um nome, por exemplo Pets.",
+    "balanceInvalid": "Digite um valor como 1.250,00 ou -80,00.",
     "endBeforeStart": "O fim precisa ser depois do início."
   },
   "Fixed": {
@@ -520,6 +544,11 @@
     "perDay": "Dá para gastar {amount} por dia {days, plural, one {no # dia restante} other {nos # dias restantes}}.",
     "available": "Disponível agora",
     "availableHint": "O que entrou menos o que saiu neste mês, até hoje.",
+    "availableHintCarry": "Inclui {amount} que veio dos meses anteriores.",
+    "carried": "Veio dos meses anteriores",
+    "recent": "Últimos lançamentos",
+    "seeAll": "Ver todos",
+    "spentTotal": "{amount} gastos",
     "projection": "Até o fim do mês",
     "inPrimaryShort": "em {currency}",
     "projectedIncome": "Entradas previstas",
@@ -670,6 +699,7 @@
     "spent": "{spent} gastos",
     "planned": "+ {planned} previstos",
     "of": "de {budget}",
+    "manageCategories": "Gerenciar categorias",
     "noLimit": "Sem limite",
     "limit": "Limite de {name}",
     "save": "Salvar",
@@ -679,6 +709,91 @@
     "errors": {
       "invalidInput": "Digite um valor maior que zero, ou deixe vazio para remover.",
       "saveFailed": "Não conseguimos salvar. Tente de novo."
+    }
+  },
+  "Categories": {
+    "title": "Categorias",
+    "description": "Crie, renomeie ou esconda categorias. Esconder tira a categoria do lançamento rápido, mas mantém o histórico.",
+    "add": "Nova categoria",
+    "edit": "Editar categoria",
+    "editNamed": "Editar {name}",
+    "hide": "Esconder",
+    "hideNamed": "Esconder {name}",
+    "show": "Mostrar",
+    "hidden": "Escondidas",
+    "hiddenToast": "Categoria escondida.",
+    "shownToast": "Categoria de volta.",
+    "kinds": {
+      "income": "Entradas",
+      "variable": "Gastos do dia a dia",
+      "fixed": "Custos fixos",
+      "savings": "Reserva e investimentos"
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Ex.: Pets",
+      "kind": "Tipo",
+      "kindLocked": "O tipo não muda depois de criada.",
+      "icon": "Ícone",
+      "color": "Cor",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "saved": "Categoria criada.",
+      "updated": "Categoria atualizada.",
+      "icons": {
+        "shopping-cart": "Carrinho",
+        "utensils": "Talheres",
+        "coffee": "Café",
+        "party-popper": "Festa",
+        "shopping-bag": "Sacola",
+        "shirt": "Roupa",
+        "heart-pulse": "Saúde",
+        "dumbbell": "Academia",
+        "plane": "Avião",
+        "car": "Carro",
+        "fuel": "Combustível",
+        "bus": "Ônibus",
+        "house": "Casa",
+        "lightbulb": "Lâmpada",
+        "wifi": "Wi-Fi",
+        "smartphone": "Celular",
+        "shield-check": "Escudo",
+        "repeat": "Repetir",
+        "graduation-cap": "Estudos",
+        "book-open": "Livro",
+        "baby": "Bebê",
+        "dog": "Pet",
+        "gift": "Presente",
+        "gamepad": "Jogos",
+        "wrench": "Manutenção",
+        "triangle-alert": "Alerta",
+        "banknote": "Dinheiro",
+        "hand-coins": "Moedas",
+        "briefcase": "Trabalho",
+        "circle-plus": "Outros",
+        "piggy-bank": "Cofrinho",
+        "trending-up": "Investimento"
+      },
+      "colors": {
+        "#f97316": "Laranja",
+        "#ef4444": "Vermelho",
+        "#ec4899": "Rosa",
+        "#a855f7": "Roxo",
+        "#6366f1": "Índigo",
+        "#0ea5e9": "Azul",
+        "#06b6d4": "Ciano",
+        "#14b8a6": "Turquesa",
+        "#10b981": "Verde",
+        "#84cc16": "Lima",
+        "#eab308": "Amarelo",
+        "#64748b": "Cinza"
+      }
+    },
+    "errors": {
+      "invalidInput": "Confira os campos e tente de novo.",
+      "duplicate": "Já existe uma categoria com esse nome nesse tipo.",
+      "saveFailed": "Não conseguimos salvar. Tente de novo.",
+      "notFound": "Essa categoria não existe mais."
     }
   }
 }

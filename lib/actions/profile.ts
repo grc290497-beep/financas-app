@@ -5,7 +5,9 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import {
+  balanceSettingsSchema,
   onboardingSchema,
+  type BalanceSettingsInput,
   profileSchema,
   type OnboardingInput,
   type ProfileInput,
@@ -27,6 +29,28 @@ export async function updateProfile(
     .update({
       display_name: parsed.data.displayName,
       month_start_day: parsed.data.monthStartDay,
+    })
+    .eq("id", user.id);
+  if (error) return { status: "error", error: "saveFailed" };
+
+  revalidatePath("/app", "layout");
+  return { status: "ok" };
+}
+
+/** Whether earlier months' leftover carries into "Disponível agora", and from what opening balance. */
+export async function updateBalanceSettings(
+  input: BalanceSettingsInput,
+): Promise<{ status: "ok" } | ProfileActionResult> {
+  const parsed = balanceSettingsSchema.safeParse(input);
+  if (!parsed.success) return { status: "error", error: "invalidInput" };
+
+  const user = await requireUser();
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      carry_over: parsed.data.carryOver,
+      opening_balance_cents: parsed.data.openingBalance,
     })
     .eq("id", user.id);
   if (error) return { status: "error", error: "saveFailed" };

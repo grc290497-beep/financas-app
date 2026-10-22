@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { BudgetBar } from "@/components/budget/budget-bar";
 import { BudgetLimitInput } from "@/components/budget/budget-row";
@@ -59,7 +60,12 @@ async function Budget({
         currentHref={period.start === current.start ? undefined : "/app/budget"}
         currentLabel={t("current")}
       />
-      <p className="text-sm text-muted-foreground">{t("description", { currency: primary })}</p>
+      <p className="text-sm text-muted-foreground">
+        {t("description", { currency: primary })}{" "}
+        <Link href="/app/categories" className="text-foreground underline-offset-4 hover:underline">
+          {t("manageCategories")}
+        </Link>
+      </p>
       <ul className="surface divide-y">
         {categories.map((c) => (
           <li key={c.id} className="flex flex-col gap-2.5 px-4 py-3.5">

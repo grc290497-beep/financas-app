@@ -1,12 +1,15 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { ChevronRight } from "lucide-react";
+import { BalanceForm } from "@/components/settings/balance-form";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { ExportLinks } from "@/components/settings/export-links";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { ThemeSelect } from "@/components/settings/theme-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile, requireUser } from "@/lib/auth";
+import { formatAmountInput } from "@/lib/money";
 
 export default function SettingsPage() {
   return (
@@ -44,6 +47,37 @@ async function Settings() {
             monthStartDay: profile.monthStartDay,
           }}
         />
+      </Section>
+
+      <Section title={t("balance.title")}>
+        <BalanceForm
+          defaultValues={{
+            carryOver: profile.carryOver,
+            openingBalance: profile.openingBalanceCents
+              ? formatAmountInput(profile.openingBalanceCents)
+              : "",
+          }}
+          symbol={profile.primaryCurrency === "EUR" ? "€" : "R$"}
+        />
+      </Section>
+
+      <Section title={t("organize.title")}>
+        <ul className="surface divide-y text-sm">
+          {[
+            { href: "/app/categories", label: t("organize.categories") },
+            { href: "/app/budget", label: t("organize.budget") },
+          ].map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-accent/50"
+              >
+                {link.label}
+                <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title={t("account")} hint={t("currencyHint")}>
