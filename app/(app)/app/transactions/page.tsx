@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -66,6 +67,28 @@ async function Transactions({
   const expenses = sum(rows, "expense");
   const hasFilters = Boolean(filters.type || filters.currency || filters.category || filters.q);
 
+  // In the current month, what is still to come stays folded until asked for;
+  // a future month is opened precisely to see it, so it shows everything.
+  const isCurrent = period.start <= today && today <= period.end;
+  const showFuture = raw.futuros === "1";
+  const future = isCurrent ? rows.filter((r) => r.occurredOn > today) : [];
+  const shown = showFuture ? rows : rows.filter((r) => !future.includes(r));
+  const toggleFuture = new URLSearchParams(
+    Object.entries(raw).flatMap(([key, value]) =>
+      key === "futuros" || value === undefined ? [] : [[key, String(value)]],
+    ),
+  );
+  if (!showFuture) toggleFuture.set("futuros", "1");
+  const futureLink = future.length > 0 && (
+    <Link
+      href={`/app/transactions?${toggleFuture.toString()}`}
+      scroll={false}
+      className="self-center rounded-full px-4 py-2 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+    >
+      {showFuture ? t("hideFuture") : t("showFuture", { count: future.length })}
+    </Link>
+  );
+
   return (
     <>
       <TransactionFiltersBar
@@ -89,16 +112,16 @@ async function Transactions({
         </dl>
         <p className="border-t px-4 py-2.5 text-xs text-muted-foreground">
           {t("summary.inPrimary", { currency: primary })}
-          {rows.some((r) => r.status === "planned") && <> · {t("plannedHint")}</>}
+          {shown.some((r) => r.status === "planned") && <> · {t("plannedHint")}</>}
         </p>
       </section>
 
-      {rows.length === 0 ? (
+      {shown.length === 0 ? (
         <EmptyState filtered={hasFilters} />
       ) : (
         // One card for the month; each day is a labelled band inside it.
         <div className="surface overflow-hidden">
-          {groupByDay(rows).map(([day, items]) => {
+          {groupByDay(shown).map(([day, items]) => {
             const net = sum(items, "income") - sum(items, "expense");
             return (
               <section key={day} aria-labelledby={`day-${day}`}>
@@ -132,6 +155,7 @@ async function Transactions({
           })}
         </div>
       )}
+      {futureLink}
     </>
   );
 }

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { serverFxDeps } from "@/lib/fx-cache";
 import { getFinancialPeriod } from "@/lib/period";
 import { generateRecurringForPeriod } from "@/lib/recurring";
-import { supabaseRecurringStore } from "@/lib/recurring-store";
+import { confirmDue, supabaseRecurringStore } from "@/lib/recurring-store";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Currency } from "@/lib/validators";
 
@@ -58,7 +58,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ users: profiles.length, created, failed });
+  const confirmed = await confirmDue(admin, today);
+  return NextResponse.json({ users: profiles.length, created, failed, confirmed });
 }
 
 function isAuthorized(header: string | null) {

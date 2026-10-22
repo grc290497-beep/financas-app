@@ -2,8 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { format, parseISO } from "date-fns";
-import { CalendarClock, ReceiptText } from "lucide-react";
+import { ReceiptText } from "lucide-react";
 import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { BudgetBar } from "@/components/budget/budget-bar";
 import { GoalProgress, GoalStatusBadge } from "@/components/goals/goal-status";
@@ -21,7 +20,6 @@ import { currentDate, getCategorySpend, getMonthSummary } from "@/lib/transactio
 import { cn } from "@/lib/utils";
 import { transactionFiltersSchema } from "@/lib/validators";
 
-const dayMonth = (date: string) => format(parseISO(date), "dd/MM");
 const percent = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 0 });
 const signedPercent = new Intl.NumberFormat("pt-BR", {
   style: "percent",
@@ -85,7 +83,6 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
   const previousById = new Map(previousSpend.map((c) => [c.id, c.spentCents]));
   const budgets = spend.filter((c) => c.budgetCents);
   const top = spend.filter((c) => c.spentCents > 0).slice(0, 5);
-  const upcoming = planned.filter((p) => p.type === "expense").slice(0, 5);
   const isEmpty = summary.incomeCents === 0 && summary.expenseCents === 0 && planned.length === 0;
 
   const monthLink = (count: number) =>
@@ -202,49 +199,6 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
               </ul>
             </Section>
           )}
-
-          <Section
-            title={t("upcoming")}
-            action={
-              <Link
-                href="/app/fixed"
-                className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-              >
-                {t("seeFixed")}
-              </Link>
-            }
-          >
-            {upcoming.length === 0 ? (
-              <p className="surface flex items-center gap-2 px-4 py-3.5 text-sm text-muted-foreground">
-                <CalendarClock className="size-4" aria-hidden />
-                {t("noUpcoming")}
-              </p>
-            ) : (
-              <ul className="surface divide-y">
-                {upcoming.map((bill) => (
-                  <li
-                    key={bill.id}
-                    className="flex items-center justify-between gap-3 px-4 py-3 text-sm"
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      <span
-                        className={cn(
-                          "w-11 shrink-0 tabular-nums",
-                          bill.occurredOn < today ? "text-negative" : "text-muted-foreground",
-                        )}
-                      >
-                        {dayMonth(bill.occurredOn)}
-                      </span>
-                      <span className="truncate">{bill.description}</span>
-                    </span>
-                    <span className="shrink-0 tabular-nums">
-                      {formatMoney(bill.amountCents, bill.currency)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Section>
 
           <Section
             title={t("budgets")}

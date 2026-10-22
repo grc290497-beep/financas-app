@@ -73,8 +73,9 @@ export function supabaseRecurringStore(client: SupabaseClient, userId: string): 
 /**
  * Makes sure the signed-in user's recurring items are planned for the
  * current financial month, and for `viewedMonth` (yyyy-MM) when it is a
- * future month being opened. Runs when the app's pages open (the daily cron
- * is the backstop); cached so one request only does it once.
+ * future month being opened, then confirms what has come due. Runs when the
+ * app's pages open (the daily cron is the backstop); cached so one request
+ * only does it once.
  */
 export const ensureRecurringGenerated = cache(async (today: string, viewedMonth?: string) => {
   const profile = await requireProfile();
@@ -84,7 +85,23 @@ export const ensureRecurringGenerated = cache(async (today: string, viewedMonth?
   for (const period of periodsToPlan(today, profile.monthStartDay, viewedMonth)) {
     await generateRecurringForPeriod(profile.id, period, profile.primaryCurrency, deps);
   }
+  await confirmDue(supabase, today);
 });
+
+/**
+ * Planned occurrences that have come due become confirmed, at the planned
+ * amount (the user edits it if the real one differed). With the user's
+ * client RLS limits it to them; the cron passes the service role for everyone.
+ */
+export async function confirmDue(client: SupabaseClient, today: string) {
+  const { error, count } = await client
+    .from("transactions")
+    .update({ status: "confirmed" }, { count: "exact" })
+    .eq("status", "planned")
+    .lte("occurred_on", today);
+  if (error) throw error;
+  return count ?? 0;
+}
 
 export const listRecurringItems = cache(async (): Promise<RecurringItem[]> => {
   const supabase = await createClient();

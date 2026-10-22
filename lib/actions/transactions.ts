@@ -85,9 +85,10 @@ export async function deleteTransaction(id: string): Promise<TransactionActionRe
     .maybeSingle();
   if (!existing) return { status: "error", error: "notFound" };
 
-  // A planned occurrence of a fixed cost is marked skipped, not deleted: the row
-  // keeps its (recurring_item_id, occurred_on) slot, so generation won't recreate it.
-  const skip = existing.recurring_item_id !== null && existing.status === "planned";
+  // An occurrence of a fixed cost (planned, or confirmed on its due day) is marked
+  // skipped, not deleted: the row keeps its (recurring_item_id, occurred_on)
+  // slot, so generation won't recreate it and confirm it again.
+  const skip = existing.recurring_item_id !== null;
   const { error, count } = skip
     ? await supabase
         .from("transactions")

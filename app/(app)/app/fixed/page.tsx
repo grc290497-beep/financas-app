@@ -103,29 +103,37 @@ async function Fixed() {
             {t("allDone")}
           </p>
         ) : (
-          <>
-            {toPay.length > 0 && (
-              <PlannedList
-                title={t("toPay")}
-                rows={toPay}
-                today={today}
-                primary={primary}
-                categoryIdByItem={new Map(items.map((i) => [i.id, i.categoryId]))}
-                categoryById={categoryById}
-                footer={t("remaining", { amount: formatMoney(remaining, primary) })}
-              />
-            )}
-            {toReceive.length > 0 && (
-              <PlannedList
-                title={t("toReceive")}
-                rows={toReceive}
-                today={today}
-                primary={primary}
-                categoryIdByItem={new Map(items.map((i) => [i.id, i.categoryId]))}
-                categoryById={categoryById}
-              />
-            )}
-          </>
+          // Due items confirm themselves on the day; what is still to come stays folded.
+          <details className="group">
+            <summary className="surface flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-sm select-none">
+              <span>{t("upcomingList", { count: planned.length })}</span>
+              <span className="text-muted-foreground group-open:hidden">{t("show")}</span>
+              <span className="hidden text-muted-foreground group-open:inline">{t("hide")}</span>
+            </summary>
+            <div className="mt-3 flex flex-col gap-3">
+              {toPay.length > 0 && (
+                <PlannedList
+                  title={t("toPay")}
+                  rows={toPay}
+                  today={today}
+                  primary={primary}
+                  categoryIdByItem={new Map(items.map((i) => [i.id, i.categoryId]))}
+                  categoryById={categoryById}
+                  footer={t("remaining", { amount: formatMoney(remaining, primary) })}
+                />
+              )}
+              {toReceive.length > 0 && (
+                <PlannedList
+                  title={t("toReceive")}
+                  rows={toReceive}
+                  today={today}
+                  primary={primary}
+                  categoryIdByItem={new Map(items.map((i) => [i.id, i.categoryId]))}
+                  categoryById={categoryById}
+                />
+              )}
+            </div>
+          </details>
         )}
       </section>
 
