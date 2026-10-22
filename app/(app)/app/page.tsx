@@ -18,7 +18,7 @@ import { goalsPlannedThisMonth, listGoals } from "@/lib/goals-store";
 import { ensureRecurringGenerated, listPlanned } from "@/lib/recurring-store";
 import { currentDate, getCategorySpend, getMonthSummary } from "@/lib/transactions";
 import { cn } from "@/lib/utils";
-import { transactionFiltersSchema } from "@/lib/validators";
+import { transactionFiltersSchema, type Currency } from "@/lib/validators";
 
 const percent = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 0 });
 const signedPercent = new Intl.NumberFormat("pt-BR", {
@@ -119,56 +119,37 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
         </section>
       ) : (
         <>
-          {/* The one coloured region: the number the month is steered by. */}
+          {/* The one coloured region: what there is to work with today. */}
           <section
             className="hero-card flex flex-col gap-1.5 rounded-3xl px-5 py-6"
-            aria-labelledby="free"
+            aria-labelledby="available"
           >
-            <h2 id="free" className="text-sm text-hero-muted">
-              {t("freeToSpend")}
+            <h2 id="available" className="text-sm text-hero-muted">
+              {t("available")}
             </h2>
             <p
               className={cn(
                 "text-5xl font-semibold tracking-tight text-brass-light tabular-nums",
-                m.freeToSpendCents < 0 && "text-hero-negative",
+                m.balanceCents < 0 && "text-hero-negative",
               )}
             >
-              {formatMoney(m.freeToSpendCents, primary)}
+              {formatMoney(m.balanceCents, primary)}
             </p>
-            <p className="text-sm text-hero-muted">
-              {isCurrent && m.freePerDayCents !== null
-                ? t("perDay", {
-                    amount: formatMoney(m.freePerDayCents, primary),
-                    days: daysLeft(period, today),
-                  })
-                : t("freeToSpendHint")}
-            </p>
-            {goalsPlannedCents > 0 && (
-              <p className="text-xs text-hero-muted">
-                {t("goalsHint", { amount: formatMoney(goalsPlannedCents, primary) })}
-              </p>
-            )}
+            <p className="text-sm text-hero-muted">{t("availableHint")}</p>
           </section>
 
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-5 surface p-4 sm:grid-cols-3">
-            <Metric label={t("income")} value={formatMoney(m.incomeCents, primary)} />
-            <Metric label={t("expenses")} value={formatMoney(m.expenseCents, primary)} />
-            <Metric
-              label={t("balance")}
-              value={formatMoney(m.balanceCents, primary)}
-              negative={m.balanceCents < 0}
-            />
-            <Metric label={t("fixed")} value={formatMoney(m.fixedPlannedCents, primary)} />
-            <Metric
-              label={t("savingsRate")}
-              value={m.savingsRate === null ? t("noRate") : percent.format(m.savingsRate)}
-              negative={(m.savingsRate ?? 0) < 0}
-            />
-          </dl>
-          <p className="-mt-3 text-xs text-muted-foreground">
-            {t("inPrimary", { currency: primary })}
-          </p>
-
+          <MonthProjection
+            m={m}
+            primary={primary}
+            perDay={
+              isCurrent && m.leftoverPerDayCents !== null
+                ? t("perDay", {
+                    amount: formatMoney(m.leftoverPerDayCents, primary),
+                    days: daysLeft(period, today),
+                  })
+                : null
+            }
+          />
           {highlightedGoals.length > 0 && (
             <Section
               title={t("goals")}
@@ -277,14 +258,90 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
   );
 }
 
-function Metric({ label, value, negative }: { label: string; value: string; negative?: boolean }) {
+/**
+ * Where the month ends up: expected income split into what goes out, what is
+ * set aside for goals and what is left. The bar is the chart; the list beside
+ * it carries the exact figures (and the meaning, so colour is never alone).
+ */
+async function MonthProjection({
+  m,
+  primary,
+  perDay,
+}: {
+  m: ReturnType<typeof computeMetrics>;
+  primary: Currency;
+  perDay: string | null;
+}) {
+  const t = await getTranslations("Dashboard");
+  const short = m.leftoverCents < 0;
+  // When more goes out than comes in, the bar is scaled to the outflow instead.
+  const total = Math.max(m.projectedIncomeCents, m.projectedExpenseCents + m.goalsPlannedCents, 1);
+  const width = (cents: number) => `${(Math.max(cents, 0) / total) * 100}%`;
+  const rows = [
+    { label: t("projectedIncome"), cents: m.projectedIncomeCents, swatch: null },
+    { label: t("projectedExpenses"), cents: m.projectedExpenseCents, swatch: "bg-expense" },
+    ...(m.goalsPlannedCents > 0
+      ? [{ label: t("goalsReserved"), cents: m.goalsPlannedCents, swatch: "bg-hero-muted" }]
+      : []),
+  ];
+
   return (
-    <div className="flex min-w-0 flex-col gap-0.5">
-      <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className={cn("truncate text-lg font-medium tabular-nums", negative && "text-negative")}>
-        {value}
-      </dd>
-    </div>
+    <section className="surface flex flex-col gap-4 p-4" aria-labelledby="projection">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id="projection" className="text-base font-medium">
+          {t("projection")}
+        </h2>
+        <span className="text-xs text-muted-foreground">
+          {t("inPrimaryShort", { currency: primary })}
+        </span>
+      </div>
+
+      <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-muted" aria-hidden>
+        <span className="h-full bg-expense" style={{ width: width(m.projectedExpenseCents) }} />
+        {m.goalsPlannedCents > 0 && (
+          <span className="h-full bg-hero-muted" style={{ width: width(m.goalsPlannedCents) }} />
+        )}
+        {!short && (
+          <span className="h-full bg-positive" style={{ width: width(m.leftoverCents) }} />
+        )}
+      </div>
+
+      <dl className="flex flex-col gap-2 text-sm">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center justify-between gap-3">
+            <dt className="flex items-center gap-2 text-muted-foreground">
+              {row.swatch && <span className={cn("size-2.5 rounded-sm", row.swatch)} aria-hidden />}
+              {row.label}
+            </dt>
+            <dd className="tabular-nums">{formatMoney(row.cents, primary)}</dd>
+          </div>
+        ))}
+        <div className="mt-1 flex items-center justify-between gap-3 border-t pt-3">
+          <dt className="flex items-center gap-2 font-medium">
+            <span
+              className={cn("size-2.5 rounded-sm", short ? "bg-negative" : "bg-positive")}
+              aria-hidden
+            />
+            {short ? t("shortfall") : t("leftover")}
+          </dt>
+          <dd
+            className={cn(
+              "text-lg font-semibold tabular-nums",
+              short ? "text-negative" : "text-positive",
+            )}
+          >
+            {formatMoney(Math.abs(m.leftoverCents), primary)}
+          </dd>
+        </div>
+        <div className="flex items-center justify-between gap-3 text-muted-foreground">
+          <dt>{t("leftoverRate")}</dt>
+          <dd className="tabular-nums">
+            {m.leftoverRate === null ? t("noRate") : percent.format(m.leftoverRate)}
+          </dd>
+        </div>
+      </dl>
+      {perDay && <p className="text-xs text-muted-foreground">{perDay}</p>}
+    </section>
   );
 }
 

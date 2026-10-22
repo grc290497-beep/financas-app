@@ -14,8 +14,10 @@ export type MonthSummary = {
 /**
  * `goalsPlannedCents`: this month's required contributions to active goals.
  * `plannedIncomeCents`: income expected this month but not received yet (a
- * salary still to come), so the month doesn't start "in the red" before payday.
- * Both in the primary currency.
+ * salary still to come). Both in the primary currency.
+ *
+ * `balanceCents` is what is available now (received minus paid); the
+ * projected figures are where the month ends up once everything planned lands.
  */
 export function computeMetrics(
   summary: MonthSummary,
@@ -23,20 +25,22 @@ export function computeMetrics(
   goalsPlannedCents = 0,
   plannedIncomeCents = 0,
 ) {
-  const freeToSpendCents =
-    summary.incomeCents +
-    plannedIncomeCents -
-    summary.fixedPlannedCents -
-    goalsPlannedCents -
-    summary.variableSpentCents;
+  // Paid so far plus fixed costs still planned: fixed (paid or planned) + variable paid.
+  const projectedExpenseCents = summary.fixedPlannedCents + summary.variableSpentCents;
+  const projectedIncomeCents = summary.incomeCents + plannedIncomeCents;
+  const leftoverCents = projectedIncomeCents - projectedExpenseCents - goalsPlannedCents;
 
   return {
     incomeCents: summary.incomeCents,
     expenseCents: summary.expenseCents,
     fixedPlannedCents: summary.fixedPlannedCents,
     balanceCents: summary.incomeCents - summary.expenseCents,
-    freeToSpendCents,
-    freePerDayCents: daysLeft > 0 ? Math.floor(Math.max(freeToSpendCents, 0) / daysLeft) : null,
+    projectedIncomeCents,
+    projectedExpenseCents,
+    goalsPlannedCents,
+    leftoverCents,
+    leftoverPerDayCents: daysLeft > 0 ? Math.floor(Math.max(leftoverCents, 0) / daysLeft) : null,
+    leftoverRate: projectedIncomeCents > 0 ? leftoverCents / projectedIncomeCents : null,
     savingsRate:
       summary.incomeCents > 0
         ? (summary.incomeCents - summary.expenseCents) / summary.incomeCents

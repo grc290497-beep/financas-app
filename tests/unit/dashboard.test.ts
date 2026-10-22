@@ -9,51 +9,58 @@ const summary = {
 };
 
 describe("computeMetrics", () => {
-  it("computes the section 6 metrics", () => {
+  it("computes what is available now and where the month ends up", () => {
     expect(computeMetrics(summary, 10)).toEqual({
       incomeCents: 300000,
       expenseCents: 150000,
       fixedPlannedCents: 120000,
-      balanceCents: 150000,
-      // 300000 - 120000 fixed - 0 goals - 50000 variable
-      freeToSpendCents: 130000,
-      freePerDayCents: 13000,
+      balanceCents: 150000, // available now: received minus paid
+      projectedIncomeCents: 300000,
+      projectedExpenseCents: 170000, // 150000 paid + 20000 internet still to pay
+      goalsPlannedCents: 0,
+      leftoverCents: 130000,
+      leftoverPerDayCents: 13000,
+      leftoverRate: 130000 / 300000,
       savingsRate: 0.5,
     });
   });
 
   it("sets aside the month's planned goal contributions", () => {
     const m = computeMetrics(summary, 10, 40000);
-    expect(m.freeToSpendCents).toBe(90000); // 130000 - 40000
-    expect(m.freePerDayCents).toBe(9000);
-    expect(m.balanceCents).toBe(150000); // the balance is money that moved, goals aside
+    expect(m.leftoverCents).toBe(90000); // 130000 - 40000
+    expect(m.leftoverPerDayCents).toBe(9000);
+    expect(m.balanceCents).toBe(150000); // available now is money that moved, goals aside
   });
 
-  it("counts income still expected this month, but not in the income total", () => {
+  it("counts income still expected this month in the projection only", () => {
     const m = computeMetrics(summary, 10, 40000, 150000);
-    expect(m.freeToSpendCents).toBe(240000); // 90000 + 150000 salary still to come
+    expect(m.projectedIncomeCents).toBe(450000);
+    expect(m.leftoverCents).toBe(240000); // 90000 + 150000 salary still to come
     expect(m.incomeCents).toBe(300000); // received only
     expect(m.balanceCents).toBe(150000);
   });
 
   it("has no per-day figure once the period is over", () => {
-    expect(computeMetrics(summary, 0).freePerDayCents).toBeNull();
+    expect(computeMetrics(summary, 0).leftoverPerDayCents).toBeNull();
   });
 
-  it("does not spread a negative free amount over the remaining days", () => {
+  it("does not spread a shortfall over the remaining days", () => {
     const over = computeMetrics({ ...summary, variableSpentCents: 250000 }, 5);
-    expect(over.freeToSpendCents).toBe(-70000);
-    expect(over.freePerDayCents).toBe(0);
+    expect(over.leftoverCents).toBe(-70000);
+    expect(over.leftoverPerDayCents).toBe(0);
+    expect(over.leftoverRate).toBeLessThan(0);
   });
 
   it("rounds the per-day amount down so it never promises more than there is", () => {
-    expect(computeMetrics({ ...summary, variableSpentCents: 50001 }, 3).freePerDayCents).toBe(
+    expect(computeMetrics({ ...summary, variableSpentCents: 50001 }, 3).leftoverPerDayCents).toBe(
       43333,
     );
   });
 
-  it("has no savings rate without income", () => {
-    expect(computeMetrics({ ...summary, incomeCents: 0 }, 10).savingsRate).toBeNull();
+  it("has no rates without income", () => {
+    const m = computeMetrics({ ...summary, incomeCents: 0 }, 10);
+    expect(m.savingsRate).toBeNull();
+    expect(m.leftoverRate).toBeNull();
   });
 
   it("allows a negative savings rate when spending exceeds income", () => {
