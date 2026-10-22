@@ -50,9 +50,10 @@
     },
     "data": "Seus dados",
     "dataHint": "Baixe uma cópia de tudo o que está guardado na sua conta.",
-    "legal": "Privacidade e termos",
+    "legal": "Privacidade, termos e contato",
     "privacy": "Política de privacidade",
     "terms": "Termos de uso",
+    "contact": "Fale conosco",
     "delete": {
       "section": "Excluir conta",
       "hint": "Apaga sua conta e todos os dados (lançamentos, fixos, metas e categorias). Não dá para desfazer.",

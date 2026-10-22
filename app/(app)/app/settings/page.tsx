@@ -21,7 +21,11 @@ export default function SettingsPage() {
 async function Settings() {
   // Profile first: it resolves the session (request time) before anything else.
   const profile = await requireProfile();
-  const [user, t] = await Promise.all([requireUser(), getTranslations("Settings")]);
+  const [user, t, tFooter] = await Promise.all([
+    requireUser(),
+    getTranslations("Settings"),
+    getTranslations("Footer"),
+  ]);
 
   // The currency stays read-only: changing it would have to re-price every transaction.
   const rows = [
@@ -72,6 +76,14 @@ async function Settings() {
             <Link href="/terms" className="underline-offset-4 hover:underline">
               {t("terms")}
             </Link>
+          </li>
+          <li>
+            <a
+              href={`mailto:${tFooter("contactEmail")}`}
+              className="underline-offset-4 hover:underline"
+            >
+              {t("contact")}
+            </a>
           </li>
         </ul>
       </Section>
