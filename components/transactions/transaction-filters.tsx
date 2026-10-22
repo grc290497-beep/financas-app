@@ -154,7 +154,7 @@ function FilterChip({
       <SelectTrigger
         aria-label={label}
         className={cn(
-          "surface h-9! w-auto shrink-0 gap-1.5 rounded-full! border-0 px-3.5 text-sm",
+          "raised-control! h-9! w-auto shrink-0 gap-1.5 rounded-full! border-0 px-3.5 text-sm transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:translate-y-px active:scale-[0.97]",
           active && "ring-1 ring-brass/70",
         )}
       >

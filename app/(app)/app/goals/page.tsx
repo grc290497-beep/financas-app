@@ -8,6 +8,7 @@ import { GoalSheet } from "@/components/goals/goal-form";
 import { MonthSwitcher } from "@/components/nav/month-switcher";
 import { GoalProgress, GoalStatusBadge } from "@/components/goals/goal-status";
 import { CategoryIcon } from "@/components/transactions/category-icon";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile } from "@/lib/auth";
 import { addMonths } from "@/lib/dates";
@@ -17,8 +18,7 @@ import { formatMoney } from "@/lib/money";
 import { currentDate } from "@/lib/transactions";
 import { transactionFiltersSchema } from "@/lib/validators";
 
-const ADD_BUTTON =
-  "inline-flex h-9 items-center gap-2 self-start rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90";
+const ADD_BUTTON = buttonVariants({ className: "self-start" });
 
 const monthYear = (date: string) => format(parseISO(date), "MMM/yyyy", { locale: ptBR });
 

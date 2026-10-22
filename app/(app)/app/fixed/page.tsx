@@ -4,6 +4,7 @@ import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarClock, CheckCircle2, Plus } from "lucide-react";
 import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PayButton } from "@/components/recurring/pay-button";
 import { RecurringSheet } from "@/components/recurring/recurring-sheet";
@@ -75,7 +76,7 @@ async function Fixed({ searchParams }: { searchParams: PageProps<"/app/fixed">["
     <RecurringSheet
       categories={categories}
       primaryCurrency={primary}
-      className="inline-flex h-9 items-center gap-2 self-start rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+      className={buttonVariants({ className: "self-start" })}
     >
       <Plus className="size-4" aria-hidden />
       {t("add")}

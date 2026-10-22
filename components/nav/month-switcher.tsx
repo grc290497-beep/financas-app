@@ -34,7 +34,7 @@ export function MonthSwitcher({
   className?: string;
 }) {
   const arrow =
-    "flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground";
+    "flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:translate-y-px active:scale-[0.97]";
 
   return (
     <nav className={cn("flex items-center gap-3", className)} aria-label={label}>

@@ -34,7 +34,7 @@ export function QuickAdd(props: {
         size="icon-lg"
         onClick={openSheet}
         aria-label={t("add")}
-        className="metal-brass fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-40 size-14 rounded-full hover:brightness-105 md:right-8 md:bottom-8"
+        className="metal-brass active:scale-[0.94] fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-40 size-14 rounded-full hover:brightness-105 md:right-8 md:bottom-8"
       >
         <Plus className="size-6" aria-hidden />
       </Button>
