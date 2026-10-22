@@ -14,8 +14,6 @@ import {
   YAxis,
 } from "recharts";
 import { Segmented } from "@/components/forms/segmented";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { addDays, addMonths } from "@/lib/dates";
 import { convertCents, formatMoney, invertRate, parseAmount, parseRate } from "@/lib/money";
 import type { Currency } from "@/lib/validators";
@@ -33,6 +31,30 @@ const signedPercent = new Intl.NumberFormat("pt-BR", {
   signDisplay: "exceptZero",
 });
 const dayMonth = (date: string) => format(parseISO(date), "dd/MM");
+// Display only: the badge beside it already says which currency it is.
+const amountFormat = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+const QUICK_AMOUNTS = [10, 50, 100, 500, 1000];
+
+/** Coin-like mark with the symbol, plus the code and the currency's name. */
+function CurrencyBadge({ currency, label }: { currency: Currency; label: string }) {
+  return (
+    <div className="flex shrink-0 items-center gap-2.5">
+      <span
+        className="flex size-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-brass-light ring-1 ring-brass-light/30"
+        aria-hidden
+      >
+        {currency === "EUR" ? "€" : "R$"}
+      </span>
+      <span className="flex flex-col leading-tight">
+        <span className="font-semibold text-hero-foreground">{currency}</span>
+        <span className="text-xs text-hero-muted">{label}</span>
+      </span>
+    </div>
+  );
+}
 
 /** Converter plus the EUR→BRL history, for a feel of where the rate stands. */
 export function ExchangeView({ series, today }: { series: Point[]; today: string }) {
@@ -64,50 +86,80 @@ export function ExchangeView({ series, today }: { series: Point[]; today: string
 
   return (
     <>
+      {/* Two symmetric rows (from / to) split by the swap button, then both
+          rates and one-tap amounts: the pattern currency apps use. */}
       <section
-        className="hero-card flex flex-col gap-4 rounded-3xl px-5 py-6"
+        className="hero-card flex flex-col rounded-3xl px-5 pt-5 pb-4"
         aria-labelledby="converter"
       >
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 id="converter" className="text-sm text-hero-muted">
-            {t("converter")}
-          </h2>
-          <span className="text-xs text-hero-muted">
-            {t("rateOf", { rate: rateFormat.format(latest.rate), date: dayMonth(latest.date) })}
-          </span>
-        </div>
+        <h2 id="converter" className="sr-only">
+          {t("converter")}
+        </h2>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 pb-5">
+          <CurrencyBadge currency={from} label={t(`names.${from}`)} />
           <label className="sr-only" htmlFor="fx-amount">
             {t("amount", { currency: from })}
           </label>
-          <span className="w-10 shrink-0 text-sm font-medium text-hero-muted">{from}</span>
-          <Input
+          <input
             id="fx-amount"
             inputMode="decimal"
             autoComplete="off"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
-            className="h-12 border-white/15 bg-white/10 text-2xl font-semibold text-hero-foreground tabular-nums md:text-2xl"
+            onFocus={(event) => event.currentTarget.select()}
+            placeholder="0"
+            className="min-w-0 flex-1 rounded-md bg-transparent text-right text-4xl font-semibold tracking-tight text-hero-foreground tabular-nums outline-none placeholder:text-hero-muted/60 focus-visible:ring-2 focus-visible:ring-brass-light/60"
           />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="size-12 shrink-0 text-hero-foreground hover:bg-white/10"
-            aria-label={t("swap")}
-            onClick={() => setFrom(to)}
-          >
-            <ArrowDownUp aria-hidden />
-          </Button>
         </div>
 
-        <p className="flex items-baseline gap-2" aria-live="polite">
-          <span className="w-10 shrink-0 text-sm font-medium text-hero-muted">{to}</span>
-          <span className="text-4xl font-semibold tracking-tight text-brass-light tabular-nums">
-            {converted === null ? "—" : formatMoney(converted, to)}
-          </span>
-        </p>
+        <div className="relative border-t border-white/15">
+          <button
+            type="button"
+            onClick={() => setFrom(to)}
+            aria-label={t("swap")}
+            className="metal-brass absolute top-0 left-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-95"
+          >
+            <ArrowDownUp className="size-5" aria-hidden />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3 pt-5" aria-live="polite">
+          <CurrencyBadge currency={to} label={t(`names.${to}`)} />
+          <p className="min-w-0 flex-1 truncate text-right text-4xl font-semibold tracking-tight text-brass-light tabular-nums">
+            {converted === null ? "—" : amountFormat.format(converted / 100)}
+          </p>
+        </div>
+
+        <dl className="mt-4 grid grid-cols-2 gap-2 rounded-2xl bg-black/15 px-3 py-2.5 text-xs text-hero-muted">
+          <div>
+            <dt className="sr-only">{t("rateEurBrl")}</dt>
+            <dd className="font-medium text-hero-foreground tabular-nums">
+              € 1 = R$ {rateFormat.format(latest.rate)}
+            </dd>
+          </div>
+          <div className="text-right">
+            <dt className="sr-only">{t("rateBrlEur")}</dt>
+            <dd className="font-medium text-hero-foreground tabular-nums">
+              R$ 1 = € {rateFormat.format(1 / latest.rate)}
+            </dd>
+          </div>
+          <dd className="col-span-2">{t("closeOf", { date: dayMonth(latest.date) })}</dd>
+        </dl>
+
+        <div className="mt-3 grid grid-cols-5 gap-1.5" role="group" aria-label={t("quick")}>
+          {QUICK_AMOUNTS.map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setAmount(String(value))}
+              className="h-9 rounded-full bg-white/10 px-1 text-[13px] whitespace-nowrap text-hero-foreground tabular-nums transition-colors hover:bg-white/15 aria-pressed:bg-brass-light aria-pressed:text-[var(--brass-ink)]"
+              aria-pressed={amount === String(value)}
+            >
+              {formatMoney(value * 100, from).replace(/,00$/, "")}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="surface flex flex-col gap-4 p-4" aria-labelledby="history">
