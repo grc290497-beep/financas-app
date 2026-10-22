@@ -3,6 +3,7 @@ import {
   FxUnavailableError,
   convertToPrimary,
   fetchFrankfurterEurBrl,
+  fetchFrankfurterEurBrlSeries,
   getRate,
   type FxCache,
   type FxDeps,
@@ -172,5 +173,44 @@ describe("fetchFrankfurterEurBrl", () => {
   it("rejects malformed payloads", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response(JSON.stringify({ rates: {} })));
     await expect(fetchFrankfurterEurBrl("2026-10-20", fetchImpl)).rejects.toThrow();
+  });
+});
+
+describe("fetchFrankfurterEurBrlSeries", () => {
+  it("requests the range and returns the daily closes oldest first", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          amount: 1,
+          base: "EUR",
+          start_date: "2026-10-01",
+          end_date: "2026-10-05",
+          rates: {
+            "2026-10-05": { BRL: 5.8 },
+            "2026-10-01": { BRL: 5.7 },
+            "2026-10-02": { BRL: 5.75 },
+          },
+        }),
+      ),
+    );
+    await expect(
+      fetchFrankfurterEurBrlSeries("2026-10-01", "2026-10-05", fetchImpl),
+    ).resolves.toEqual([
+      { date: "2026-10-01", rate: 5.7 },
+      { date: "2026-10-02", rate: 5.75 },
+      { date: "2026-10-05", rate: 5.8 },
+    ]);
+    expect(fetchImpl.mock.calls[0][0]).toBe(
+      "https://api.frankfurter.app/2026-10-01..2026-10-05?from=EUR&to=BRL",
+    );
+  });
+
+  it("rejects malformed payloads", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ rates: { "2026-10-01": { USD: 1 } } })));
+    await expect(
+      fetchFrankfurterEurBrlSeries("2026-10-01", "2026-10-05", fetchImpl),
+    ).rejects.toThrow();
   });
 });

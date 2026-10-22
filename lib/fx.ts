@@ -114,3 +114,23 @@ export async function fetchFrankfurterEurBrl(
   const body = frankfurterResponse.parse(await response.json());
   return { date: body.date, rate: String(body.rates.BRL) };
 }
+
+const frankfurterSeriesResponse = z.object({
+  rates: z.record(z.iso.date(), z.object({ BRL: z.number().positive() })),
+});
+
+/** Daily EUR→BRL closes between two dates (ECB business days only), oldest first. */
+export async function fetchFrankfurterEurBrlSeries(
+  from: string,
+  to: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ date: string; rate: number }[]> {
+  const response = await fetchImpl(`${FRANKFURTER_URL}/${from}..${to}?from=EUR&to=BRL`, {
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!response.ok) throw new Error(`Frankfurter responded ${response.status}`);
+  const body = frankfurterSeriesResponse.parse(await response.json());
+  return Object.entries(body.rates)
+    .map(([date, { BRL }]) => ({ date, rate: BRL }))
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
+}

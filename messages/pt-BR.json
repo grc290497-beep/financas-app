@@ -304,7 +304,26 @@
     "fixed": "Fixos",
     "goals": "Metas",
     "reports": "Relatórios",
+    "exchange": "Câmbio",
     "main": "Navegação principal"
+  },
+  "Exchange": {
+    "title": "Câmbio",
+    "converter": "Converter",
+    "rateOf": "€ 1 = R$ {rate} · {date}",
+    "amount": "Valor em {currency}",
+    "swap": "Inverter moedas",
+    "history": "Euro em reais",
+    "range": "Período",
+    "ranges": { "4w": "4 semanas", "3m": "3 meses", "12m": "12 meses" },
+    "now": "Hoje",
+    "change": "Variação no período",
+    "high": "Máxima",
+    "low": "Mínima",
+    "chart": "Gráfico do valor de 1 euro em reais no período escolhido",
+    "source": "Cotações de fechamento do Banco Central Europeu, em dias úteis.",
+    "unavailableTitle": "Cotações indisponíveis agora",
+    "unavailableDescription": "Não conseguimos buscar as cotações. Tente de novo em alguns minutos."
   },
   "Reports": {
     "title": "Relatórios",

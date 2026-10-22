@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CalendarClock, ChartColumn, House, ReceiptText, Target } from "lucide-react";
+import {
+  ArrowLeftRight,
+  CalendarClock,
+  ChartColumn,
+  House,
+  ReceiptText,
+  Target,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Ajustes joins when its phase lands (PLAN.md section 5).
@@ -14,6 +21,7 @@ const ITEMS = [
   { href: "/app/fixed", label: "fixed", icon: CalendarClock, exact: false },
   { href: "/app/goals", label: "goals", icon: Target, exact: false },
   { href: "/app/reports", label: "reports", icon: ChartColumn, exact: false },
+  { href: "/app/exchange", label: "exchange", icon: ArrowLeftRight, exact: false },
 ] as const;
 
 /** Bottom tab bar on mobile, a top bar from md up. */
@@ -36,7 +44,7 @@ export function AppNav() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium md:h-11 md:flex-row md:gap-2 md:px-3 md:text-sm",
+                  "flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium md:h-11 md:flex-row md:gap-2 md:px-3 md:text-sm",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
