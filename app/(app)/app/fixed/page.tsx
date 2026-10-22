@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarClock, CheckCircle2, Plus } from "lucide-react";
+import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PayButton } from "@/components/recurring/pay-button";
 import { RecurringSheet } from "@/components/recurring/recurring-sheet";
@@ -10,7 +11,7 @@ import { CategoryIcon } from "@/components/transactions/category-icon";
 import { requireProfile } from "@/lib/auth";
 import type { Category } from "@/lib/categories";
 import { formatAmountInput, formatMoney } from "@/lib/money";
-import { getFinancialPeriod } from "@/lib/period";
+import { getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/lib/period";
 import { nextOccurrence, type RecurringItem } from "@/lib/recurring";
 import {
   ensureRecurringGenerated,
@@ -20,29 +21,38 @@ import {
 } from "@/lib/recurring-store";
 import { currentDate, getCategories } from "@/lib/transactions";
 import { cn } from "@/lib/utils";
-import type { Currency } from "@/lib/validators";
+import { transactionFiltersSchema, type Currency } from "@/lib/validators";
 
 const dayMonth = (date: string) => format(parseISO(date), "dd/MM");
 
-export default async function FixedPage() {
+export default async function FixedPage({ searchParams }: PageProps<"/app/fixed">) {
   const t = await getTranslations("Fixed");
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6">
       <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       <Suspense fallback={<FixedSkeleton />}>
-        <Fixed />
+        <Fixed searchParams={searchParams} />
       </Suspense>
     </main>
   );
 }
 
-async function Fixed() {
+async function Fixed({ searchParams }: { searchParams: PageProps<"/app/fixed">["searchParams"] }) {
+  const raw = await searchParams;
+  const { month } = transactionFiltersSchema.parse({
+    month: Array.isArray(raw.month) ? raw.month[0] : raw.month,
+  });
   const today = await currentDate();
-  await ensureRecurringGenerated(today);
+  await ensureRecurringGenerated(today, month);
 
   const profile = await requireProfile();
-  const period = getFinancialPeriod(today, profile.monthStartDay);
+  const msd = profile.monthStartDay;
+  const current = getFinancialPeriod(today, msd);
+  const period = month ? periodStartingIn(month, msd) : current;
+  const isCurrent = period.start === current.start;
+  const monthLink = (count: number) =>
+    `/app/fixed?month=${shiftPeriod(period, msd, count).start.slice(0, 7)}`;
   const [planned, items, categories, t] = await Promise.all([
     listPlanned(period.start, period.end),
     listRecurringItems(),
@@ -88,14 +98,18 @@ async function Fixed() {
   return (
     <>
       <section aria-labelledby="this-month" className="flex flex-col gap-3">
-        <div className="flex items-baseline justify-between gap-2">
-          <h2 id="this-month" className="text-lg font-medium">
-            {t("thisMonth")}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {t("period", { start: dayMonth(period.start), end: dayMonth(period.end) })}
-          </p>
-        </div>
+        <h2 id="this-month" className="sr-only">
+          {t("period", { start: dayMonth(period.start), end: dayMonth(period.end) })}
+        </h2>
+        <MonthSwitcher
+          label={periodLabel(period, msd)}
+          previousHref={monthLink(-1)}
+          nextHref={monthLink(1)}
+          previousLabel={t("previousMonth")}
+          nextLabel={t("nextMonth")}
+          currentHref={isCurrent ? undefined : "/app/fixed"}
+          currentLabel={t("current")}
+        />
 
         {planned.length === 0 ? (
           <p className="flex items-center gap-2 surface px-4 py-3 text-sm text-muted-foreground">
@@ -104,7 +118,8 @@ async function Fixed() {
           </p>
         ) : (
           // Due items confirm themselves on the day; what is still to come stays folded.
-          <details className="group">
+          // A future month is opened precisely to see what is planned, so it starts unfolded.
+          <details className="group" open={!isCurrent}>
             <summary className="surface flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-sm select-none">
               <span>{t("upcomingList", { count: planned.length })}</span>
               <span className="text-muted-foreground group-open:hidden">{t("show")}</span>
