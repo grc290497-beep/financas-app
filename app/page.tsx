@@ -17,6 +17,7 @@ import {
   QuickAddPrint,
 } from "@/components/landing/mockups";
 import { SiteHeader } from "@/components/nav/site-header";
+import { InstallAppButton } from "@/components/pwa/install-app";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -124,6 +125,7 @@ export default async function Home() {
                 </span>
                 <h3 className="font-medium">{t(`more.${key}`)}</h3>
                 <p className="text-sm text-pretty text-muted-foreground">{t(`more.${key}Hint`)}</p>
+                {key === "app" && <InstallAppButton className="mt-1" />}
               </li>
             ))}
           </ul>

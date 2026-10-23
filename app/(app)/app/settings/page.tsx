@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { ChevronRight } from "lucide-react";
+import { InstallAppButton } from "@/components/pwa/install-app";
 import { BalanceForm } from "@/components/settings/balance-form";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { ExportLinks } from "@/components/settings/export-links";
@@ -90,6 +91,8 @@ async function Settings() {
           ))}
         </dl>
       </Section>
+
+      <InstallAppButton explained />
 
       <Section title={t("theme.label")}>
         <ThemeSelect />

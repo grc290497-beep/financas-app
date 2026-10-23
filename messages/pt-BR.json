@@ -183,6 +183,16 @@
       ]
     }
   },
+  "InstallApp": {
+    "title": "App no celular e no computador",
+    "hint": "Instale o Finanças como um app: ganha ícone próprio, abre em tela cheia sem a barra do navegador e fica na lista de apps. É o mesmo site, sempre atualizado, sem baixar nada da loja.",
+    "button": "Instalar app",
+    "iosTitle": "Instalar no iPhone",
+    "iosIntro": "A Apple não deixa sites abrirem a instalação sozinhos, mas leva três toques no Safari:",
+    "iosStep1": "Toque em Compartilhar, na barra do Safari.",
+    "iosStep2": "Escolha \"Adicionar à Tela de Início\".",
+    "iosStep3": "Toque em Adicionar. O app aparece na sua tela de início."
+  },
   "SiteHeader": {
     "label": "Seções do site",
     "home": "Página inicial",
