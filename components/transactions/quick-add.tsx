@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
@@ -27,6 +27,19 @@ export function QuickAdd(props: {
     setFormKey((k) => k + 1);
     setOpen(true);
   };
+
+  // The installed app's "Novo lançamento" shortcut opens /app?novo=1.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("novo") !== "1") return;
+    // Next tick, so a cancelled effect (React's dev double-run) leaves the URL alone.
+    const timer = setTimeout(() => {
+      url.searchParams.delete("novo");
+      window.history.replaceState(null, "", url);
+      openSheet();
+    });
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>

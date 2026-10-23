@@ -1,6 +1,7 @@
 {
   "Metadata": {
     "title": "Finanças",
+    "ogTitle": "Finanças: seu dinheiro em euro e real, sem planilha",
     "description": "Controle suas finanças pessoais em euro e real: entradas, custos fixos, gastos e metas."
   },
   "Common": {
@@ -9,7 +10,17 @@
     "continue": "Continuar",
     "signOut": "Sair",
     "settings": "Ajustes",
-    "loading": "Carregando…"
+    "loading": "Carregando…",
+    "close": "Fechar"
+  },
+  "ErrorPages": {
+    "notFoundTitle": "Página não encontrada",
+    "notFoundBody": "O link pode estar errado ou a página mudou de lugar.",
+    "errorTitle": "Algo deu errado",
+    "errorBody": "Não conseguimos abrir esta tela agora. Seus dados estão salvos. Tente de novo em instantes.",
+    "retry": "Tentar de novo",
+    "openApp": "Abrir o app",
+    "home": "Página inicial"
   },
   "Footer": {
     "appName": "Finanças",

@@ -29,11 +29,15 @@ declare global {
 const READY = "install-prompt-ready";
 
 /**
- * Mounted once in the root layout: the browser fires beforeinstallprompt once
- * per page load, often before the page with the button is open, so keep it.
+ * Mounted once in the root layout. Registers the offline-page service worker
+ * (public/sw.js) and keeps beforeinstallprompt, which the browser fires once
+ * per page load, often before the page with the button is open.
  */
-export function InstallPromptListener() {
+export function PwaSetup() {
   useEffect(() => {
+    navigator.serviceWorker?.register("/sw.js").catch(() => {
+      // No offline page then; the app itself works the same.
+    });
     const keep = (event: Event) => {
       event.preventDefault(); // we show our own button instead of the mini-infobar
       window.__installPrompt = event as InstallPromptEvent;

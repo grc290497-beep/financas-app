@@ -20,3 +20,15 @@ export function resolveSiteOrigin(env: SiteEnv, requestOrigin: string): string {
   }
   return requestOrigin;
 }
+
+/** The public origin outside a request (link previews, robots, sitemap); localhost in dev. */
+export function publicSiteOrigin(): string {
+  return resolveSiteOrigin(
+    {
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+      VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    },
+    "http://localhost:3000",
+  );
+}

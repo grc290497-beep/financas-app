@@ -4,8 +4,9 @@ import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "next-themes";
 import { getLocale, getTranslations } from "next-intl/server";
 import { SiteFooter } from "@/components/nav/site-footer";
-import { InstallPromptListener } from "@/components/pwa/install-app";
+import { PwaSetup } from "@/components/pwa/install-app";
 import { Toaster } from "@/components/ui/sonner";
+import { publicSiteOrigin } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,9 +23,19 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
 
   return {
+    // Absolute URLs for the link preview (opengraph-image.tsx).
+    metadataBase: new URL(publicSiteOrigin()),
     title: t("title"),
     description: t("description"),
     appleWebApp: { capable: true, title: t("title"), statusBarStyle: "default" },
+    openGraph: {
+      type: "website",
+      locale: "pt_BR",
+      siteName: t("title"),
+      title: t("ogTitle"),
+      description: t("description"),
+    },
+    twitter: { card: "summary_large_image", title: t("ogTitle"), description: t("description") },
   };
 }
 
@@ -55,7 +66,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             {children}
             <SiteFooter />
             <Toaster />
-            <InstallPromptListener />
+            <PwaSetup />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>
