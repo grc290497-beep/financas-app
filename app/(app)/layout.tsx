@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
-import { Avatar } from "@/components/nav/avatar";
+import { AccountMenu } from "@/components/nav/account-menu";
 import { requireProfile, requireUser } from "@/lib/auth";
 
 // Phones (and onboarding): logo and the account avatar. Inside /app from md up
@@ -28,19 +28,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
 }
 
 async function AccountLink() {
-  const [profile, user, t] = await Promise.all([
-    requireProfile(),
-    requireUser(),
-    getTranslations("Nav"),
-  ]);
+  const [profile, user] = await Promise.all([requireProfile(), requireUser()]);
   const name = profile.displayName || user.email || "";
-  return (
-    <Link
-      href="/app/settings"
-      aria-label={t("account")}
-      className="rounded-full transition-transform duration-150 active:scale-[0.94]"
-    >
-      <Avatar initial={name.charAt(0) || "?"} className="size-9" />
-    </Link>
-  );
+  return <AccountMenu name={name} email={user.email ?? ""} initial={name.charAt(0) || "?"} />;
 }

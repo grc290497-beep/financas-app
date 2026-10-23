@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Ellipsis, PanelLeftClose, PanelLeftOpen, Plus } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { AccountMenu } from "@/components/nav/account-menu";
 import { Avatar } from "@/components/nav/avatar";
 import {
   GOALS,
@@ -36,7 +37,7 @@ const isActive = (pathname: string, { href, exact }: NavItem) =>
  * Phones: a bottom bar with the "+" in the middle (Início · Lançamentos · + ·
  * Metas · Mais). From md up: a sidebar with every section.
  */
-export function AppNav({ name, initial }: { name: string; initial: string }) {
+export function AppNav({ name, email, initial }: { name: string; email: string; initial: string }) {
   const t = useTranslations("Nav");
   const common = useTranslations("Common");
   const pathname = usePathname();
@@ -158,18 +159,22 @@ export function AppNav({ name, initial }: { name: string; initial: string }) {
             );
           })}
         </nav>
-        <Link
-          href="/app/settings"
-          title={t("settings")}
-          aria-current={pathname.startsWith("/app/settings") ? "page" : undefined}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-accent/60 collapsed:justify-center collapsed:px-0"
+        <AccountMenu
+          name={name}
+          email={email}
+          initial={initial}
+          side="top"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent/60 collapsed:justify-center collapsed:px-0",
+            pathname.startsWith("/app/settings") && "bg-accent",
+          )}
         >
           <Avatar initial={initial} />
           <span className="flex min-w-0 flex-col collapsed:sr-only">
             <span className="truncate font-medium">{name}</span>
-            <span className="text-xs text-muted-foreground">{t("settings")}</span>
+            <span className="truncate text-xs text-muted-foreground">{email}</span>
           </span>
-        </Link>
+        </AccountMenu>
       </aside>
     </div>
   );

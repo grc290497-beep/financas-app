@@ -23,7 +23,7 @@ export default function AppSectionLayout({ children }: LayoutProps<"/app">) {
 async function NavLoader() {
   const [profile, user] = await Promise.all([requireProfile(), requireUser()]);
   const name = profile.displayName || user.email || "";
-  return <AppNav name={name} initial={name.charAt(0) || "?"} />;
+  return <AppNav name={name} email={user.email ?? ""} initial={name.charAt(0) || "?"} />;
 }
 
 async function QuickAddLoader() {

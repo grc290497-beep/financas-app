@@ -202,3 +202,11 @@ test("Instalar app only shows when the browser can install", async ({ page }) =>
   });
   await expect(install.first()).toBeVisible();
 });
+
+// Last: it ends the session.
+test("Sair from the avatar menu signs out", async ({ page }) => {
+  await signIn(page);
+  await page.getByRole("button", { name: "Sua conta e ajustes" }).filter({ visible: true }).click();
+  await page.getByRole("menuitem", { name: "Sair" }).click();
+  await expect(page).toHaveURL(/\/login/);
+});
