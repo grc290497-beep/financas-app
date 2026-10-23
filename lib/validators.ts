@@ -46,6 +46,17 @@ export const magicLinkSchema = z.object({
 });
 export type MagicLinkInput = z.infer<typeof magicLinkSchema>;
 
+export const newPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, { error: "passwordTooShort" })
+      .max(72, { error: "passwordTooLong" }),
+    confirm: z.string(),
+  })
+  .refine((v) => v.password === v.confirm, { path: ["confirm"], error: "passwordMismatch" });
+export type NewPasswordInput = z.infer<typeof newPasswordSchema>;
+
 // What was in the bank before using the app; may be negative, empty means zero.
 const openingBalance = z
   .string()

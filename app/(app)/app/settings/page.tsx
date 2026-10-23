@@ -90,6 +90,13 @@ async function Settings() {
             </div>
           ))}
         </dl>
+        <Link
+          href="/reset-password"
+          className="surface flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-accent/50"
+        >
+          {t("changePassword")}
+          <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
+        </Link>
       </Section>
 
       <InstallAppButton look="explained" />

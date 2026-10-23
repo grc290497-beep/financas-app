@@ -2,14 +2,17 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/auth";
 import { safeNextPath } from "@/lib/redirect";
 import { resolveSiteOrigin } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import {
   magicLinkSchema,
+  newPasswordSchema,
   signInSchema,
   signUpSchema,
   type MagicLinkInput,
+  type NewPasswordInput,
   type SignInInput,
   type SignUpInput,
 } from "@/lib/validators";
@@ -99,6 +102,40 @@ export async function sendMagicLink(input: MagicLinkInput): Promise<AuthActionRe
   if (error?.status === 429) return { status: "error", error: "rateLimited" };
   // Same answer whether or not the email has an account, to avoid leaking which do.
   return { status: "link-sent" };
+}
+
+/** "Esqueci minha senha": the e-mail's link signs in and lands on /reset-password. */
+export async function requestPasswordReset(input: MagicLinkInput): Promise<AuthActionResult> {
+  const parsed = magicLinkSchema.safeParse(input);
+  if (!parsed.success) return { status: "error", error: "invalidInput" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${await siteOrigin()}/auth/callback?next=/reset-password`,
+  });
+
+  if (error?.status === 429) return { status: "error", error: "rateLimited" };
+  // Same answer whether or not the email has an account, to avoid leaking which do.
+  return { status: "link-sent" };
+}
+
+/** Sets a new password for the signed-in user (after the reset link, or from Ajustes). */
+export async function updatePassword(input: NewPasswordInput): Promise<AuthActionResult> {
+  const parsed = newPasswordSchema.safeParse(input);
+  if (!parsed.success) return { status: "error", error: "invalidInput" };
+
+  await requireUser();
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+
+  if (error) {
+    if (error.code === "weak_password") return { status: "error", error: "weakPassword" };
+    if (error.code === "same_password") return { status: "error", error: "samePassword" };
+    if (error.status === 429) return { status: "error", error: "rateLimited" };
+    return { status: "error", error: "unexpected" };
+  }
+
+  redirect("/app");
 }
 
 export async function signOut() {

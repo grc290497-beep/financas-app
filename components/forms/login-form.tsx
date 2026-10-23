@@ -9,7 +9,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { sendMagicLink, signIn, type AuthActionResult } from "@/lib/actions/auth";
+import {
+  requestPasswordReset,
+  sendMagicLink,
+  signIn,
+  type AuthActionResult,
+} from "@/lib/actions/auth";
 import {
   magicLinkSchema,
   signInSchema,
@@ -24,7 +29,7 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? undefined;
   const linkError = searchParams.get("error") === "link";
-  const [mode, setMode] = useState<"password" | "magic">("password");
+  const [mode, setMode] = useState<"password" | "magic" | "reset">("password");
 
   return (
     <div className="flex flex-col gap-6">
@@ -33,7 +38,11 @@ export function LoginForm() {
           <AlertDescription>{t("errors.link")}</AlertDescription>
         </Alert>
       )}
-      {mode === "password" ? <PasswordForm next={next} /> : <MagicLinkForm next={next} />}
+      {mode === "password" ? (
+        <PasswordForm next={next} onForgot={() => setMode("reset")} />
+      ) : (
+        <MagicLinkForm key={mode} next={next} reset={mode === "reset"} />
+      )}
       <Button
         type="button"
         variant="link"
@@ -46,7 +55,7 @@ export function LoginForm() {
   );
 }
 
-function PasswordForm({ next }: { next?: string }) {
+function PasswordForm({ next, onForgot }: { next?: string; onForgot: () => void }) {
   const t = useTranslations("Auth");
   const validationMessage = useValidationMessage();
   const [pending, startTransition] = useTransition();
@@ -97,6 +106,13 @@ function PasswordForm({ next }: { next?: string }) {
             {...register("password")}
           />
           <FieldError errors={validationMessage(errors.password)} />
+          <button
+            type="button"
+            onClick={onForgot}
+            className="self-end text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {t("login.forgot")}
+          </button>
         </Field>
         <Button type="submit" size="lg" disabled={pending}>
           {pending ? t("login.submitting") : t("login.submit")}
@@ -106,7 +122,8 @@ function PasswordForm({ next }: { next?: string }) {
   );
 }
 
-function MagicLinkForm({ next }: { next?: string }) {
+/** The e-mail form behind "link de acesso" and, with `reset`, "Esqueci minha senha". */
+function MagicLinkForm({ next, reset }: { next?: string; reset?: boolean }) {
   const t = useTranslations("Auth");
   const validationMessage = useValidationMessage();
   const [pending, startTransition] = useTransition();
@@ -126,19 +143,22 @@ function MagicLinkForm({ next }: { next?: string }) {
       <Alert>
         <MailCheck aria-hidden />
         <AlertTitle>{t("login.linkSentTitle")}</AlertTitle>
-        <AlertDescription>{t("login.linkSent", { email: getValues("email") })}</AlertDescription>
+        <AlertDescription>
+          {t(reset ? "login.resetSent" : "login.linkSent", { email: getValues("email") })}
+        </AlertDescription>
       </Alert>
     );
   }
 
   const onSubmit = (data: MagicLinkInput) =>
     startTransition(async () => {
-      setResult(await sendMagicLink({ ...data, next }));
+      setResult(reset ? await requestPasswordReset(data) : await sendMagicLink({ ...data, next }));
     });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <FieldGroup>
+        {reset && <p className="text-sm text-muted-foreground">{t("login.resetIntro")}</p>}
         {result?.status === "error" && (
           <Alert variant="destructive">
             <AlertDescription>
@@ -159,7 +179,7 @@ function MagicLinkForm({ next }: { next?: string }) {
           <FieldError errors={validationMessage(errors.email)} />
         </Field>
         <Button type="submit" size="lg" disabled={pending}>
-          {pending ? t("login.sendingLink") : t("login.sendLink")}
+          {pending ? t("login.sendingLink") : t(reset ? "login.sendReset" : "login.sendLink")}
         </Button>
       </FieldGroup>
     </form>

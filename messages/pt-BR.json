@@ -38,6 +38,7 @@
     "name": "Nome",
     "email": "E-mail",
     "currency": "Moeda principal",
+    "changePassword": "Trocar senha",
     "monthStartDay": "Mês financeiro começa",
     "dayValue": "dia {day}",
     "currencyHint": "A moeda principal não muda depois do cadastro, para não alterar o valor dos lançamentos já feitos.",
@@ -311,6 +312,7 @@
     "passwordTooShort": "A senha precisa ter pelo menos 8 caracteres.",
     "passwordTooLong": "A senha pode ter no máximo 72 caracteres.",
     "passwordRequired": "Digite sua senha.",
+    "passwordMismatch": "As duas senhas não são iguais.",
     "currencyRequired": "Escolha sua moeda principal.",
     "monthStartDayInvalid": "Escolha um dia entre 1 e 28.",
     "amountInvalid": "Digite um valor maior que zero.",
@@ -581,7 +583,20 @@
       "linkSentTitle": "Confira seu e-mail",
       "linkSent": "Se existir uma conta com {email}, enviamos um link de acesso. Abra no mesmo navegador.",
       "noAccount": "Ainda não tem conta?",
-      "signUpLink": "Criar conta"
+      "signUpLink": "Criar conta",
+      "forgot": "Esqueci minha senha",
+      "resetIntro": "Digite seu e-mail e enviamos um link para criar uma senha nova.",
+      "sendReset": "Enviar link para nova senha",
+      "resetSent": "Se existir uma conta com {email}, enviamos um link para criar uma senha nova. Abra no mesmo navegador."
+    },
+    "reset": {
+      "title": "Nova senha",
+      "subtitle": "Escolha a senha que vai usar daqui para frente.",
+      "password": "Nova senha",
+      "confirm": "Repita a nova senha",
+      "submit": "Salvar e entrar",
+      "submitting": "Salvando…",
+      "back": "Voltar para o app"
     },
     "signup": {
       "title": "Criar conta",
@@ -606,6 +621,7 @@
       "rateLimited": "Muitas tentativas seguidas. Espere alguns minutos e tente de novo.",
       "signUpFailed": "Não foi possível criar a conta. Tente de novo.",
       "link": "Esse link expirou ou já foi usado. Peça um novo.",
+      "samePassword": "A senha nova precisa ser diferente da atual.",
       "unexpected": "Algo deu errado. Tente de novo."
     }
   },
