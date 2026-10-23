@@ -6,7 +6,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { SiteFooter } from "@/components/nav/site-footer";
 import { PwaSetup } from "@/components/pwa/install-app";
 import { Toaster } from "@/components/ui/sonner";
-import { PRIVACY_SCRIPT } from "@/lib/privacy";
+import { PREFS_SCRIPT } from "@/lib/prefs";
 import { publicSiteOrigin } from "@/lib/site";
 import "./globals.css";
 
@@ -62,8 +62,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        {/* "Esconder valores" before the first paint (lib/privacy.ts). */}
-        <script dangerouslySetInnerHTML={{ __html: PRIVACY_SCRIPT }} />
+        {/* Saved display choices before the first paint (lib/prefs.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: PREFS_SCRIPT }} />
       </head>
       <body className="flex min-h-full flex-col">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>

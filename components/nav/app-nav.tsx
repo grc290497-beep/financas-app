@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Ellipsis, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Ellipsis, PanelLeftClose, PanelLeftOpen, Plus } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Avatar } from "@/components/nav/avatar";
 import {
@@ -14,6 +15,7 @@ import {
   TRANSACTIONS,
   type NavItem,
 } from "@/components/nav/nav-items";
+import { SIDEBAR_KEY } from "@/lib/prefs";
 import { cn } from "@/lib/utils";
 
 // Before the sheet has loaded, leave ?novo=1 in the URL: it opens as soon as it mounts.
@@ -38,6 +40,23 @@ export function AppNav({ name, initial }: { name: string; initial: string }) {
   const t = useTranslations("Nav");
   const common = useTranslations("Common");
   const pathname = usePathname();
+  // Mirrors html[data-sidebar-collapsed] (set before paint by lib/prefs.ts) for aria-expanded.
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    const sync = () =>
+      setCollapsed(document.documentElement.hasAttribute("data-sidebar-collapsed"));
+    sync();
+  }, []);
+  const toggleSidebar = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    document.documentElement.toggleAttribute("data-sidebar-collapsed", next);
+    try {
+      localStorage.setItem(SIDEBAR_KEY, next ? "1" : "0");
+    } catch {
+      // Private mode: the choice lasts until the page closes.
+    }
+  };
   const moreActive =
     pathname.startsWith("/app/more") ||
     pathname.startsWith("/app/settings") ||
@@ -83,17 +102,36 @@ export function AppNav({ name, initial }: { name: string; initial: string }) {
         </ul>
       </nav>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col gap-6 border-r bg-card/60 px-3 py-5 backdrop-blur md:flex">
-        <Link href="/app" className="px-3">
-          <Logo name={common("appName")} />
-        </Link>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col gap-6 overflow-hidden border-r bg-card/60 px-3 py-5 backdrop-blur transition-[width] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] md:flex collapsed:w-16 collapsed:px-2">
+        <div className="flex items-center justify-between gap-2 pl-3 collapsed:flex-col collapsed:pl-0">
+          <Link href="/app" aria-label={common("appName")}>
+            <span className="collapsed:hidden">
+              <Logo name={common("appName")} />
+            </span>
+            <span className="hidden collapsed:inline">
+              <Logo />
+            </span>
+          </Link>
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            aria-label={t("toggleSidebar")}
+            aria-expanded={!collapsed}
+            title={t("toggleSidebar")}
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <PanelLeftClose className="size-4 collapsed:hidden" aria-hidden />
+            <PanelLeftOpen className="hidden size-4 collapsed:block" aria-hidden />
+          </button>
+        </div>
         <button
           type="button"
           onClick={openQuickAdd}
-          className="mx-1 flex h-10 items-center justify-center gap-2 rounded-lg text-sm font-medium metal-brass transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97]"
+          title={t("add")}
+          className="mx-1 flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg text-sm font-medium metal-brass transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] collapsed:mx-0"
         >
-          <Plus className="size-4" aria-hidden />
-          {t("add")}
+          <Plus className="size-4 shrink-0" aria-hidden />
+          <span className="whitespace-nowrap collapsed:sr-only">{t("add")}</span>
         </button>
         <nav aria-label={t("main")} className="flex flex-1 flex-col gap-0.5">
           {[HOME, TRANSACTIONS, GOALS, ...MORE_ITEMS].map((item) => {
@@ -102,27 +140,32 @@ export function AppNav({ name, initial }: { name: string; initial: string }) {
               <Link
                 key={item.href}
                 href={item.href}
+                title={t(item.label)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
+                  "flex h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors collapsed:justify-center collapsed:px-0",
                   active
                     ? "bg-accent font-medium text-foreground"
                     : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
                 )}
               >
-                <item.icon className={cn("size-4", active && "text-primary")} aria-hidden />
-                {t(item.label)}
+                <item.icon
+                  className={cn("size-4 shrink-0", active && "text-primary")}
+                  aria-hidden
+                />
+                <span className="whitespace-nowrap collapsed:sr-only">{t(item.label)}</span>
               </Link>
             );
           })}
         </nav>
         <Link
           href="/app/settings"
+          title={t("settings")}
           aria-current={pathname.startsWith("/app/settings") ? "page" : undefined}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-accent/60"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-accent/60 collapsed:justify-center collapsed:px-0"
         >
           <Avatar initial={initial} />
-          <span className="flex min-w-0 flex-col">
+          <span className="flex min-w-0 flex-col collapsed:sr-only">
             <span className="truncate font-medium">{name}</span>
             <span className="text-xs text-muted-foreground">{t("settings")}</span>
           </span>

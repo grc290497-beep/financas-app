@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
-import { PRIVACY_KEY } from "@/lib/privacy";
+import { PRIVACY_KEY } from "@/lib/prefs";
 
 /**
  * The eye on the hero card: hides every amount (globals.css blurs

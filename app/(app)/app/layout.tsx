@@ -6,8 +6,8 @@ import { getCategories, getCategoryUsage } from "@/lib/transactions";
 
 export default function AppSectionLayout({ children }: LayoutProps<"/app">) {
   return (
-    // Phones: bottom padding keeps the last item clear of the tab bar. md+: room for the sidebar.
-    <div className="flex flex-1 flex-col pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-12 md:pl-60">
+    // Phones: bottom padding keeps the last item clear of the tab bar. md+: room for the sidebar (narrow when folded).
+    <div className="flex flex-1 flex-col pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-12 md:pl-60 md:transition-[padding] md:duration-200 md:collapsed:pl-16">
       {/* Dynamic routes (/app/goals/[id]) only know the pathname at request time. */}
       <Suspense fallback={null}>
         <NavLoader />

@@ -13,7 +13,7 @@ export default async function ExchangePage() {
   const t = await getTranslations("Exchange");
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6 lg:max-w-5xl">
       <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       <Suspense fallback={<ExchangeSkeleton />}>
         <Exchange />

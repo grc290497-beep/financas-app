@@ -4,6 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 /* Opened from the home-screen icon (PWA). */
+/* The desktop sidebar folded to icons (components/nav/app-nav.tsx). */
+@custom-variant collapsed {
+  &:where([data-sidebar-collapsed] *) {
+    @slot;
+  }
+}
 @custom-variant standalone {
   @media (display-mode: standalone) {
     @slot;
