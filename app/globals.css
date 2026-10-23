@@ -290,10 +290,15 @@ body:has([data-bottom-nav]) .site-footer {
   }
 }
 
-/* "Esconder valores" (the eye on Início): amounts blur everywhere. Inputs and
-   labels marked .privacy-safe (month names, dates) stay readable. */
+/* "Esconder valores" (the eye on Início): amounts turn into a blurred bar
+   everywhere. The digits are made transparent, not just blurred, so big
+   figures can't be read through it. Inputs and labels marked .privacy-safe
+   (month names, dates) stay readable. */
 html[data-privacy] .tabular-nums:not(input):not(.privacy-safe) {
-  filter: blur(7px);
+  -webkit-text-fill-color: transparent;
+  background-color: color-mix(in oklab, currentColor 22%, transparent);
+  border-radius: 0.4em;
+  filter: blur(3px);
   user-select: none;
 }
 /* Bars fill from the left when they appear (budget, goals, shares). */
