@@ -70,6 +70,9 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Profil
     .update({
       primary_currency: parsed.data.primaryCurrency,
       month_start_day: parsed.data.monthStartDay,
+      // New accounts track a running balance from what they start with (0 if skipped).
+      carry_over: true,
+      opening_balance_cents: parsed.data.openingBalance,
       onboarding_done: true,
     })
     .eq("id", user.id);

@@ -29,6 +29,7 @@ async function Onboarding() {
       defaultValues={{
         primaryCurrency: profile.primaryCurrency,
         monthStartDay: profile.monthStartDay,
+        openingBalance: "",
       }}
     />
   );

@@ -49,6 +49,9 @@ test("sign in, set up, log an expense and create a goal", async ({ page }) => {
   await page.getByRole("button", { name: "Continuar" }).click();
   // Step 2 must be shown, not skipped by an early submit (the bug this caught).
   await expect(page.getByText("Em que dia começa o seu mês?")).toBeVisible();
+  await page.getByRole("button", { name: "Continuar" }).click();
+  await expect(page.getByText("Quanto você tem hoje?")).toBeVisible();
+  await page.getByLabel("Saldo atual").fill("1.000,00");
   await page.getByRole("button", { name: "Concluir" }).click();
   await expect(page).toHaveURL(/\/app$/);
   await page.waitForLoadState("networkidle");

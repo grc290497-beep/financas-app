@@ -16,7 +16,7 @@ import { daysLeft, getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/l
 import { goalMetrics } from "@/lib/goals";
 import { goalsPlannedThisMonth, listGoals } from "@/lib/goals-store";
 import { ensureRecurringGenerated, listPlanned } from "@/lib/recurring-store";
-import { TransactionItem } from "@/components/transactions/transaction-item";
+import { TransactionDayList } from "@/components/transactions/transaction-day-list";
 import {
   currentDate,
   getBalanceBefore,
@@ -211,18 +211,13 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                   </Link>
                 }
               >
-                <ul className="surface divide-y">
-                  {recent.map((row) => (
-                    <li key={row.id}>
-                      <TransactionItem
-                        row={row}
-                        primaryCurrency={primary}
-                        categories={categories}
-                        usage={usage}
-                      />
-                    </li>
-                  ))}
-                </ul>
+                <TransactionDayList
+                  rows={recent}
+                  today={today}
+                  primaryCurrency={primary}
+                  categories={categories}
+                  usage={usage}
+                />
               </Section>
             )}
           </div>

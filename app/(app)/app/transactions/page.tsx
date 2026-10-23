@@ -1,24 +1,16 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { ReceiptText, SearchX } from "lucide-react";
 import { periodLabel } from "@/components/nav/month-switcher";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TransactionFiltersBar } from "@/components/transactions/transaction-filters";
-import { TransactionItem } from "@/components/transactions/transaction-item";
+import { sumConfirmed, TransactionDayList } from "@/components/transactions/transaction-day-list";
 import { requireProfile } from "@/lib/auth";
 import { formatMoney } from "@/lib/money";
 import { getFinancialPeriod, periodStartingIn } from "@/lib/period";
 import { ensureRecurringGenerated } from "@/lib/recurring-store";
-import {
-  currentDate,
-  getCategories,
-  getCategoryUsage,
-  listTransactions,
-  type TransactionRow,
-} from "@/lib/transactions";
+import { currentDate, getCategories, getCategoryUsage, listTransactions } from "@/lib/transactions";
 import { cn } from "@/lib/utils";
 import { transactionFiltersSchema } from "@/lib/validators";
 
@@ -63,8 +55,8 @@ async function Transactions({
   ]);
 
   const primary = profile.primaryCurrency;
-  const income = sum(rows, "income");
-  const expenses = sum(rows, "expense");
+  const income = sumConfirmed(rows, "income");
+  const expenses = sumConfirmed(rows, "expense");
   const hasFilters = Boolean(filters.type || filters.currency || filters.category || filters.q);
 
   // In the current month, what is still to come stays folded until asked for;
@@ -119,41 +111,13 @@ async function Transactions({
       {shown.length === 0 ? (
         <EmptyState filtered={hasFilters} />
       ) : (
-        // One card for the month; each day is a labelled band inside it.
-        <div className="surface overflow-hidden">
-          {groupByDay(shown).map(([day, items]) => {
-            const net = sum(items, "income") - sum(items, "expense");
-            return (
-              <section key={day} aria-labelledby={`day-${day}`}>
-                <div className="flex items-baseline justify-between gap-3 border-y bg-muted/40 px-4 py-2 first:border-t-0">
-                  <h2
-                    id={`day-${day}`}
-                    className="text-xs font-medium text-muted-foreground first-letter:uppercase"
-                  >
-                    {format(parseISO(day), "EEEE, d 'de' MMMM", { locale: ptBR })}
-                  </h2>
-                  {net !== 0 && (
-                    <span className="text-xs text-muted-foreground tabular-nums">
-                      {net > 0 ? "+" : "−"} {formatMoney(Math.abs(net), primary)}
-                    </span>
-                  )}
-                </div>
-                <ul className="divide-y">
-                  {items.map((row) => (
-                    <li key={row.id}>
-                      <TransactionItem
-                        row={row}
-                        primaryCurrency={primary}
-                        categories={categories}
-                        usage={usage}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          })}
-        </div>
+        <TransactionDayList
+          rows={shown}
+          today={today}
+          primaryCurrency={primary}
+          categories={categories}
+          usage={usage}
+        />
       )}
       {futureLink}
     </>
@@ -210,19 +174,4 @@ function ListSkeleton() {
       </div>
     </div>
   );
-}
-
-/** Paid or received only: planned fixed costs are not money that moved yet. */
-function sum(rows: TransactionRow[], type: TransactionRow["type"]) {
-  return rows
-    .filter((r) => r.type === type && r.status === "confirmed")
-    .reduce((total, r) => total + r.amountPrimaryCents, 0);
-}
-
-function groupByDay(rows: TransactionRow[]): [string, TransactionRow[]][] {
-  const groups = new Map<string, TransactionRow[]>();
-  for (const row of rows) {
-    groups.set(row.occurredOn, [...(groups.get(row.occurredOn) ?? []), row]);
-  }
-  return [...groups.entries()];
 }

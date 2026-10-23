@@ -46,9 +46,26 @@ export const magicLinkSchema = z.object({
 });
 export type MagicLinkInput = z.infer<typeof magicLinkSchema>;
 
+// What was in the bank before using the app; may be negative, empty means zero.
+const openingBalance = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value, ctx) => {
+    if (!value) return 0;
+    const negative = value.startsWith("-");
+    const cents = parseAmount(negative ? value.slice(1) : value);
+    if (cents === null || cents > MAX_AMOUNT_CENTS) {
+      ctx.addIssue({ code: "custom", message: "balanceInvalid" });
+      return z.NEVER;
+    }
+    return negative ? -cents : cents;
+  });
+
 export const onboardingSchema = z.object({
   primaryCurrency: z.enum(CURRENCIES, { error: "currencyRequired" }),
   monthStartDay,
+  openingBalance,
 });
 export type OnboardingInput = z.input<typeof onboardingSchema>;
 
@@ -57,20 +74,7 @@ export const profileSchema = z.object({ displayName, monthStartDay });
 
 export const balanceSettingsSchema = z.object({
   carryOver: z.boolean(),
-  // What was in the bank before using the app; may be negative, empty means zero.
-  openingBalance: z
-    .string()
-    .trim()
-    .transform((value, ctx) => {
-      if (!value) return 0;
-      const negative = value.startsWith("-");
-      const cents = parseAmount(negative ? value.slice(1) : value);
-      if (cents === null || cents > MAX_AMOUNT_CENTS) {
-        ctx.addIssue({ code: "custom", message: "balanceInvalid" });
-        return z.NEVER;
-      }
-      return negative ? -cents : cents;
-    }),
+  openingBalance,
 });
 export type BalanceSettingsInput = z.input<typeof balanceSettingsSchema>;
 export type BalanceSettingsData = z.output<typeof balanceSettingsSchema>;

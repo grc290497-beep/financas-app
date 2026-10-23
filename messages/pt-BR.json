@@ -185,20 +185,89 @@
     }
   },
   "Landing": {
+    "eyebrow": "Finanças pessoais para quem vive entre o euro e o real",
     "title": "Seu dinheiro em euro e real, sem planilha",
-    "subtitle": "Registre o que entra e o que sai, acompanhe o mês e veja se suas metas estão no ritmo. Tudo convertido para a sua moeda principal.",
-    "cta": "Criar conta",
-    "preview": {
-      "label": "Exemplo do painel: quanto ainda dá para gastar no mês",
-      "title": "Livre para gastar",
-      "sample": "Exemplo",
-      "perDay": "€ 92,39 por dia · 12 dias restantes"
+    "subtitle": "Registre o que entra e o que sai, veja quanto tem disponível agora e quanto vai sobrar no fim do mês. Tudo convertido para a sua moeda principal.",
+    "cta": "Criar conta grátis",
+    "login": "Entrar",
+    "trust": "Grátis · Funciona no celular como app · Dados guardados na União Europeia",
+    "sample": "Exemplo",
+    "printLabel": "Exemplo de tela do app: {name}",
+    "sections": {
+      "dashboard": {
+        "kicker": "Painel"
+      },
+      "quickAdd": {
+        "kicker": "Lançamento rápido",
+        "title": "Um gasto anotado em menos de 10 segundos",
+        "body": "Toque no +, digite o valor e escolha a categoria. As que você mais usa aparecem primeiro. Gastou em reais? Escolha BRL e o app converte pela cotação do dia."
+      },
+      "goals": {
+        "kicker": "Metas",
+        "title": "Metas com parcela do mês e data de chegada",
+        "body": "Diga quanto quer juntar e até quando. O app calcula quanto guardar por mês e avisa se você está no ritmo ou se precisa ajustar."
+      },
+      "exchange": {
+        "kicker": "Câmbio",
+        "title": "Euro e real lado a lado",
+        "body": "Conversor com a cotação oficial do Banco Central Europeu e o histórico das últimas semanas e meses, para saber a hora de mandar dinheiro."
+      }
     },
-    "login": "Já tenho conta",
-    "features": {
-      "currencies": "EUR e BRL com conversão automática",
-      "monthly": "Tracker mensal com orçamento por categoria",
-      "goals": "Metas de economia com projeção"
+    "more": {
+      "title": "E mais o que você precisa no dia a dia",
+      "fixed": "Fixos que se lançam sozinhos",
+      "fixedHint": "Aluguel, contas e salário, mensais, quinzenais ou semanais.",
+      "budget": "Orçamento por categoria",
+      "budgetHint": "Barras que avisam quando o limite está chegando.",
+      "reports": "Relatórios mês a mês",
+      "reportsHint": "Entradas, gastos e sobra de cada mês num gráfico.",
+      "month": "Mês do seu jeito",
+      "monthHint": "O mês começa no dia em que cai o seu salário.",
+      "export": "Seus dados são seus",
+      "exportHint": "Exporte tudo em CSV ou JSON quando quiser.",
+      "app": "Instale como app",
+      "appHint": "Adicione à tela inicial e use como um app, no claro ou no escuro."
+    },
+    "final": {
+      "title": "Comece hoje, do zero",
+      "body": "Crie a conta, informe quanto tem agora e faça o primeiro lançamento em um minuto."
+    },
+    "mock": {
+      "greeting": "Olá, Ana!",
+      "month": "Outubro de 2026",
+      "available": "Disponível agora",
+      "availableHint": "Inclui € 640,00 de saldo anterior.",
+      "projection": "Até o fim do mês",
+      "income": "Entradas previstas",
+      "expenses": "Saídas previstas",
+      "leftover": "Vai sobrar",
+      "perDay": "Dá para gastar € 41,20 por dia nos 9 dias restantes.",
+      "recent": "Últimos lançamentos",
+      "today": "Hoje",
+      "groceries": "Mercado",
+      "coffee": "Café",
+      "salary": "Salário",
+      "newEntry": "Novo lançamento",
+      "expense": "Gasto",
+      "incomeTab": "Entrada",
+      "save": "Salvar",
+      "restaurants": "Restaurantes",
+      "leisure": "Lazer",
+      "transport": "Transporte",
+      "pets": "Pets",
+      "health": "Saúde",
+      "goalName": "Viagem ao Brasil",
+      "goalStatus": "No ritmo",
+      "goalOf": "€ 1.850 de € 3.000",
+      "goalMonth": "Este mês: € 230 de € 230",
+      "goalEnd": "Seguindo o plano, termina em mar/27",
+      "goal2Name": "Reserva de emergência",
+      "goal2Status": "Atrasada",
+      "goal2Of": "€ 2.400 de € 6.000",
+      "rate": "€ 1 = R$ 5,6574",
+      "rateSource": "Fechamento do BCE em 22/10",
+      "chartTitle": "Euro em reais · 3 meses",
+      "change": "-2,4% no período"
     }
   },
   "Validation": {
@@ -384,6 +453,8 @@
   },
   "Transactions": {
     "title": "Lançamentos",
+    "today": "Hoje",
+    "yesterday": "Ontem",
     "add": "Novo lançamento",
     "addShort": "Lançar",
     "edit": "Editar lançamento",
@@ -520,6 +591,12 @@
       "exampleFirst": "Seu mês vai do dia 1 até o último dia do mês.",
       "exampleOther": "Seu mês vai do dia {day} até o dia {previousDay} do mês seguinte."
     },
+    "balance": {
+      "title": "Quanto você tem hoje?",
+      "description": "O saldo da sua conta agora. A partir dele, o app mostra quanto você tem disponível.",
+      "label": "Saldo atual",
+      "hint": "Pode deixar em branco: começa em 0. Dá para mudar depois em Ajustes."
+    },
     "finish": "Concluir",
     "saving": "Salvando…",
     "errors": {
@@ -545,8 +622,8 @@
     "perDay": "Dá para gastar {amount} por dia {days, plural, one {no # dia restante} other {nos # dias restantes}}.",
     "available": "Disponível agora",
     "availableHint": "O que entrou menos o que saiu neste mês, até hoje.",
-    "availableHintCarry": "Inclui {amount} que veio dos meses anteriores.",
-    "carried": "Veio dos meses anteriores",
+    "availableHintCarry": "Inclui {amount} de saldo anterior.",
+    "carried": "Saldo anterior",
     "recent": "Últimos lançamentos",
     "seeAll": "Ver todos",
     "spentTotal": "{amount} gastos",

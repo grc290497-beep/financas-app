@@ -9,7 +9,7 @@ export async function SiteFooter() {
   return (
     <footer className="site-footer mt-12 border-t bg-card/40">
       {/* pr-20 on phones keeps the text clear of the floating "+" button. */}
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 py-8 pr-20 pl-4 text-sm sm:flex-row sm:items-end sm:justify-between sm:px-4">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-8 pr-20 pl-4 text-sm sm:flex-row sm:items-end sm:justify-between sm:px-4">
         <div className="flex flex-col gap-1">
           <Link href="/" className="self-start">
             <Logo name={t("appName")} size={24} />

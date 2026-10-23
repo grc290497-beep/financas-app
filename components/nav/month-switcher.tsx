@@ -34,33 +34,37 @@ export function MonthSwitcher({
   className?: string;
 }) {
   const arrow =
-    "flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:translate-y-px active:scale-[0.97]";
+    "raised-control flex size-11 shrink-0 items-center justify-center rounded-xl text-foreground transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-accent active:translate-y-px active:scale-[0.97]";
 
+  // Full width, like the cards below it, so the page reads as one column.
   return (
-    <nav className={cn("flex items-center gap-3", className)} aria-label={label}>
-      <div className="surface flex items-center gap-1 rounded-full! p-1">
-        <Link href={previousHref} scroll={false} aria-label={previousLabel} className={arrow}>
-          <ChevronLeft className="size-4" aria-hidden />
-        </Link>
+    <nav
+      className={cn("surface flex w-full items-center gap-2 p-1.5", className)}
+      aria-label={label}
+    >
+      <Link href={previousHref} scroll={false} aria-label={previousLabel} className={arrow}>
+        <ChevronLeft className="size-5" aria-hidden />
+      </Link>
+      <div className="flex min-w-0 flex-1 flex-col items-center leading-tight">
         <span
-          className="min-w-32 px-1 text-center text-sm font-medium tabular-nums first-letter:uppercase"
+          className="truncate text-base font-semibold tabular-nums first-letter:uppercase"
           aria-live="polite"
         >
           {label}
         </span>
-        <Link href={nextHref} scroll={false} aria-label={nextLabel} className={arrow}>
-          <ChevronRight className="size-4" aria-hidden />
-        </Link>
+        {currentHref && currentLabel && (
+          <Link
+            href={currentHref}
+            scroll={false}
+            className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {currentLabel}
+          </Link>
+        )}
       </div>
-      {currentHref && currentLabel && (
-        <Link
-          href={currentHref}
-          scroll={false}
-          className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-        >
-          {currentLabel}
-        </Link>
-      )}
+      <Link href={nextHref} scroll={false} aria-label={nextLabel} className={arrow}>
+        <ChevronRight className="size-5" aria-hidden />
+      </Link>
     </nav>
   );
 }

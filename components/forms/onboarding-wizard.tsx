@@ -15,6 +15,7 @@ import {
   FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -33,12 +34,10 @@ import {
 import { zodResolver } from "@/lib/zod-resolver";
 import { useValidationMessage } from "./use-validation-message";
 
-// Income, fixed costs and a first goal join this wizard once their tables
-// exist (PLAN.md phases 2, 3 and 5).
-const STEPS = ["currency", "monthStart"] as const;
+const STEPS = ["currency", "monthStart", "balance"] as const;
 const DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
 
-export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingData }) {
+export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingInput }) {
   const t = useTranslations("Onboarding");
   const tCommon = useTranslations("Common");
   const validationMessage = useValidationMessage();
@@ -47,6 +46,8 @@ export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingD
   const [result, setResult] = useState<ProfileActionResult | null>(null);
   const {
     control,
+    register,
+    getValues,
     handleSubmit,
     formState: { errors },
   } = useForm<OnboardingInput, unknown, OnboardingData>({
@@ -55,11 +56,15 @@ export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingD
   });
 
   const isLast = step === STEPS.length - 1;
-  const monthStartDay = Number(useWatch({ control, name: "monthStartDay" }));
+  const [monthStartDay, primaryCurrency] = useWatch({
+    control,
+    name: ["monthStartDay", "primaryCurrency"],
+  });
 
-  const onSubmit = (data: OnboardingData) =>
+  // The action validates again on the server, so it takes the raw form values.
+  const onSubmit = () =>
     startTransition(async () => {
-      setResult(await completeOnboarding(data));
+      setResult(await completeOnboarding(getValues()));
     });
 
   return (
@@ -131,14 +136,40 @@ export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingD
               )}
             />
             <FieldDescription>
-              {monthStartDay === 1
+              {Number(monthStartDay) === 1
                 ? t("monthStart.exampleFirst")
                 : t("monthStart.exampleOther", {
-                    day: monthStartDay,
-                    previousDay: monthStartDay - 1,
+                    day: Number(monthStartDay),
+                    previousDay: Number(monthStartDay) - 1,
                   })}
             </FieldDescription>
             <FieldError errors={validationMessage(errors.monthStartDay)} />
+          </Field>
+        </FieldSet>
+      )}
+
+      {STEPS[step] === "balance" && (
+        <FieldSet>
+          <FieldLegend className="text-lg">{t("balance.title")}</FieldLegend>
+          <FieldDescription>{t("balance.description")}</FieldDescription>
+          <Field data-invalid={!!errors.openingBalance}>
+            <FieldLabel htmlFor="openingBalance">{t("balance.label")}</FieldLabel>
+            <div className="flex items-center gap-2">
+              <span className="text-lg text-muted-foreground">
+                {primaryCurrency === "EUR" ? "€" : "R$"}
+              </span>
+              <Input
+                id="openingBalance"
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder="0,00"
+                aria-invalid={!!errors.openingBalance}
+                className="h-12 text-xl font-semibold tabular-nums md:text-xl"
+                {...register("openingBalance")}
+              />
+            </div>
+            <FieldDescription>{t("balance.hint")}</FieldDescription>
+            <FieldError errors={validationMessage(errors.openingBalance)} />
           </Field>
         </FieldSet>
       )}
