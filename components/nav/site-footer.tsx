@@ -2,12 +2,12 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
 
-/** Footer for the public pages; globals.css hides it inside the app. */
+/** Footer for the public pages; globals.css hides it inside the app, and the installed app never shows it. */
 export async function SiteFooter() {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="site-footer mt-12 border-t bg-card/40">
+    <footer className="site-footer mt-12 border-t bg-card/40 standalone:hidden">
       {/* pr-20 on phones keeps the text clear of the floating "+" button. */}
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-8 pr-20 pl-4 text-sm sm:flex-row sm:items-end sm:justify-between sm:px-4">
         <div className="flex flex-col gap-1">

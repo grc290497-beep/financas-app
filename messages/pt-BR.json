@@ -94,7 +94,6 @@
     }
   },
   "Legal": {
-    "home": "Início",
     "updated": "Atualizado em 20 de outubro de 2026",
     "privacy": {
       "title": "Política de privacidade",
@@ -183,6 +182,17 @@
         }
       ]
     }
+  },
+  "SiteHeader": {
+    "label": "Seções do site",
+    "home": "Página inicial",
+    "quickAdd": "Lançamentos",
+    "goals": "Metas",
+    "exchange": "Câmbio",
+    "features": "Recursos",
+    "login": "Entrar",
+    "signup": "Criar conta",
+    "menu": "Abrir menu"
   },
   "Landing": {
     "eyebrow": "Finanças pessoais para quem vive entre o euro e o real",

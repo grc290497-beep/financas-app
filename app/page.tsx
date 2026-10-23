@@ -9,7 +9,6 @@ import {
   Smartphone,
   type LucideIcon,
 } from "lucide-react";
-import { Logo } from "@/components/brand/logo";
 import {
   DashboardPrint,
   ExchangePrint,
@@ -17,11 +16,12 @@ import {
   PhoneFrame,
   QuickAddPrint,
 } from "@/components/landing/mockups";
+import { SiteHeader } from "@/components/nav/site-header";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default async function Home() {
-  const [t, common] = await Promise.all([getTranslations("Landing"), getTranslations("Common")]);
+  const t = await getTranslations("Landing");
 
   const more: {
     icon: LucideIcon;
@@ -48,17 +48,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Logo name={common("appName")} size={32} className="text-base" />
-        <nav className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/login">{t("login")}</Link>
-          </Button>
-          <Button asChild size="sm" className="hidden sm:inline-flex">
-            <Link href="/signup">{t("cta")}</Link>
-          </Button>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main className="flex flex-col gap-24 pb-24 sm:gap-32">
         {/* Hero: the pitch on the left, the dashboard on a phone on the right. */}
@@ -87,6 +77,7 @@ export default async function Home() {
         </section>
 
         <Feature
+          id="lancamento"
           kicker={t("sections.quickAdd.kicker")}
           title={t("sections.quickAdd.title")}
           body={t("sections.quickAdd.body")}
@@ -98,6 +89,7 @@ export default async function Home() {
         </Feature>
 
         <Feature
+          id="metas"
           kicker={t("sections.goals.kicker")}
           title={t("sections.goals.title")}
           body={t("sections.goals.body")}
@@ -108,6 +100,7 @@ export default async function Home() {
         </Feature>
 
         <Feature
+          id="cambio"
           kicker={t("sections.exchange.kicker")}
           title={t("sections.exchange.title")}
           body={t("sections.exchange.body")}
@@ -116,7 +109,10 @@ export default async function Home() {
           <ExchangePrint />
         </Feature>
 
-        <section className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 sm:px-6">
+        <section
+          id="recursos"
+          className="mx-auto flex w-full max-w-6xl scroll-mt-24 flex-col gap-8 px-4 sm:px-6"
+        >
           <h2 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
             {t("more.title")}
           </h2>
@@ -150,6 +146,7 @@ export default async function Home() {
 }
 
 function Feature({
+  id,
   kicker,
   title,
   body,
@@ -157,6 +154,7 @@ function Feature({
   reverse,
   children,
 }: {
+  id: string;
   kicker: string;
   title: string;
   body: string;
@@ -165,7 +163,10 @@ function Feature({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
+    <section
+      id={id}
+      className="mx-auto grid w-full max-w-6xl scroll-mt-24 items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16"
+    >
       <div className={cn("flex flex-col gap-4", reverse && "lg:order-last")}>
         <span className="text-sm font-medium text-brass">{kicker}</span>
         <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{title}</h2>

@@ -3,6 +3,12 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+/* Opened from the home-screen icon (PWA). */
+@custom-variant standalone {
+  @media (display-mode: standalone) {
+    @slot;
+  }
+}
 
 @theme inline {
   --color-background: var(--background);
