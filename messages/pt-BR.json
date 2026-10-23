@@ -775,6 +775,7 @@
     "planDone": "Meta atingida",
     "thisMonthDue": "Este mês: faltam {due} de {installment}",
     "thisMonthStart": "Este mês: guardar {amount}",
+    "summary": "{amount} guardados em {count, plural, one {# meta} other {# metas}}",
     "thisMonthDone": "Parcela deste mês completa",
     "later": "Depois: {amount}/mês até {deadline}",
     "monthContributed": "Aportado em {month}: {amount}",

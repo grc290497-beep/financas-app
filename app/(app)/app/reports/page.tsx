@@ -86,7 +86,7 @@ async function Reports({
       <div className="flex flex-col gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <MonthSwitcher
-          label={t("range", { from: all[0].label, to: all[MONTHS - 1].label })}
+          label={t("range", { from: months[0].label, to: all[MONTHS - 1].label })}
           previousHref={monthLink(-1)}
           nextHref={monthLink(1)}
           previousLabel={t("previous")}

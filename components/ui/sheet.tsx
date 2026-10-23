@@ -49,10 +49,12 @@ function SheetContent({
   showCloseButton?: boolean;
 }) {
   const tCommon = useTranslations("Common");
+  const { contentRef, closeRef, onPointerDown, onPointerMove, onPointerEnd } = useSheetDrag();
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
+        ref={contentRef}
         data-slot="sheet-content"
         className={cn(
           "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500",
@@ -68,6 +70,22 @@ function SheetContent({
         )}
         {...props}
       >
+        {side === "bottom" && (
+          <>
+            {/* Drag down to close, as in native apps. */}
+            <div
+              aria-hidden
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerEnd}
+              onPointerCancel={onPointerEnd}
+              className="sticky top-0 z-10 -mb-4 flex h-6 shrink-0 touch-none cursor-grab items-center justify-center"
+            >
+              <span className="h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+            </div>
+            <SheetPrimitive.Close ref={closeRef} className="hidden" tabIndex={-1} aria-hidden />
+          </>
+        )}
         {children}
         {showCloseButton && (
           <SheetPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary">
@@ -133,3 +151,46 @@ export {
   SheetTitle,
   SheetDescription,
 };
+
+/** Pointer drag on the bottom sheet's handle: follows the finger, closes past 100px or on a flick. */
+function useSheetDrag() {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const closeRef = React.useRef<HTMLButtonElement>(null);
+  const start = React.useRef<{ y: number; at: number } | null>(null);
+  const offset = React.useRef(0);
+
+  const move = (y: number, animate: boolean) => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.style.transition = animate ? "transform 200ms cubic-bezier(0.23, 1, 0.32, 1)" : "none";
+    el.style.transform = y ? `translateY(${y}px)` : "";
+  };
+
+  return {
+    contentRef,
+    closeRef,
+    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+      start.current = { y: e.clientY, at: performance.now() };
+      offset.current = 0;
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // The pointer is already gone; dragging still works without capture.
+      }
+    },
+    onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!start.current) return;
+      // Down follows the finger; up resists, like a rubber band.
+      const dy = e.clientY - start.current.y;
+      offset.current = dy > 0 ? dy : dy / 6;
+      move(offset.current, false);
+    },
+    onPointerEnd: () => {
+      if (!start.current) return;
+      const velocity = offset.current / (performance.now() - start.current.at);
+      start.current = null;
+      if (offset.current > 100 || velocity > 0.5) closeRef.current?.click();
+      else move(0, true);
+    },
+  };
+}

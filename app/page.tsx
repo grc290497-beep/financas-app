@@ -60,7 +60,7 @@ export default async function Home() {
         {/* Hero: the pitch on the left, the dashboard on a phone on the right. */}
         <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pt-8 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-16">
           <div className="flex flex-col gap-6">
-            <span className="self-start rounded-full bg-brass/15 px-3 py-1 text-xs font-medium text-brass">
+            <span className="self-start rounded-full bg-brass/15 px-3 py-1 text-xs font-medium text-brass-dark dark:text-brass">
               {t("eyebrow")}
             </span>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
@@ -125,7 +125,7 @@ export default async function Home() {
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {more.map(({ icon: Icon, key }) => (
               <li key={key} className="surface flex flex-col gap-3 p-5">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-brass/15 text-brass">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-brass/15 text-brass-dark dark:text-brass">
                   <Icon className="size-5" aria-hidden />
                 </span>
                 <h3 className="font-medium">{t(`more.${key}`)}</h3>
@@ -175,7 +175,7 @@ function Feature({
       className="mx-auto grid w-full max-w-6xl scroll-mt-24 items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16"
     >
       <div className={cn("flex flex-col gap-4", reverse && "lg:order-last")}>
-        <span className="text-sm font-medium text-brass">{kicker}</span>
+        <span className="text-sm font-medium text-brass-dark dark:text-brass">{kicker}</span>
         <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{title}</h2>
         <p className="max-w-lg text-lg text-pretty text-muted-foreground">{body}</p>
       </div>

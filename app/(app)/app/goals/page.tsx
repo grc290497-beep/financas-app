@@ -16,7 +16,7 @@ import { goalMetrics, goalMonthView, monthStart } from "@/lib/goals";
 import { listGoals } from "@/lib/goals-store";
 import { formatMoney } from "@/lib/money";
 import { currentDate } from "@/lib/transactions";
-import { transactionFiltersSchema } from "@/lib/validators";
+import { transactionFiltersSchema, type Currency } from "@/lib/validators";
 
 const ADD_BUTTON = buttonVariants({ className: "self-start" });
 
@@ -52,6 +52,15 @@ async function Goals({ searchParams }: { searchParams: PageProps<"/app/goals">["
   const viewed = month ? `${month}-01` : thisMonth;
   const viewedLabel = format(parseISO(viewed), "MMM/yyyy", { locale: ptBR });
   const monthLink = (count: number) => `/app/goals?month=${addMonths(viewed, count).slice(0, 7)}`;
+  // Saved across goals, per currency ("€ 1.250,00 + R$ 800,00").
+  const savedByCurrency = new Map<Currency, number>();
+  for (const goal of goals) {
+    const saved = goalMetrics(goal, goal.contributions, today).accumulatedCents;
+    savedByCurrency.set(goal.currency, (savedByCurrency.get(goal.currency) ?? 0) + saved);
+  }
+  const savedTotal = [...savedByCurrency]
+    .map(([currency, cents]) => formatMoney(cents, currency))
+    .join(" + ");
 
   const addButton = (
     <GoalSheet primaryCurrency={profile.primaryCurrency} className={ADD_BUTTON}>
@@ -84,6 +93,9 @@ async function Goals({ searchParams }: { searchParams: PageProps<"/app/goals">["
         currentHref={viewed === thisMonth ? undefined : "/app/goals"}
         currentLabel={t("currentMonth")}
       />
+      <p className="text-sm text-muted-foreground tabular-nums">
+        {t("summary", { amount: savedTotal, count: goals.length })}
+      </p>
       <ul className="flex flex-col gap-3">
         {goals.map((goal) => {
           const m = goalMetrics(goal, goal.contributions, today);

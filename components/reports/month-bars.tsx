@@ -30,7 +30,12 @@ export function MonthBars({ data, currency }: { data: MonthBar[]; currency: Curr
       </ul>
       <div className="h-60 w-full" role="img" aria-label={t("barsChart")}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: 0 }} barGap={2}>
+          <BarChart
+            data={data}
+            margin={{ top: 8, right: 0, bottom: 0, left: 0 }}
+            barGap={2}
+            maxBarSize={36}
+          >
             <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
             <XAxis
               dataKey="label"

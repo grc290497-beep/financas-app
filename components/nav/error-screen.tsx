@@ -18,7 +18,9 @@ export function ErrorScreen({
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-16 text-center">
       <Logo name={appName} size={36} className="text-lg" />
-      <p className="text-7xl font-semibold tracking-tight text-brass tabular-nums">{code}</p>
+      <p className="privacy-safe text-7xl font-semibold tracking-tight text-brass-dark tabular-nums dark:text-brass">
+        {code}
+      </p>
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold tracking-tight text-balance">{title}</h1>
         <p className="text-pretty text-muted-foreground">{body}</p>

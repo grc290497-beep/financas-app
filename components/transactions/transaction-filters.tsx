@@ -95,7 +95,7 @@ export function TransactionFiltersBar({
       </div>
 
       {/* Chips scroll sideways on small screens instead of squeezing three selects. */}
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)]">
         <FilterChip
           label={t("filters.type")}
           value={filters.type ?? ALL}

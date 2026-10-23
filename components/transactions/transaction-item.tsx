@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import { useTranslations } from "next-intl";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { deleteTransaction } from "@/lib/actions/transactions";
@@ -66,15 +67,82 @@ export function TransactionItem({
     });
   };
 
+  // Swipe left to delete (touch only; goal entries also remove a contribution,
+  // so they keep the dialog in the edit sheet).
+  const [dx, setDx] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const swipe = useRef<{ x: number; y: number; at: number; active: boolean } | null>(null);
+  const swiped = useRef(false);
+
+  const onPointerDown = (e: PointerEvent<HTMLButtonElement>) => {
+    if (e.pointerType === "mouse" || row.goalLinked) return;
+    swipe.current = { x: e.clientX, y: e.clientY, at: performance.now(), active: false };
+  };
+  const onPointerMove = (e: PointerEvent<HTMLButtonElement>) => {
+    const s = swipe.current;
+    if (!s) return;
+    const moveX = e.clientX - s.x;
+    const moveY = e.clientY - s.y;
+    if (!s.active) {
+      if (Math.abs(moveY) > 10)
+        swipe.current = null; // a vertical scroll
+      else if (moveX < -10 && Math.abs(moveX) > Math.abs(moveY)) {
+        s.active = true;
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {
+          // The pointer is already gone; the swipe still works without capture.
+        }
+        setDragging(true);
+      }
+      return;
+    }
+    setDx(Math.min(0, moveX));
+  };
+  const onPointerEnd = () => {
+    const s = swipe.current;
+    swipe.current = null;
+    if (!s?.active) return;
+    swiped.current = true;
+    setDragging(false);
+    // Far enough, or a quick flick: delete (with Desfazer). Otherwise snap back.
+    const velocity = dx / (performance.now() - s.at);
+    setDx(0);
+    if (dx < -110 || (dx < -40 && velocity < -0.5)) deleteWithUndo();
+  };
+
   if (hidden) return null;
 
   return (
-    <>
+    <div className="relative overflow-hidden">
+      {(dragging || dx < 0) && (
+        <div
+          aria-hidden
+          className="absolute inset-0 flex items-center justify-end gap-2 bg-destructive px-5 text-sm font-medium text-white"
+        >
+          <Trash2 className="size-4" />
+          {t("form.delete")}
+        </div>
+      )}
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          // The click that ends a swipe is not a tap.
+          if (swiped.current) {
+            swiped.current = false;
+            return;
+          }
+          setOpen(true);
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
+        style={{ transform: dx ? `translateX(${dx}px)` : undefined }}
         className={cn(
-          "flex w-full items-center gap-3 px-4 text-left transition-colors hover:bg-accent/60 focus-visible:bg-accent/60 focus-visible:outline-none",
+          "relative flex w-full touch-pan-y items-center gap-3 bg-card px-4 text-left hover:bg-accent focus-visible:bg-accent focus-visible:outline-none",
+          !dragging &&
+            "transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
           compact ? "py-2.5" : "py-3.5",
         )}
       >
@@ -147,6 +215,6 @@ export function TransactionItem({
           </div>
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }
