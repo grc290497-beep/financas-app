@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Menu } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { InstallAppButton } from "@/components/pwa/install-app";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -35,6 +36,7 @@ export async function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <InstallAppButton variant="ghost" size="sm" className="hidden md:inline-flex" />
           <Button asChild variant="ghost" size="sm">
             <Link href="/login">{t("login")}</Link>
           </Button>
@@ -62,6 +64,7 @@ export async function SiteHeader() {
               <Button asChild size="sm" className="mt-2">
                 <Link href="/signup">{t("signup")}</Link>
               </Button>
+              <InstallAppButton variant="outline" size="sm" className="mt-2 self-stretch" />
             </nav>
           </details>
         </div>

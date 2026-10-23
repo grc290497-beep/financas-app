@@ -44,6 +44,11 @@ export default async function Home() {
       <Button asChild size="lg" variant="outline" className="h-12 px-6 text-base">
         <Link href="/login">{t("login")}</Link>
       </Button>
+      <InstallAppButton
+        variant="ghost"
+        size="lg"
+        className="h-12 self-stretch px-6 text-base sm:self-auto"
+      />
     </div>
   );
 

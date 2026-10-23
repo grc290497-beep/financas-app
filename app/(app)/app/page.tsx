@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { ReceiptText } from "lucide-react";
 import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { BudgetBar } from "@/components/budget/budget-bar";
+import { InstallAppButton } from "@/components/pwa/install-app";
 import { GoalProgress, GoalStatusBadge } from "@/components/goals/goal-status";
 import { CategoryIcon } from "@/components/transactions/category-icon";
 import { Button } from "@/components/ui/button";
@@ -148,6 +149,8 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
           currentLabel={t("current")}
         />
       </div>
+
+      <InstallAppButton look="banner" />
 
       {isEmpty ? (
         <section className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-12 text-center">

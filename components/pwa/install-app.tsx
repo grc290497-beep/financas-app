@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Download, Share, SquarePlus } from "lucide-react";
+import { Download, Share, Smartphone, SquarePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -69,27 +69,57 @@ function detectMode(): Mode {
 }
 
 /** "Instalar app": the browser's install prompt where there is one, steps on iPhone. */
+const DISMISSED = "install-banner-dismissed";
+
+function readDismissed() {
+  try {
+    return localStorage.getItem(DISMISSED) === "1";
+  } catch {
+    return false; // storage blocked: show the card
+  }
+}
+
+/**
+ * "Instalar app": the browser's install prompt where there is one, steps on iPhone.
+ * `look`: a plain button, the explained block of Ajustes, or the closable card on Início.
+ */
 export function InstallAppButton({
-  explained,
+  look = "button",
+  variant,
+  size,
   className,
 }: {
-  /** Ajustes: a card with what installing means, shown only where it is possible. */
-  explained?: boolean;
+  look?: "button" | "explained" | "banner";
+  variant?: React.ComponentProps<typeof Button>["variant"];
+  size?: React.ComponentProps<typeof Button>["size"];
   className?: string;
 }) {
   const t = useTranslations("InstallApp");
   const [mode, setMode] = useState<Mode>("hidden");
   const [stepsOpen, setStepsOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(true);
 
   useEffect(() => {
-    const update = () => setMode(detectMode());
+    const update = () => {
+      setMode(detectMode());
+      setDismissed(readDismissed());
+    };
     update();
     window.addEventListener(READY, update);
     return () => window.removeEventListener(READY, update);
   }, []);
 
   // Nothing to offer: already installed, or a browser that cannot install sites.
-  if (mode === "hidden") return null;
+  if (mode === "hidden" || (look === "banner" && dismissed)) return null;
+
+  const dismiss = () => {
+    setDismissed(true);
+    try {
+      localStorage.setItem(DISMISSED, "1");
+    } catch {
+      // Private mode: it simply comes back next visit.
+    }
+  };
 
   const install = async () => {
     if (mode === "ios") {
@@ -106,7 +136,13 @@ export function InstallAppButton({
   };
 
   const button = (
-    <Button type="button" onClick={install} className={cn("self-start", className)}>
+    <Button
+      type="button"
+      variant={variant}
+      size={size}
+      onClick={install}
+      className={cn("self-start", className)}
+    >
       <Download aria-hidden />
       {t("button")}
     </Button>
@@ -114,7 +150,7 @@ export function InstallAppButton({
 
   return (
     <>
-      {explained ? (
+      {look === "explained" && (
         <section className="flex flex-col gap-2">
           <div className="flex flex-col gap-0.5">
             <h2 className="text-base font-medium">{t("title")}</h2>
@@ -122,9 +158,30 @@ export function InstallAppButton({
           </div>
           {button}
         </section>
-      ) : (
-        button
       )}
+      {look === "banner" && (
+        <section className="surface relative flex items-center gap-3 p-4 pr-10">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl metal-brass">
+            <Smartphone className="size-5" aria-hidden />
+          </span>
+          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <h2 className="text-sm font-medium">{t("bannerTitle")}</h2>
+              <p className="text-xs text-pretty text-muted-foreground">{t("bannerHint")}</p>
+            </div>
+            {button}
+          </div>
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label={t("dismiss")}
+            className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground"
+          >
+            <X className="size-4" aria-hidden />
+          </button>
+        </section>
+      )}
+      {look === "button" && button}
       <Dialog open={stepsOpen} onOpenChange={setStepsOpen}>
         <DialogContent>
           <DialogHeader>

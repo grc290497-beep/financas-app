@@ -92,7 +92,7 @@ async function Settings() {
         </dl>
       </Section>
 
-      <InstallAppButton explained />
+      <InstallAppButton look="explained" />
 
       <Section title={t("theme.label")}>
         <ThemeSelect />
