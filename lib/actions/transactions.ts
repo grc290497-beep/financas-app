@@ -48,6 +48,13 @@ export async function updateTransaction(
     .maybeSingle();
   if (!existing) return { status: "error", error: "notFound" };
 
+  // A goal's contribution owns this entry; editing it here would desync the goal.
+  const { count: linked } = await supabase
+    .from("goal_contributions")
+    .select("id", { count: "exact", head: true })
+    .eq("transaction_id", parsedId.data);
+  if (linked) return { status: "error", error: "goalLinked" };
+
   // A fixed cost's date is its due date and half of the key that stops it
   // being generated twice; moving it would bring the original date back.
   if (existing.recurring_item_id && existing.occurred_on !== parsed.data.occurredOn) {

@@ -565,6 +565,7 @@
       "deleteFailed": "Não conseguimos excluir. Tente de novo.",
       "notFound": "Esse lançamento não existe mais.",
       "recurringDateLocked": "A data de um fixo é o vencimento e não pode mudar. Ajuste o dia no cadastro do fixo.",
+      "goalLinked": "Este lançamento vem de um aporte numa meta. Para mudar, apague o aporte na meta e lance de novo.",
       "unexpected": "Algo deu errado. Tente de novo."
     }
   },
@@ -709,6 +710,7 @@
   },
   "Goals": {
     "title": "Metas",
+    "entryDescription": "Meta · {name}",
     "add": "Nova meta",
     "edit": "Editar meta",
     "of": "{saved} de {target}",
