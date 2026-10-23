@@ -5,6 +5,7 @@ import { TransactionItem } from "@/components/transactions/transaction-item";
 import type { Category } from "@/lib/categories";
 import { formatMoney } from "@/lib/money";
 import type { TransactionRow } from "@/lib/transactions";
+import { cn } from "@/lib/utils";
 import type { Currency } from "@/lib/validators";
 
 /** Paid or received only: planned fixed costs are not money that moved yet. */
@@ -29,7 +30,10 @@ export async function TransactionDayList({
   primaryCurrency,
   categories,
   usage,
+  compact,
 }: {
+  /** Início: tighter rows and bands, so five entries don't fill the screen. */
+  compact?: boolean;
   rows: TransactionRow[];
   today: string;
   primaryCurrency: Currency;
@@ -51,7 +55,12 @@ export async function TransactionDayList({
         const net = sumConfirmed(items, "income") - sumConfirmed(items, "expense");
         return (
           <section key={day} aria-labelledby={`day-${day}`}>
-            <div className="flex items-baseline justify-between gap-3 border-y bg-muted/40 px-4 py-2 first:border-t-0">
+            <div
+              className={cn(
+                "flex items-baseline justify-between gap-3 border-y bg-muted/40 px-4 first:border-t-0",
+                compact ? "py-1" : "py-2",
+              )}
+            >
               <h2
                 id={`day-${day}`}
                 className="text-xs font-medium text-muted-foreground first-letter:uppercase"
@@ -68,6 +77,7 @@ export async function TransactionDayList({
               {items.map((row) => (
                 <li key={row.id}>
                   <TransactionItem
+                    compact={compact}
                     row={row}
                     primaryCurrency={primaryCurrency}
                     categories={categories}

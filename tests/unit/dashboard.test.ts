@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { budgetLevel, computeMetrics, variation } from "@/lib/dashboard";
+import { budgetLevel, computeMetrics, dailyBalance, variation } from "@/lib/dashboard";
 
 const summary = {
   incomeCents: 300000, // salary received
@@ -106,5 +106,26 @@ describe("variation", () => {
 
   it("is null when there is nothing to compare with", () => {
     expect(variation(5000, 0)).toBeNull();
+  });
+});
+
+describe("dailyBalance", () => {
+  it("carries the balance from day to day, adding each day's movements", () => {
+    const movements = [
+      { date: "2026-10-01", cents: 300000 },
+      { date: "2026-10-03", cents: -90000 },
+      { date: "2026-10-03", cents: -1000 },
+    ];
+    expect(dailyBalance(movements, "2026-10-01", "2026-10-04", 5000)).toEqual([
+      305000, 305000, 214000, 214000,
+    ]);
+  });
+
+  it("crosses month ends and ignores days outside the range", () => {
+    const series = dailyBalance([{ date: "2026-12-01", cents: 1 }], "2026-11-29", "2026-12-01");
+    expect(series).toEqual([0, 0, 1]);
+    expect(dailyBalance([{ date: "2026-12-05", cents: 1 }], "2026-12-01", "2026-12-02")).toEqual([
+      0, 0,
+    ]);
   });
 });

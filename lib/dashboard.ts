@@ -62,6 +62,33 @@ export function budgetLevel(spentCents: number, budgetCents: number): "ok" | "wa
   return "ok";
 }
 
+/**
+ * Balance at the end of each day from `start` to `end` (the hero's sparkline):
+ * `base` (what was carried in) plus every confirmed movement up to that day.
+ */
+export function dailyBalance(
+  movements: { date: string; cents: number }[],
+  start: string,
+  end: string,
+  base = 0,
+): number[] {
+  const byDay = new Map<string, number>();
+  for (const m of movements) byDay.set(m.date, (byDay.get(m.date) ?? 0) + m.cents);
+  const series: number[] = [];
+  let balance = base;
+  for (let day = start; day <= end; day = nextDay(day)) {
+    balance += byDay.get(day) ?? 0;
+    series.push(balance);
+  }
+  return series;
+}
+
+function nextDay(date: string): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Relative change against the previous month; null without a previous amount. */
 export function variation(currentCents: number, previousCents: number): number | null {
   return previousCents > 0 ? (currentCents - previousCents) / previousCents : null;

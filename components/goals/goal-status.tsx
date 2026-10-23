@@ -32,7 +32,7 @@ export function GoalProgress({ progress, color }: { progress: number; color: str
       className="h-2 w-full overflow-hidden rounded-full bg-muted"
     >
       <div
-        className="h-full rounded-full"
+        className="grow-x h-full rounded-full"
         style={{ width: `${percent}%`, backgroundColor: color }}
       />
     </div>

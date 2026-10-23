@@ -56,6 +56,23 @@ export async function getBalanceBefore(date: string): Promise<number> {
   return Number(data);
 }
 
+/** Confirmed movements between two dates, signed (income +, expense −), for the sparkline. */
+export async function getMovements(from: string, to: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("occurred_on, type, amount_primary_cents")
+    .eq("status", "confirmed")
+    .gte("occurred_on", from)
+    .lte("occurred_on", to)
+    .limit(5000);
+  if (error) throw error;
+  return data.map((t) => ({
+    date: t.occurred_on,
+    cents: (t.type === "income" ? 1 : -1) * Number(t.amount_primary_cents),
+  }));
+}
+
 export type CategorySpend = Category & {
   budgetCents: number | null;
   spentCents: number;

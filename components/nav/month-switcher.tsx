@@ -47,7 +47,7 @@ export function MonthSwitcher({
       </Link>
       <div className="flex min-w-0 flex-1 flex-col items-center leading-tight">
         <span
-          className="truncate text-base font-semibold tabular-nums first-letter:uppercase"
+          className="privacy-safe truncate text-base font-semibold tabular-nums first-letter:uppercase"
           aria-live="polite"
         >
           {label}

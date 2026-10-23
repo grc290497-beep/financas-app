@@ -283,3 +283,20 @@ body:has([data-bottom-nav]) .site-footer {
     display: none;
   }
 }
+
+/* "Esconder valores" (the eye on Início): amounts blur everywhere. Inputs and
+   labels marked .privacy-safe (month names, dates) stay readable. */
+html[data-privacy] .tabular-nums:not(input):not(.privacy-safe) {
+  filter: blur(7px);
+  user-select: none;
+}
+/* Bars fill from the left when they appear (budget, goals, shares). */
+@utility grow-x {
+  transform-origin: left;
+  animation: grow-x 700ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}

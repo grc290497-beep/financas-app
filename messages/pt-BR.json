@@ -732,6 +732,8 @@
     "available": "Disponível agora",
     "availableHint": "O que entrou menos o que saiu neste mês, até hoje.",
     "availableHintCarry": "Inclui {amount} de saldo anterior.",
+    "hideValues": "Esconder valores",
+    "showValues": "Mostrar valores",
     "carried": "Saldo anterior",
     "recent": "Últimos lançamentos",
     "seeAll": "Ver todos",

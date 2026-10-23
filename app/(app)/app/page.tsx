@@ -5,13 +5,15 @@ import { getTranslations } from "next-intl/server";
 import { ReceiptText } from "lucide-react";
 import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { BudgetBar } from "@/components/budget/budget-bar";
+import { PrivacyToggle } from "@/components/dashboard/privacy-toggle";
+import { Sparkline } from "@/components/dashboard/sparkline";
 import { InstallAppButton } from "@/components/pwa/install-app";
 import { GoalProgress, GoalStatusBadge } from "@/components/goals/goal-status";
 import { CategoryIcon } from "@/components/transactions/category-icon";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile } from "@/lib/auth";
-import { computeMetrics, variation } from "@/lib/dashboard";
+import { computeMetrics, dailyBalance, variation } from "@/lib/dashboard";
 import { formatMoney } from "@/lib/money";
 import { daysLeft, getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/lib/period";
 import { goalMetrics } from "@/lib/goals";
@@ -25,6 +27,7 @@ import {
   getCategorySpend,
   getCategoryUsage,
   getMonthSummary,
+  getMovements,
   listTransactions,
 } from "@/lib/transactions";
 import { cn } from "@/lib/utils";
@@ -67,6 +70,8 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
   const isCurrent = period.start === current.start;
 
   const previous = shiftPeriod(period, msd, -1);
+  // The month so far: up to today, or the whole of a past month.
+  const lastDay = period.end < today ? period.end : today;
   const [
     t,
     summary,
@@ -79,6 +84,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
     carriedCents,
     categories,
     usage,
+    movements,
   ] = await Promise.all([
     getTranslations("Dashboard"),
     getMonthSummary(period),
@@ -101,6 +107,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
     // Same per-request cache as the quick-add sheet: tapping a recent entry edits it.
     getCategories(),
     getCategoryUsage(),
+    period.start <= today ? getMovements(period.start, lastDay) : [],
   ]);
 
   const primary = profile.primaryCurrency;
@@ -171,9 +178,12 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
               className="hero-card flex flex-col gap-1.5 rounded-3xl px-5 py-6"
               aria-labelledby="available"
             >
-              <h2 id="available" className="text-sm text-hero-muted">
-                {t("available")}
-              </h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 id="available" className="text-sm text-hero-muted">
+                  {t("available")}
+                </h2>
+                <PrivacyToggle />
+              </div>
               <p
                 className={cn(
                   "text-5xl font-semibold tracking-tight text-brass-light tabular-nums",
@@ -182,11 +192,19 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
               >
                 {formatMoney(m.balanceCents, primary)}
               </p>
-              <p className="text-sm text-hero-muted">
+              {/* tabular-nums: the sentence carries an amount, so it blurs with the rest. */}
+              <p className="text-sm text-hero-muted tabular-nums">
                 {profile.carryOver
                   ? t("availableHintCarry", { amount: formatMoney(carriedCents, primary) })
                   : t("availableHint")}
               </p>
+              {movements.length > 0 && (
+                <div className="-mx-1 mt-2">
+                  <Sparkline
+                    values={dailyBalance(movements, period.start, lastDay, carriedCents)}
+                  />
+                </div>
+              )}
             </section>
 
             <MonthProjection
@@ -215,6 +233,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                 }
               >
                 <TransactionDayList
+                  compact
                   rows={recent}
                   today={today}
                   primaryCurrency={primary}
@@ -318,7 +337,19 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                     return (
                       <li key={c.id} className="flex items-center gap-3 px-4 py-3">
                         <CategoryIcon icon={c.icon} color={c.color} />
-                        <span className="min-w-0 flex-1 truncate">{c.name}</span>
+                        <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+                          <span className="truncate">{c.name}</span>
+                          {/* Its share of the month's spending. */}
+                          <span className="h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
+                            <span
+                              className="grow-x block h-full rounded-full"
+                              style={{
+                                width: `${(c.spentCents / Math.max(summary.expenseCents, 1)) * 100}%`,
+                                backgroundColor: c.color ?? "#64748b",
+                              }}
+                            />
+                          </span>
+                        </span>
                         <span className="flex shrink-0 flex-col items-end">
                           <span className="font-medium tabular-nums">
                             {formatMoney(c.spentCents, primary)}
@@ -438,7 +469,7 @@ async function MonthProjection({
           </dd>
         </div>
       </dl>
-      {perDay && <p className="text-xs text-muted-foreground">{perDay}</p>}
+      {perDay && <p className="text-xs text-muted-foreground tabular-nums">{perDay}</p>}
     </section>
   );
 }

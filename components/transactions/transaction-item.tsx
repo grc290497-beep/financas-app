@@ -19,7 +19,9 @@ export function TransactionItem({
   primaryCurrency,
   categories,
   usage,
+  compact,
 }: {
+  compact?: boolean;
   row: TransactionRow;
   primaryCurrency: Currency;
   categories: Category[];
@@ -71,9 +73,16 @@ export function TransactionItem({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-accent/60 focus-visible:bg-accent/60 focus-visible:outline-none"
+        className={cn(
+          "flex w-full items-center gap-3 px-4 text-left transition-colors hover:bg-accent/60 focus-visible:bg-accent/60 focus-visible:outline-none",
+          compact ? "py-2.5" : "py-3.5",
+        )}
       >
-        <CategoryIcon icon={row.category.icon} color={row.category.color} />
+        <CategoryIcon
+          icon={row.category.icon}
+          color={row.category.color}
+          className={compact ? "size-8" : undefined}
+        />
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="truncate font-medium">{row.description || row.category.name}</span>
           {(showCategory || planned) && (

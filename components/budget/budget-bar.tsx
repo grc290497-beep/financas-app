@@ -32,7 +32,7 @@ export function BudgetBar({
       className="h-2 w-full overflow-hidden rounded-full bg-muted"
     >
       <div
-        className={cn("h-full rounded-full transition-[width]", LEVEL_CLASS[level])}
+        className={cn("grow-x h-full rounded-full", LEVEL_CLASS[level])}
         style={{ width: `${Math.min(percent, 100)}%` }}
       />
     </div>
