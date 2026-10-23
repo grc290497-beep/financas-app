@@ -299,7 +299,6 @@ Tudo é exibido na **moeda primária**, com um toggle para ver os valores na out
 - **Pronto quando:** o app está publicado e usável por qualquer pessoa.
 
 ### Backlog (v2+)
-- Importar extrato do banco em CSV (AIB, Revolut, Nubank, Itaú…) com mapeamento de colunas.
 - Contas/carteiras com saldo próprio e transferências entre elas.
 - Divisão de gastos com outra pessoa (casal).
 - Notificações (conta vencendo, orçamento estourando).
