@@ -14,6 +14,8 @@ import { currentDate, getCategories, getCategoryUsage, listTransactions } from "
 import { cn } from "@/lib/utils";
 import { transactionFiltersSchema } from "@/lib/validators";
 
+const SEARCH_LIMIT = 200;
+
 export default async function TransactionsPage({ searchParams }: PageProps<"/app/transactions">) {
   const t = await getTranslations("Transactions");
 
@@ -47,12 +49,18 @@ async function Transactions({
     : getFinancialPeriod(today, profile.monthStartDay);
   const month = period.start.slice(0, 7);
 
-  const [categories, usage, rows, t] = await Promise.all([
+  // A search looks through every month; one extra row tells whether there are more.
+  const searching = Boolean(filters.q);
+  const [categories, usage, found, t] = await Promise.all([
     getCategories(),
     getCategoryUsage(),
-    listTransactions(filters, period),
+    searching
+      ? listTransactions(filters, null, SEARCH_LIMIT + 1)
+      : listTransactions(filters, period),
     getTranslations("Transactions"),
   ]);
+  const rows = found.slice(0, searching ? SEARCH_LIMIT : undefined);
+  const truncated = searching && found.length > SEARCH_LIMIT;
 
   const primary = profile.primaryCurrency;
   const income = sumConfirmed(rows, "income");
@@ -61,7 +69,7 @@ async function Transactions({
 
   // In the current month, what is still to come stays folded until asked for;
   // a future month is opened precisely to see it, so it shows everything.
-  const isCurrent = period.start <= today && today <= period.end;
+  const isCurrent = !searching && period.start <= today && today <= period.end;
   const showFuture = raw.futuros === "1";
   const future = isCurrent ? rows.filter((r) => r.occurredOn > today) : [];
   const shown = showFuture ? rows : rows.filter((r) => !future.includes(r));
@@ -104,6 +112,12 @@ async function Transactions({
           />
         </dl>
         <p className="border-t px-4 py-2.5 text-xs text-muted-foreground">
+          {searching && (
+            <span className="font-medium text-foreground">
+              {t("searchAll", { count: rows.length })}
+              {truncated && ` ${t("searchMore", { limit: SEARCH_LIMIT })}`} ·{" "}
+            </span>
+          )}
           {t("summary.inPrimary", { currency: primary })}
           {shown.some((r) => r.status === "planned") && <> · {t("plannedHint")}</>}
         </p>

@@ -123,7 +123,8 @@ export const getCategoryUsage = cache(async (): Promise<Record<string, number>> 
 
 export async function listTransactions(
   filters: TransactionFilters,
-  { start: from, end: to }: Period,
+  /** null: every month (the search on Lançamentos). */
+  period: Period | null,
   limit = 500,
 ): Promise<TransactionRow[]> {
   const supabase = await createClient();
@@ -134,12 +135,11 @@ export async function listTransactions(
       "id, type, category_id, description, amount_cents, currency, fx_rate, amount_primary_cents, occurred_on, status, recurring_item_id, categories (name, icon, color)",
     )
     .neq("status", "skipped") // removed fixed-cost occurrences (see deleteTransaction)
-    .gte("occurred_on", from)
-    .lte("occurred_on", to)
     .order("occurred_on", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(limit);
 
+  if (period) query = query.gte("occurred_on", period.start).lte("occurred_on", period.end);
   if (filters.type) query = query.eq("type", filters.type);
   if (filters.currency) query = query.eq("currency", filters.currency);
   if (filters.category) query = query.eq("category_id", filters.category);

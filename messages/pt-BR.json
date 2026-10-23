@@ -553,6 +553,8 @@
     "showFuture": "Ver futuros deste mês ({count})",
     "hideFuture": "Esconder futuros",
     "plannedHint": "Totais contam só o que já foi pago ou recebido.",
+    "searchAll": "{count, plural, =0 {Nenhum resultado em todos os meses} one {Buscando em todos os meses · # resultado} other {Buscando em todos os meses · # resultados}}",
+    "searchMore": "(mostrando os {limit} mais recentes)",
     "errors": {
       "invalidInput": "Confira os campos destacados.",
       "categoryInvalid": "Essa categoria não serve para esse tipo de lançamento.",
