@@ -38,6 +38,7 @@ export function Sparkline({ values }: { values: number[] }) {
         strokeWidth="2"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
+        pathLength={1}
         className="draw-line"
       />
     </svg>

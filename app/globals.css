@@ -300,3 +300,52 @@ html[data-privacy] .tabular-nums:not(input):not(.privacy-safe) {
     transform: scaleX(0);
   }
 }
+
+/* Screens in the app rise in, block after block, when they open (or come back). */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+[data-bottom-nav] ~ main > * {
+  animation: rise 420ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+[data-bottom-nav] ~ main > :nth-child(2) {
+  animation-delay: 40ms;
+}
+[data-bottom-nav] ~ main > :nth-child(3) {
+  animation-delay: 80ms;
+}
+[data-bottom-nav] ~ main > :nth-child(4) {
+  animation-delay: 120ms;
+}
+[data-bottom-nav] ~ main > :nth-child(n + 5) {
+  animation-delay: 160ms;
+}
+
+/* The hero sparkline draws itself (its path has pathLength="1"). */
+.draw-line {
+  stroke-dasharray: 1;
+  animation: draw-line 900ms cubic-bezier(0.23, 1, 0.32, 1) 150ms both;
+}
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* "Reduzir movimento" on the device: no entrances, no drawing, no growing. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

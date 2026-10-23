@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { ReceiptText } from "lucide-react";
 import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { BudgetBar } from "@/components/budget/budget-bar";
+import { AnimatedMoney } from "@/components/dashboard/animated-money";
 import { PrivacyToggle } from "@/components/dashboard/privacy-toggle";
 import { Sparkline } from "@/components/dashboard/sparkline";
 import { InstallAppButton } from "@/components/pwa/install-app";
@@ -190,7 +191,7 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
                   m.balanceCents < 0 && "text-hero-negative",
                 )}
               >
-                {formatMoney(m.balanceCents, primary)}
+                <AnimatedMoney id="available" cents={m.balanceCents} currency={primary} />
               </p>
               {/* tabular-nums: the sentence carries an amount, so it blurs with the rest. */}
               <p className="text-sm text-hero-muted tabular-nums">
@@ -459,7 +460,7 @@ async function MonthProjection({
               short ? "text-negative" : "text-positive",
             )}
           >
-            {formatMoney(Math.abs(m.leftoverCents), primary)}
+            <AnimatedMoney id="leftover" cents={Math.abs(m.leftoverCents)} currency={primary} />
           </dd>
         </div>
         <div className="flex items-center justify-between gap-3 text-muted-foreground">
