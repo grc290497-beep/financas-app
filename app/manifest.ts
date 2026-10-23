@@ -46,8 +46,8 @@ export default function manifest(): MetadataRoute.Manifest {
 // wants 320–3840 px and a long side at most 2.3× the short one.
 const SCREENSHOTS: MetadataRoute.Manifest["screenshots"] = [
   ["inicio", "Quanto você tem agora e quanto vai sobrar"],
-  ["lancamento", "Um gasto anotado em segundos"],
-  ["metas", "Metas com parcela do mês"],
+  ["lancamento", "Registre um gasto em segundos"],
+  ["metas", "Quanto guardar por mês para cada meta"],
   ["cambio", "Euro e real lado a lado"],
 ].map(([name, label]) => ({
   src: `/screenshots/${name}.jpg`,

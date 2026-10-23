@@ -255,12 +255,12 @@
     "menu": "Abrir menu"
   },
   "Landing": {
-    "eyebrow": "Finanças pessoais para quem vive entre o euro e o real",
+    "eyebrow": "Para quem vive entre o euro e o real",
     "title": "Seu dinheiro em euro e real, sem planilha",
-    "subtitle": "Registre o que entra e o que sai, veja quanto tem disponível agora e quanto vai sobrar no fim do mês. Tudo convertido para a sua moeda principal.",
+    "subtitle": "Registre o que entra e o que sai, veja quanto você tem hoje e quanto deve sobrar no fim do mês. Tudo convertido para a sua moeda principal.",
     "cta": "Criar conta grátis",
     "login": "Entrar",
-    "trust": "Grátis · Funciona no celular como app · Dados guardados na União Europeia",
+    "trust": "Grátis · Funciona como app no celular · Dados guardados na União Europeia",
     "sample": "Exemplo",
     "printLabel": "Exemplo de tela do app: {name}",
     "sections": {
@@ -269,38 +269,38 @@
       },
       "quickAdd": {
         "kicker": "Lançamento rápido",
-        "title": "Um gasto anotado em menos de 10 segundos",
-        "body": "Toque no +, digite o valor e escolha a categoria. As que você mais usa aparecem primeiro. Gastou em reais? Escolha BRL e o app converte pela cotação do dia."
+        "title": "Registre um gasto em menos de 10 segundos",
+        "body": "Toque no +, digite o valor e escolha a categoria. As que você mais usa aparecem primeiro. Pagou em reais? É só escolher BRL que o app converte pela cotação do dia."
       },
       "goals": {
         "kicker": "Metas",
-        "title": "Metas com parcela do mês e data de chegada",
-        "body": "Diga quanto quer juntar e até quando. O app calcula quanto guardar por mês e avisa se você está no ritmo ou se precisa ajustar."
+        "title": "Saiba quanto guardar por mês e quando vai chegar lá",
+        "body": "Diga quanto quer juntar e até quando. O app mostra quanto separar por mês e avisa se você está no ritmo ou se precisa ajustar."
       },
       "exchange": {
         "kicker": "Câmbio",
         "title": "Euro e real lado a lado",
-        "body": "Conversor com a cotação oficial do Banco Central Europeu e o histórico das últimas semanas e meses, para saber a hora de mandar dinheiro."
+        "body": "Converta com a cotação oficial do Banco Central Europeu e acompanhe o histórico das últimas semanas e meses para escolher a melhor hora de mandar dinheiro."
       }
     },
     "more": {
-      "title": "E mais o que você precisa no dia a dia",
-      "fixed": "Fixos que se lançam sozinhos",
-      "fixedHint": "Aluguel, contas e salário, mensais, quinzenais ou semanais.",
+      "title": "E tudo o que você precisa no dia a dia",
+      "fixed": "Contas fixas no automático",
+      "fixedHint": "Aluguel, internet e salário entram sozinhos, todo mês, a cada 15 dias ou toda semana.",
       "budget": "Orçamento por categoria",
-      "budgetHint": "Barras que avisam quando o limite está chegando.",
+      "budgetHint": "Você é avisado quando estiver chegando perto do limite.",
       "reports": "Relatórios mês a mês",
-      "reportsHint": "Entradas, gastos e sobra de cada mês num gráfico.",
-      "month": "Mês do seu jeito",
-      "monthHint": "O mês começa no dia em que cai o seu salário.",
+      "reportsHint": "Entradas, gastos e o que sobrou em cada mês, num gráfico só.",
+      "month": "O mês do seu jeito",
+      "monthHint": "Faça o mês começar no dia em que o salário cai.",
       "export": "Seus dados são seus",
       "exportHint": "Exporte tudo em CSV ou JSON quando quiser.",
       "app": "Instale como app",
-      "appHint": "Adicione à tela inicial e use como um app, no claro ou no escuro."
+      "appHint": "Coloque na tela inicial e use como qualquer app, no tema claro ou escuro."
     },
     "final": {
-      "title": "Comece hoje, do zero",
-      "body": "Crie a conta, informe quanto tem agora e faça o primeiro lançamento em um minuto."
+      "title": "Comece hoje mesmo",
+      "body": "Crie sua conta, informe quanto você tem hoje e faça o primeiro lançamento em um minuto."
     },
     "mock": {
       "greeting": "Olá, Ana!",
