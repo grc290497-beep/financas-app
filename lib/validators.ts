@@ -73,10 +73,34 @@ const openingBalance = z
     return negative ? -cents : cents;
   });
 
+// Onboarding's optional salary and rent: empty skips them.
+const optionalAmount = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value, ctx) => {
+    if (!value) return null;
+    const cents = parseAmount(value);
+    if (cents === null || cents <= 0 || cents > MAX_AMOUNT_CENTS) {
+      ctx.addIssue({ code: "custom", message: "amountInvalid" });
+      return z.NEVER;
+    }
+    return cents;
+  });
+const dueDay = z.coerce
+  .number({ error: "dayOfMonthInvalid" })
+  .int({ error: "dayOfMonthInvalid" })
+  .min(1, { error: "dayOfMonthInvalid" })
+  .max(31, { error: "dayOfMonthInvalid" });
+
 export const onboardingSchema = z.object({
   primaryCurrency: z.enum(CURRENCIES, { error: "currencyRequired" }),
   monthStartDay,
   openingBalance,
+  salary: optionalAmount,
+  salaryDay: dueDay.optional(),
+  rent: optionalAmount,
+  rentDay: dueDay.optional(),
 });
 export type OnboardingInput = z.input<typeof onboardingSchema>;
 

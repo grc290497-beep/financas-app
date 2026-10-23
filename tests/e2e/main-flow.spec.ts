@@ -52,6 +52,9 @@ test("sign in, set up, log an expense and create a goal", async ({ page }) => {
   await page.getByRole("button", { name: "Continuar" }).click();
   await expect(page.getByText("Quanto você tem hoje?")).toBeVisible();
   await page.getByLabel("Saldo atual").fill("1.000,00");
+  await page.getByRole("button", { name: "Continuar" }).click();
+  await expect(page.getByText("Salário e aluguel")).toBeVisible();
+  await page.locator("#salary").fill("2.500,00");
   await page.getByRole("button", { name: "Concluir" }).click();
   await expect(page).toHaveURL(/\/app$/);
   await page.waitForLoadState("networkidle");

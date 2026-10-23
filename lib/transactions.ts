@@ -23,6 +23,8 @@ export type TransactionRow = {
   status: "planned" | "confirmed";
   recurringItemId: string | null;
   category: Pick<Category, "name" | "icon" | "color">;
+  /** Owned by a goal contribution: deleting it also removes the contribution. */
+  goalLinked: boolean;
 };
 
 /** Today (yyyy-MM-dd, UTC). Request time only. */
@@ -132,7 +134,7 @@ export async function listTransactions(
   let query = supabase
     .from("transactions")
     .select(
-      "id, type, category_id, description, amount_cents, currency, fx_rate, amount_primary_cents, occurred_on, status, recurring_item_id, categories (name, icon, color)",
+      "id, type, category_id, description, amount_cents, currency, fx_rate, amount_primary_cents, occurred_on, status, recurring_item_id, categories (name, icon, color), goal_contributions (id)",
     )
     .neq("status", "skipped") // removed fixed-cost occurrences (see deleteTransaction)
     .order("occurred_on", { ascending: false })
@@ -161,6 +163,10 @@ export async function listTransactions(
     status: t.status as TransactionRow["status"],
     recurringItemId: t.recurring_item_id,
     category: t.categories as unknown as TransactionRow["category"],
+    // One-to-one (unique transaction_id): PostgREST may return an object, null or a list.
+    goalLinked: Array.isArray(t.goal_contributions)
+      ? t.goal_contributions.length > 0
+      : !!t.goal_contributions,
   }));
 }
 

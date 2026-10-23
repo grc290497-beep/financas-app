@@ -34,8 +34,17 @@ import {
 import { zodResolver } from "@/lib/zod-resolver";
 import { useValidationMessage } from "./use-validation-message";
 
-const STEPS = ["currency", "monthStart", "balance"] as const;
+const STEPS = ["currency", "monthStart", "balance", "fixed"] as const;
 const DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
+const DUE_DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
+// Where each field lives, to jump back to the step with an error on submit.
+const FIELD_STEP: Record<string, number> = {
+  primaryCurrency: 0,
+  monthStartDay: 1,
+  openingBalance: 2,
+  salary: 3,
+  rent: 3,
+};
 
 export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingInput }) {
   const t = useTranslations("Onboarding");
@@ -68,7 +77,13 @@ export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingI
     });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, (invalid) =>
+        setStep(Math.min(...Object.keys(invalid).map((field) => FIELD_STEP[field] ?? step))),
+      )}
+      noValidate
+      className="flex flex-col gap-6"
+    >
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {t("step", { current: step + 1, total: STEPS.length })}
       </p>
@@ -174,7 +189,67 @@ export function OnboardingWizard({ defaultValues }: { defaultValues: OnboardingI
         </FieldSet>
       )}
 
+      {STEPS[step] === "fixed" && (
+        <FieldSet>
+          <FieldLegend className="text-lg">{t("fixed.title")}</FieldLegend>
+          <FieldDescription>{t("fixed.description")}</FieldDescription>
+          {(["salary", "rent"] as const).map((item) => {
+            const dayField = item === "salary" ? "salaryDay" : "rentDay";
+            return (
+              <div key={item} className="surface flex flex-col gap-3 p-4">
+                <span className="font-medium">{t(`fixed.${item}`)}</span>
+                <div className="grid grid-cols-[1fr_7.5rem] gap-3">
+                  <Field data-invalid={!!errors[item]}>
+                    <FieldLabel htmlFor={item} className="sr-only">
+                      {t("fixed.amount")}
+                    </FieldLabel>
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">
+                        {primaryCurrency === "EUR" ? "€" : "R$"}
+                      </span>
+                      <Input
+                        id={item}
+                        inputMode="decimal"
+                        autoComplete="off"
+                        placeholder="0,00"
+                        aria-invalid={!!errors[item]}
+                        className="tabular-nums"
+                        {...register(item)}
+                      />
+                    </div>
+                    <FieldError errors={validationMessage(errors[item])} />
+                  </Field>
+                  <Controller
+                    control={control}
+                    name={dayField}
+                    render={({ field }) => (
+                      <Select
+                        value={String(field.value ?? 1)}
+                        onValueChange={(value) => field.onChange(Number(value))}
+                      >
+                        <SelectTrigger aria-label={t("fixed.day")} className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DUE_DAYS.map((day) => (
+                            <SelectItem key={day} value={String(day)}>
+                              {t("fixed.dayValue", { day })}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+              </div>
+            );
+          })}
+          <FieldDescription>{t("fixed.skipHint")}</FieldDescription>
+        </FieldSet>
+      )}
+
       <div className="flex gap-3">
+        {" "}
         {step > 0 && (
           <Button
             type="button"

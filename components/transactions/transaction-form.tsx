@@ -58,6 +58,7 @@ export type TransactionFormInitial = {
   description: string;
   /** The rate frozen when the transaction was saved. */
   fxRate: string;
+  goalLinked?: boolean;
 };
 
 type Props = {
@@ -67,6 +68,8 @@ type Props = {
   today: string;
   initial?: TransactionFormInitial;
   onDone: () => void;
+  /** Deletes with an undo toast (the row runs it); goal entries confirm in a dialog instead. */
+  onDelete?: () => void;
 };
 
 export function TransactionForm({
@@ -76,6 +79,7 @@ export function TransactionForm({
   today,
   initial,
   onDone,
+  onDelete: onDeferredDelete,
 }: Props) {
   const t = useTranslations("Transactions");
   const validationMessage = useValidationMessage();
@@ -94,7 +98,15 @@ export function TransactionForm({
   } = useForm<TransactionInput, unknown, TransactionData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: initial
-      ? { ...initial, fxRate: "" }
+      ? {
+          type: initial.type,
+          amount: initial.amount,
+          currency: initial.currency,
+          categoryId: initial.categoryId,
+          occurredOn: initial.occurredOn,
+          description: initial.description,
+          fxRate: "",
+        }
       : {
           type: "expense",
           amount: "",
@@ -275,7 +287,9 @@ export function TransactionForm({
             size="lg"
             className="text-destructive"
             disabled={pending}
-            onClick={() => setConfirmDelete(true)}
+            onClick={() =>
+              onDeferredDelete && !initial.goalLinked ? onDeferredDelete() : setConfirmDelete(true)
+            }
           >
             {t("form.delete")}
           </Button>

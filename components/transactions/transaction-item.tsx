@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { deleteTransaction } from "@/lib/actions/transactions";
 import type { Category } from "@/lib/categories";
 import { formatAmountInput, formatMoney } from "@/lib/money";
 import type { TransactionRow } from "@/lib/transactions";
@@ -25,12 +27,44 @@ export function TransactionItem({
 }) {
   const t = useTranslations("Transactions");
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const sign = row.type === "income" ? "+" : "−";
   const planned = row.status === "planned";
   // "Salario · Salário" says the same thing twice; only name the category when it adds something.
   const showCategory =
     !!row.description &&
     row.description.localeCompare(row.category.name, "pt-BR", { sensitivity: "base" }) !== 0;
+
+  // Undo instead of "are you sure?": the row hides at once and the delete only
+  // runs when the toast closes without "Desfazer".
+  const deleteWithUndo = () => {
+    setOpen(false);
+    setHidden(true);
+    let settled = false;
+    const commit = async () => {
+      if (settled) return;
+      settled = true;
+      const result = await deleteTransaction(row.id);
+      if (result.status === "error") {
+        setHidden(false);
+        toast.error(t(`errors.${result.error}` as Parameters<typeof t>[0]));
+      }
+    };
+    toast(t("form.deleted"), {
+      duration: 5000,
+      action: {
+        label: t("undo"),
+        onClick: () => {
+          settled = true;
+          setHidden(false);
+        },
+      },
+      onAutoClose: commit,
+      onDismiss: commit,
+    });
+  };
+
+  if (hidden) return null;
 
   return (
     <>
@@ -95,8 +129,10 @@ export function TransactionItem({
                   occurredOn: row.occurredOn,
                   description: row.description ?? "",
                   fxRate: row.fxRate,
+                  goalLinked: row.goalLinked,
                 }}
                 onDone={() => setOpen(false)}
+                onDelete={deleteWithUndo}
               />
             )}
           </div>

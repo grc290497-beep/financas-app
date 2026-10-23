@@ -103,7 +103,8 @@ export function RecurringForm({
       currency: primaryCurrency,
       categoryId: "",
       frequency: "monthly",
-      dayOfMonth: String(Number(today.slice(8, 10))),
+      // Chosen on purpose: a default of today would make the bill due (and paid) at once.
+      dayOfMonth: "",
       // From the 1st of this month, so a bill set up mid-month still shows
       // this month's occurrence (to mark as paid) instead of skipping to next.
       startOn: `${today.slice(0, 8)}01`,
@@ -116,6 +117,12 @@ export function RecurringForm({
     name: ["type", "currency", "categoryId", "frequency", "dayOfMonth"],
   });
   const chips = useMemo(() => categoriesFor(categories, type), [categories, type]);
+  // Everyday categories fold away: fixed costs rarely live there.
+  const [showAll, setShowAll] = useState(false);
+  const everyday = chips.filter((c) => c.kind === "variable");
+  const foldEveryday =
+    !showAll && everyday.length > 0 && !everyday.some((c) => c.id === categoryId);
+  const shownChips = foldEveryday ? chips.filter((c) => c.kind !== "variable") : chips;
 
   const onSubmit = () =>
     startTransition(async () => {
@@ -206,10 +213,19 @@ export function RecurringForm({
           <FieldLegend variant="label">{t("form.category")}</FieldLegend>
           <CategoryChips
             label={t("form.category")}
-            categories={chips}
+            categories={shownChips}
             value={categoryId}
             onChange={(id) => setValue("categoryId", id, { shouldValidate: true })}
           />
+          {foldEveryday && (
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="self-start text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              {t("form.moreCategories", { count: everyday.length })}
+            </button>
+          )}
           <FieldError errors={validationMessage(errors.categoryId)} />
         </FieldSet>
 
@@ -243,7 +259,7 @@ export function RecurringForm({
                 onValueChange={(value) => setValue("dayOfMonth", value, { shouldValidate: true })}
               >
                 <SelectTrigger id="dayOfMonth" className="w-full">
-                  <SelectValue />
+                  <SelectValue placeholder={t("form.dayPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {DAYS.map((day) => (

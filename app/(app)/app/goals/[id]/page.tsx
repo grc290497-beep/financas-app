@@ -95,24 +95,18 @@ async function GoalDetail({ params }: { params: PageProps<"/app/goals/[id]">["pa
         <p className="text-base font-medium">
           {m.status === "done"
             ? t("planDone")
-            : m.dueThisMonthCents > 0
-              ? t("thisMonthDue", {
-                  due: money(m.dueThisMonthCents),
-                  installment: money(m.installmentCents),
-                })
-              : t("thisMonthDone")}
+            : m.dueThisMonthCents <= 0
+              ? t("thisMonthDone")
+              : m.contributedThisMonthCents > 0
+                ? t("thisMonthDue", {
+                    due: money(m.dueThisMonthCents),
+                    installment: money(m.installmentCents),
+                  })
+                : t("thisMonthStart", { amount: money(m.dueThisMonthCents) })}
         </p>
         <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
           <Metric label={t("metrics.saved")} value={money(m.accumulatedCents)} />
           <Metric label={t("metrics.remaining")} value={money(m.remainingCents)} />
-          <Metric
-            label={t("metrics.thisMonth")}
-            value={money(m.dueThisMonthCents)}
-            hint={t("metrics.ofInstallment", {
-              installment: money(m.installmentCents),
-              contributed: money(m.contributedThisMonthCents),
-            })}
-          />
           {m.laterMonthlyCents !== null && (
             <Metric
               label={t("metrics.later")}
@@ -120,10 +114,13 @@ async function GoalDetail({ params }: { params: PageProps<"/app/goals/[id]">["pa
               hint={t("metrics.monthsLeft", { count: m.monthsRemaining - 1 })}
             />
           )}
-          <Metric
-            label={t("metrics.pace")}
-            value={t("metrics.perMonth", { amount: money(m.pacePerMonthCents) })}
-          />
+          {/* A new goal has no pace yet; "€ 0,00/mês" would read as a warning. */}
+          {m.pacePerMonthCents > 0 && (
+            <Metric
+              label={t("metrics.pace")}
+              value={t("metrics.perMonth", { amount: money(m.pacePerMonthCents) })}
+            />
+          )}
           {m.status !== "done" && (
             <Metric
               label={m.planEndsOn ? t("metrics.planEnd") : t("metrics.overdue")}

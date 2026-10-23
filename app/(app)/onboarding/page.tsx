@@ -30,6 +30,10 @@ async function Onboarding() {
         primaryCurrency: profile.primaryCurrency,
         monthStartDay: profile.monthStartDay,
         openingBalance: "",
+        salary: "",
+        salaryDay: 5,
+        rent: "",
+        rentDay: 1,
       }}
     />
   );

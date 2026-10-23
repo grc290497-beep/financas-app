@@ -121,12 +121,14 @@ async function Goals({ searchParams }: { searchParams: PageProps<"/app/goals">["
                         ? t("planDone")
                         : view.kind === "future"
                           ? t("monthPlanned", { month: viewedLabel, amount: money(view.cents) })
-                          : view.cents > 0
-                            ? t("thisMonthDue", {
-                                due: money(view.cents),
-                                installment: money(m.installmentCents),
-                              })
-                            : t("thisMonthDone")}
+                          : view.cents <= 0
+                            ? t("thisMonthDone")
+                            : m.contributedThisMonthCents > 0
+                              ? t("thisMonthDue", {
+                                  due: money(view.cents),
+                                  installment: money(m.installmentCents),
+                                })
+                              : t("thisMonthStart", { amount: money(view.cents) })}
                   </span>
                   {view.kind === "current" &&
                     m.status !== "done" &&
