@@ -355,3 +355,19 @@ html[data-privacy] .tabular-nums:not(input):not(.privacy-safe) {
     scroll-behavior: auto !important;
   }
 }
+
+/* Public navbar on phones: the current section's chip slides in when it changes. */
+@utility animate-section-chip {
+  animation: section-chip 260ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+@keyframes section-chip {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+}
+
+/* The landing's navbar links scroll smoothly to their section. */
+html:has(#inicio) {
+  scroll-behavior: smooth;
+}

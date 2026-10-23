@@ -245,6 +245,7 @@
   "SiteHeader": {
     "label": "Seções do site",
     "home": "Página inicial",
+    "start": "Início",
     "quickAdd": "Lançamentos",
     "goals": "Metas",
     "exchange": "Câmbio",

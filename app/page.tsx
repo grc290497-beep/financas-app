@@ -58,7 +58,10 @@ export default async function Home() {
 
       <main className="flex flex-col gap-24 pb-24 sm:gap-32">
         {/* Hero: the pitch on the left, the dashboard on a phone on the right. */}
-        <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pt-8 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-16">
+        <section
+          id="inicio"
+          className="mx-auto grid w-full max-w-6xl scroll-mt-24 items-center gap-12 px-4 pt-8 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-16"
+        >
           <div className="flex flex-col gap-6">
             <span className="self-start rounded-full bg-brass/15 px-3 py-1 text-xs font-medium text-brass-dark dark:text-brass">
               {t("eyebrow")}
