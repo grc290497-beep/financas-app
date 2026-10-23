@@ -163,7 +163,9 @@ test("search looks through every month", async ({ page }) => {
   });
 
   await page.goto("/app/transactions?q=netflix");
-  await expect(page.getByText("Buscando em todos os meses · 2 resultados")).toBeVisible();
+  await expect(
+    page.getByText("Buscando em todos os meses · 2 resultados").filter({ visible: true }),
+  ).toBeVisible();
 });
 
 test("Desfazer brings a deleted entry back", async ({ page }) => {

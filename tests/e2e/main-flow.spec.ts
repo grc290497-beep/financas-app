@@ -60,10 +60,11 @@ test("sign in, set up, log an expense and create a goal", async ({ page }) => {
   await page.waitForLoadState("networkidle");
 
   await page.getByRole("button", { name: "Novo lançamento" }).first().click();
-  await page.getByLabel("Valor").fill("12,50");
-  await page.getByRole("radio", { name: "Mercado" }).click();
-  await page.getByLabel("Descrição").fill("Pão");
-  await page.getByRole("button", { name: "Salvar" }).click();
+  const sheet = page.getByRole("dialog");
+  await sheet.getByLabel("Valor").fill("12,50");
+  await sheet.getByRole("radio", { name: "Mercado" }).click();
+  await sheet.getByLabel("Descrição").fill("Pão");
+  await sheet.getByRole("button", { name: "Salvar" }).click();
   await expect(page.getByText("Lançamento salvo.")).toBeVisible();
 
   await page.goto("/app/transactions");

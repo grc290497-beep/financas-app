@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { QUICK_ADD_EVENT } from "@/components/nav/nav-items";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { Category } from "@/lib/categories";
 import type { Currency } from "@/lib/validators";
 import { TransactionForm } from "./transaction-form";
 
-/** Floating "+" that opens the quick-add sheet. Always visible on mobile. */
+/** The quick-add sheet, opened by the "+" buttons in the navigation (or /app?novo=1). */
 export function QuickAdd(props: {
   categories: Category[];
   usage: Record<string, number>;
@@ -41,16 +40,18 @@ export function QuickAdd(props: {
     return () => clearTimeout(timer);
   }, []);
 
+  // The "+" in the tab bar and the sidebar's button (components/nav/app-nav.tsx).
+  useEffect(() => {
+    window.addEventListener(QUICK_ADD_EVENT, openSheet);
+    window.__quickAddReady = true;
+    return () => {
+      window.removeEventListener(QUICK_ADD_EVENT, openSheet);
+      window.__quickAddReady = false;
+    };
+  }, []);
+
   return (
     <>
-      <Button
-        size="icon-lg"
-        onClick={openSheet}
-        aria-label={t("add")}
-        className="metal-brass active:scale-[0.94] fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-40 size-14 rounded-full hover:brightness-105 md:right-8 md:bottom-8"
-      >
-        <Plus className="size-6" aria-hidden />
-      </Button>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="bottom"

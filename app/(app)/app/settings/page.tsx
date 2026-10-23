@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import { InstallAppButton } from "@/components/pwa/install-app";
 import { BalanceForm } from "@/components/settings/balance-form";
 import { NotificationSettings } from "@/components/settings/notification-settings";
@@ -9,7 +9,9 @@ import { DeleteAccount } from "@/components/settings/delete-account";
 import { ExportLinks } from "@/components/settings/export-links";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { ThemeSelect } from "@/components/settings/theme-select";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { signOut } from "@/lib/actions/auth";
 import { requireProfile, requireUser } from "@/lib/auth";
 import { formatAmountInput } from "@/lib/money";
 
@@ -26,10 +28,11 @@ export default function SettingsPage() {
 async function Settings() {
   // Profile first: it resolves the session (request time) before anything else.
   const profile = await requireProfile();
-  const [user, t, tFooter] = await Promise.all([
+  const [user, t, tFooter, tCommon] = await Promise.all([
     requireUser(),
     getTranslations("Settings"),
     getTranslations("Footer"),
+    getTranslations("Common"),
   ]);
 
   // The currency stays read-only: changing it would have to re-price every transaction.
@@ -134,6 +137,13 @@ async function Settings() {
           </li>
         </ul>
       </Section>
+
+      <form action={signOut}>
+        <Button type="submit" variant="outline" className="w-full sm:w-auto">
+          <LogOut aria-hidden />
+          {tCommon("signOut")}
+        </Button>
+      </form>
 
       <Section title={t("delete.section")} hint={t("delete.hint")}>
         <DeleteAccount />

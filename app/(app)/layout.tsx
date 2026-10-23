@@ -1,38 +1,46 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { LogOut, Settings } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
-import { Button } from "@/components/ui/button";
-import { signOut } from "@/lib/actions/auth";
+import { Avatar } from "@/components/nav/avatar";
+import { requireProfile, requireUser } from "@/lib/auth";
 
+// Phones (and onboarding): logo and the account avatar. Inside /app from md up
+// the sidebar takes over (globals.css hides this header there).
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const t = await getTranslations("Common");
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="border-b bg-card/60 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 w-full max-w-3xl lg:max-w-5xl items-center justify-between px-4">
+      <header className="app-header sticky top-0 z-20 border-b bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4">
           <Link href="/app">
             <Logo name={t("appName")} />
           </Link>
-          <div className="flex items-center gap-1">
-            {/* Ajustes sits here instead of a sixth tab; revisited in the design pass. */}
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/app/settings">
-                <Settings aria-hidden />
-                {t("settings")}
-              </Link>
-            </Button>
-            <form action={signOut}>
-              <Button type="submit" variant="ghost" size="sm">
-                <LogOut aria-hidden />
-                {t("signOut")}
-              </Button>
-            </form>
-          </div>
+          <Suspense fallback={<span className="size-8" />}>
+            <AccountLink />
+          </Suspense>
         </div>
       </header>
       {children}
     </div>
+  );
+}
+
+async function AccountLink() {
+  const [profile, user, t] = await Promise.all([
+    requireProfile(),
+    requireUser(),
+    getTranslations("Nav"),
+  ]);
+  const name = profile.displayName || user.email || "";
+  return (
+    <Link
+      href="/app/settings"
+      aria-label={t("account")}
+      className="rounded-full transition-transform duration-150 active:scale-[0.94]"
+    >
+      <Avatar initial={name.charAt(0) || "?"} className="size-9" />
+    </Link>
   );
 }

@@ -55,6 +55,8 @@
   --color-negative: var(--negative);
   --color-warning: var(--warning);
   --color-brass-light: var(--brass-light);
+  /* Brass as text on light surfaces, where the plain brass is too pale to read. */
+  --color-brass-dark: var(--brass-dark);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -273,4 +275,11 @@
    Unlayered so no layered rule can override it. */
 body:has([data-bottom-nav]) .site-footer {
   display: none;
+}
+
+/* From md up the app's sidebar carries the logo and account: no top header. */
+@media (width >= 48rem) {
+  body:has([data-sidebar]) .app-header {
+    display: none;
+  }
 }

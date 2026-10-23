@@ -471,6 +471,12 @@
     "goals": "Metas",
     "reports": "Relatórios",
     "exchange": "Câmbio",
+    "budget": "Orçamento",
+    "categories": "Categorias",
+    "settings": "Ajustes",
+    "more": "Mais",
+    "add": "Novo lançamento",
+    "account": "Sua conta e ajustes",
     "main": "Navegação principal"
   },
   "Exchange": {
