@@ -35,7 +35,7 @@ export function AppNav() {
       aria-label={t("main")}
       className="fixed inset-x-0 bottom-0 z-30 border-t bg-card/90 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_28px_-20px_oklch(0_0_0/0.35)] backdrop-blur md:static md:order-first md:border-t-0 md:border-b md:bg-card/60 md:pb-0 md:shadow-none"
     >
-      <ul className="mx-auto flex max-w-3xl md:gap-1 md:px-4">
+      <ul className="mx-auto flex max-w-3xl lg:max-w-5xl md:gap-1 md:px-4">
         {ITEMS.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
           return (

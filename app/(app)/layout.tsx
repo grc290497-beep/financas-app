@@ -11,7 +11,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b bg-card/60 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between px-4">
+        <div className="mx-auto flex h-14 w-full max-w-3xl lg:max-w-5xl items-center justify-between px-4">
           <Link href="/app">
             <Logo name={t("appName")} />
           </Link>

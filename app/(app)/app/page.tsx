@@ -38,7 +38,7 @@ const signedPercent = new Intl.NumberFormat("pt-BR", {
 
 export default function DashboardPage({ searchParams }: PageProps<"/app">) {
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6">
+    <main className="mx-auto flex w-full max-w-3xl lg:max-w-5xl flex-1 flex-col gap-6 px-4 py-6">
       <Suspense fallback={<DashboardSkeleton />}>
         <Dashboard searchParams={searchParams} />
       </Suspense>
@@ -161,188 +161,193 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
           </Button>
         </section>
       ) : (
-        <>
-          {/* The one coloured region: what there is to work with today. */}
-          <section
-            className="hero-card flex flex-col gap-1.5 rounded-3xl px-5 py-6"
-            aria-labelledby="available"
-          >
-            <h2 id="available" className="text-sm text-hero-muted">
-              {t("available")}
-            </h2>
-            <p
-              className={cn(
-                "text-5xl font-semibold tracking-tight text-brass-light tabular-nums",
-                m.balanceCents < 0 && "text-hero-negative",
-              )}
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+          <div className="flex flex-col gap-6">
+            {/* The one coloured region: what there is to work with today. */}
+            <section
+              className="hero-card flex flex-col gap-1.5 rounded-3xl px-5 py-6"
+              aria-labelledby="available"
             >
-              {formatMoney(m.balanceCents, primary)}
-            </p>
-            <p className="text-sm text-hero-muted">
-              {profile.carryOver
-                ? t("availableHintCarry", { amount: formatMoney(carriedCents, primary) })
-                : t("availableHint")}
-            </p>
-          </section>
-
-          <MonthProjection
-            m={m}
-            primary={primary}
-            perDay={
-              isCurrent && m.leftoverPerDayCents !== null
-                ? t("perDay", {
-                    amount: formatMoney(m.leftoverPerDayCents, primary),
-                    days: daysLeft(period, today),
-                  })
-                : null
-            }
-          />
-
-          {recent.length > 0 && (
-            <Section
-              title={t("recent")}
-              action={
-                <Link
-                  href={isCurrent ? "/app/transactions" : `/app/transactions?month=${month}`}
-                  className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                >
-                  {t("seeAll")}
-                </Link>
-              }
-            >
-              <ul className="surface divide-y">
-                {recent.map((row) => (
-                  <li key={row.id}>
-                    <TransactionItem
-                      row={row}
-                      primaryCurrency={primary}
-                      categories={categories}
-                      usage={usage}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </Section>
-          )}
-
-          {highlightedGoals.length > 0 && (
-            <Section
-              title={t("goals")}
-              action={
-                <Link
-                  href="/app/goals"
-                  className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                >
-                  {t("seeGoals")}
-                </Link>
-              }
-            >
-              <ul className="surface flex flex-col gap-4 p-4">
-                {highlightedGoals.map((goal) => {
-                  const g = goalMetrics(goal, goal.contributions, today);
-                  return (
-                    <li key={goal.id}>
-                      <Link href={`/app/goals/${goal.id}`} className="flex flex-col gap-1.5">
-                        <span className="flex items-baseline justify-between gap-2 text-sm">
-                          <span className="truncate">{goal.name}</span>
-                          <GoalStatusBadge status={g.status} />
-                        </span>
-                        <GoalProgress progress={g.progress} color={goal.color ?? "#64748b"} />
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </Section>
-          )}
-
-          <Section
-            title={t("budgets")}
-            action={
-              <Link
-                href="/app/budget"
-                className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              <h2 id="available" className="text-sm text-hero-muted">
+                {t("available")}
+              </h2>
+              <p
+                className={cn(
+                  "text-5xl font-semibold tracking-tight text-brass-light tabular-nums",
+                  m.balanceCents < 0 && "text-hero-negative",
+                )}
               >
-                {t("editBudgets")}
-              </Link>
-            }
-          >
-            {budgets.length === 0 ? (
-              <p className="surface px-4 py-3.5 text-sm text-muted-foreground">{t("noBudgets")}</p>
-            ) : (
-              <ul className="surface flex flex-col gap-4 p-4">
-                {budgets.map((c) => (
-                  <li key={c.id} className="flex flex-col gap-1.5">
-                    <div className="flex items-baseline justify-between gap-2 text-sm">
-                      <span className="truncate">{c.name}</span>
-                      <span className="shrink-0 text-muted-foreground tabular-nums">
-                        {t("budgetLine", {
-                          spent: formatMoney(c.spentCents, primary),
-                          budget: formatMoney(c.budgetCents!, primary),
-                        })}
-                      </span>
-                    </div>
-                    <BudgetBar
-                      spentCents={c.spentCents}
-                      budgetCents={c.budgetCents!}
-                      label={c.name}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Section>
+                {formatMoney(m.balanceCents, primary)}
+              </p>
+              <p className="text-sm text-hero-muted">
+                {profile.carryOver
+                  ? t("availableHintCarry", { amount: formatMoney(carriedCents, primary) })
+                  : t("availableHint")}
+              </p>
+            </section>
 
-          {top.length > 0 && (
+            <MonthProjection
+              m={m}
+              primary={primary}
+              perDay={
+                isCurrent && m.leftoverPerDayCents !== null
+                  ? t("perDay", {
+                      amount: formatMoney(m.leftoverPerDayCents, primary),
+                      days: daysLeft(period, today),
+                    })
+                  : null
+              }
+            />
+
+            {recent.length > 0 && (
+              <Section
+                title={t("recent")}
+                action={
+                  <Link
+                    href={isCurrent ? "/app/transactions" : `/app/transactions?month=${month}`}
+                    className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                  >
+                    {t("seeAll")}
+                  </Link>
+                }
+              >
+                <ul className="surface divide-y">
+                  {recent.map((row) => (
+                    <li key={row.id}>
+                      <TransactionItem
+                        row={row}
+                        primaryCurrency={primary}
+                        categories={categories}
+                        usage={usage}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </Section>
+            )}
+          </div>
+          <div className="flex flex-col gap-6">
+            {highlightedGoals.length > 0 && (
+              <Section
+                title={t("goals")}
+                action={
+                  <Link
+                    href="/app/goals"
+                    className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                  >
+                    {t("seeGoals")}
+                  </Link>
+                }
+              >
+                <ul className="surface flex flex-col gap-4 p-4">
+                  {highlightedGoals.map((goal) => {
+                    const g = goalMetrics(goal, goal.contributions, today);
+                    return (
+                      <li key={goal.id}>
+                        <Link href={`/app/goals/${goal.id}`} className="flex flex-col gap-1.5">
+                          <span className="flex items-baseline justify-between gap-2 text-sm">
+                            <span className="truncate">{goal.name}</span>
+                            <GoalStatusBadge status={g.status} />
+                          </span>
+                          <GoalProgress progress={g.progress} color={goal.color ?? "#64748b"} />
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Section>
+            )}
+
             <Section
-              title={t("topCategories")}
+              title={t("budgets")}
               action={
-                <span className="text-sm text-muted-foreground tabular-nums">
-                  {t("spentTotal", { amount: formatMoney(summary.expenseCents, primary) })}
-                  {spendChange !== null && (
-                    <>
-                      {" · "}
-                      <span className={spendChange > 0 ? "text-negative" : "text-positive"}>
-                        {t("vsPrevious", { change: signedPercent.format(spendChange) })}
-                      </span>
-                    </>
-                  )}
-                </span>
+                <Link
+                  href="/app/budget"
+                  className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  {t("editBudgets")}
+                </Link>
               }
             >
-              <ul className="surface divide-y">
-                {top.map((c) => {
-                  const change = variation(c.spentCents, previousById.get(c.id) ?? 0);
-                  return (
-                    <li key={c.id} className="flex items-center gap-3 px-4 py-3">
-                      <CategoryIcon icon={c.icon} color={c.color} />
-                      <span className="min-w-0 flex-1 truncate">{c.name}</span>
-                      <span className="flex shrink-0 flex-col items-end">
-                        <span className="font-medium tabular-nums">
-                          {formatMoney(c.spentCents, primary)}
+              {budgets.length === 0 ? (
+                <p className="surface px-4 py-3.5 text-sm text-muted-foreground">
+                  {t("noBudgets")}
+                </p>
+              ) : (
+                <ul className="surface flex flex-col gap-4 p-4">
+                  {budgets.map((c) => (
+                    <li key={c.id} className="flex flex-col gap-1.5">
+                      <div className="flex items-baseline justify-between gap-2 text-sm">
+                        <span className="truncate">{c.name}</span>
+                        <span className="shrink-0 text-muted-foreground tabular-nums">
+                          {t("budgetLine", {
+                            spent: formatMoney(c.spentCents, primary),
+                            budget: formatMoney(c.budgetCents!, primary),
+                          })}
                         </span>
-                        {change !== null && (
-                          <span
-                            className={cn(
-                              "text-xs tabular-nums",
-                              change > 0
-                                ? "text-negative"
-                                : change < 0
-                                  ? "text-positive"
-                                  : "text-muted-foreground",
-                            )}
-                          >
-                            {t("vsPrevious", { change: signedPercent.format(change) })}
-                          </span>
-                        )}
-                      </span>
+                      </div>
+                      <BudgetBar
+                        spentCents={c.spentCents}
+                        budgetCents={c.budgetCents!}
+                        label={c.name}
+                      />
                     </li>
-                  );
-                })}
-              </ul>
+                  ))}
+                </ul>
+              )}
             </Section>
-          )}
-        </>
+
+            {top.length > 0 && (
+              <Section
+                title={t("topCategories")}
+                action={
+                  <span className="text-sm text-muted-foreground tabular-nums">
+                    {t("spentTotal", { amount: formatMoney(summary.expenseCents, primary) })}
+                    {spendChange !== null && (
+                      <>
+                        {" · "}
+                        <span className={spendChange > 0 ? "text-negative" : "text-positive"}>
+                          {t("vsPrevious", { change: signedPercent.format(spendChange) })}
+                        </span>
+                      </>
+                    )}
+                  </span>
+                }
+              >
+                <ul className="surface divide-y">
+                  {top.map((c) => {
+                    const change = variation(c.spentCents, previousById.get(c.id) ?? 0);
+                    return (
+                      <li key={c.id} className="flex items-center gap-3 px-4 py-3">
+                        <CategoryIcon icon={c.icon} color={c.color} />
+                        <span className="min-w-0 flex-1 truncate">{c.name}</span>
+                        <span className="flex shrink-0 flex-col items-end">
+                          <span className="font-medium tabular-nums">
+                            {formatMoney(c.spentCents, primary)}
+                          </span>
+                          {change !== null && (
+                            <span
+                              className={cn(
+                                "text-xs tabular-nums",
+                                change > 0
+                                  ? "text-negative"
+                                  : change < 0
+                                    ? "text-positive"
+                                    : "text-muted-foreground",
+                              )}
+                            >
+                              {t("vsPrevious", { change: signedPercent.format(change) })}
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Section>
+            )}
+          </div>
+        </div>
       )}
     </>
   );

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
@@ -60,11 +61,14 @@ async function Reports({
   ]);
 
   const primary = profile.primaryCurrency;
-  const months = periods.map((p, i) => ({
+  const all = periods.map((p, i) => ({
     start: p.start,
     label: monthLabel(p.start),
     ...computeMetrics(summaries[i], 0),
   }));
+  // Months before the first entry are just rows of zeros; the viewed month always stays.
+  const first = all.findIndex((m) => m.incomeCents > 0 || m.expenseCents > 0);
+  const months = first === -1 ? all : all.slice(Math.min(first, MONTHS - 1));
   const paid = spend.filter((c) => c.spentCents > 0); // already sorted by spend
   const slices: CategorySlice[] = paid.slice(0, PIE_SLICES).map((c) => ({
     name: c.name,
@@ -82,7 +86,7 @@ async function Reports({
       <div className="flex flex-col gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <MonthSwitcher
-          label={t("range", { from: months[0].label, to: months[MONTHS - 1].label })}
+          label={t("range", { from: all[0].label, to: all[MONTHS - 1].label })}
           previousHref={monthLink(-1)}
           nextHref={monthLink(1)}
           previousLabel={t("previous")}
@@ -107,7 +111,7 @@ async function Reports({
             </div>
           </Section>
 
-          <Section title={t("byCategory", { month: months[MONTHS - 1].label })}>
+          <Section title={t("byCategory", { month: all[MONTHS - 1].label })}>
             {slices.length ? (
               <div className="surface p-4">
                 <CategoryPie slices={slices} currency={primary} />
@@ -115,6 +119,12 @@ async function Reports({
             ) : (
               <p className="text-sm text-muted-foreground">{t("noSpend")}</p>
             )}
+            <Link
+              href={isCurrent ? "/app/budget" : `/app/budget?month=${month}`}
+              className="self-start text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              {t("budgetLink")}
+            </Link>
           </Section>
 
           <Section title={t("comparison")}>
