@@ -85,6 +85,7 @@ async function Transactions({
     <>
       <TransactionFiltersBar
         month={month}
+        currentMonth={getFinancialPeriod(today, profile.monthStartDay).start.slice(0, 7)}
         periodLabel={periodLabel(period, profile.monthStartDay)}
         filters={filters}
         categories={categories}

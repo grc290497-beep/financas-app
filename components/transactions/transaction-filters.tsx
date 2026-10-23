@@ -23,12 +23,15 @@ const ALL = "all";
 
 export function TransactionFiltersBar({
   month,
+  currentMonth,
   periodLabel,
   filters,
   categories,
 }: {
   /** yyyy-MM the shown financial month starts in. */
   month: string;
+  /** yyyy-MM today's financial month starts in; filters are kept when jumping back. */
+  currentMonth: string;
   periodLabel: string;
   filters: TransactionFilters;
   categories: Category[];
@@ -71,6 +74,8 @@ export function TransactionFiltersBar({
         nextHref={monthHref(1)}
         previousLabel={t("filters.previousMonth")}
         nextLabel={t("filters.nextMonth")}
+        currentHref={month === currentMonth ? undefined : href({ month: currentMonth })}
+        currentLabel={t("filters.currentMonth")}
       />
 
       <div className="relative">
