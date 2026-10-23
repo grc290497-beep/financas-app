@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { ChevronRight } from "lucide-react";
 import { InstallAppButton } from "@/components/pwa/install-app";
 import { BalanceForm } from "@/components/settings/balance-form";
+import { NotificationSettings } from "@/components/settings/notification-settings";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { ExportLinks } from "@/components/settings/export-links";
 import { ProfileForm } from "@/components/settings/profile-form";
@@ -100,6 +101,8 @@ async function Settings() {
       </Section>
 
       <InstallAppButton look="explained" />
+
+      <NotificationSettings budget={profile.notifyBudget} goals={profile.notifyGoals} />
 
       <Section title={t("theme.label")}>
         <ThemeSelect />

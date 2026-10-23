@@ -77,7 +77,9 @@ async function addExpense(
   await expect(page.getByText("Lançamento salvo.")).toBeVisible();
 }
 
-const available = (page: Page) => page.locator("section[aria-labelledby=available]");
+// Next.js keeps an earlier visit of the page in the DOM, hidden: take the visible card.
+const available = (page: Page) =>
+  page.locator("section[aria-labelledby=available]").filter({ visible: true });
 
 test("what was left last month carries into Disponível agora", async ({ page }) => {
   await signIn(page);

@@ -36,6 +36,7 @@ Um web app (PWA, instalável no celular) para qualquer pessoa controlar suas fin
 | Datas | **date-fns** | Leve, com locale pt-BR |
 | i18n | **next-intl** (pt-BR padrão, en depois) | Preparado para crescer |
 | PWA | manifest + ícones (via Next metadata) | Instalar na tela inicial |
+| Notificações | **web-push** (Web Push com chaves VAPID) + cron diário da Vercel | Avisos de orçamento e metas no celular |
 | Testes | **Vitest** (unidade) + **Playwright** (E2E) | Garantir os cálculos financeiros |
 | Deploy | **Vercel** (app) + **Supabase Cloud** (banco) | Gratuito para começar |
 | Qualidade | ESLint + Prettier + `tsc --noEmit` | Padrão |
@@ -301,7 +302,6 @@ Tudo é exibido na **moeda primária**, com um toggle para ver os valores na out
 ### Backlog (v2+)
 - Contas/carteiras com saldo próprio e transferências entre elas.
 - Divisão de gastos com outra pessoa (casal).
-- Notificações (conta vencendo, orçamento estourando).
 - Mais moedas (USD, GBP).
 - Versão em inglês.
 - Plano pago (Stripe), se virar produto.

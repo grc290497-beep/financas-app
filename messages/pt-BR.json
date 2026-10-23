@@ -195,6 +195,40 @@
       ]
     }
   },
+  "Notifications": {
+    "title": "Notificações",
+    "hint": "Avisos no celular quando um orçamento chega a 80% ou estoura, e lembrete da parcela das metas no fim do mês. Chegam uma vez por dia, de manhã.",
+    "enable": "Ativar notificações",
+    "enabling": "Ativando…",
+    "disable": "Desativar neste aparelho",
+    "test": "Enviar teste",
+    "enabled": "Notificações ativadas neste aparelho.",
+    "disabled": "Notificações desativadas neste aparelho.",
+    "testSent": "Teste enviado. Deve chegar em alguns segundos.",
+    "on": "Ativas neste aparelho",
+    "budget": "Orçamento a 80% e estourado",
+    "goals": "Lembrete das metas (a partir do dia 25)",
+    "saved": "Preferências salvas.",
+    "unsupported": "Este navegador não recebe notificações.",
+    "iosInstall": "No iPhone, instale o app primeiro (botão Instalar app) e ative as notificações por ele.",
+    "denied": "As notificações estão bloqueadas para este site. Libere nas configurações do navegador e tente de novo.",
+    "budgetWarningTitle": "{name}: 80% do orçamento",
+    "budgetWarningBody": "Você já gastou {spent} de {budget} este mês.",
+    "budgetOverTitle": "{name}: orçamento estourado",
+    "budgetOverBody": "Você gastou {spent}, acima do limite de {budget}.",
+    "goalTitle": "Meta {name}",
+    "goalBody": "Ainda faltam {amount} para a parcela deste mês.",
+    "testTitle": "Finanças",
+    "testBody": "As notificações estão funcionando.",
+    "errors": {
+      "invalidInput": "Não conseguimos ler os dados deste aparelho. Tente de novo.",
+      "saveFailed": "Não conseguimos salvar. Tente de novo.",
+      "notConfigured": "As notificações ainda não estão configuradas no servidor.",
+      "noDevice": "Ative as notificações neste aparelho primeiro.",
+      "sendFailed": "Não conseguimos entregar o teste. Desative e ative de novo.",
+      "subscribeFailed": "Não conseguimos ativar neste aparelho. Tente de novo."
+    }
+  },
   "InstallApp": {
     "title": "App no celular e no computador",
     "hint": "Instale o Finanças como um app: ganha ícone próprio, abre em tela cheia sem a barra do navegador e fica na lista de apps. É o mesmo site, sempre atualizado, sem baixar nada da loja.",

@@ -1,5 +1,5 @@
-import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
+import { isCronAuthorized } from "@/lib/cron-auth";
 import { serverFxDeps } from "@/lib/fx-cache";
 import { getFinancialPeriod } from "@/lib/period";
 import { generateRecurringForPeriod } from "@/lib/recurring";
@@ -12,7 +12,7 @@ import type { Currency } from "@/lib/validators";
 // Vercel sends `Authorization: Bearer $CRON_SECRET`.
 
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request.headers.get("authorization"))) {
+  if (!isCronAuthorized(request.headers.get("authorization"))) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
@@ -60,12 +60,4 @@ export async function GET(request: NextRequest) {
 
   const confirmed = await confirmDue(admin, today);
   return NextResponse.json({ users: profiles.length, created, failed, confirmed });
-}
-
-function isAuthorized(header: string | null) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret || !header) return false;
-  const expected = Buffer.from(`Bearer ${secret}`);
-  const received = Buffer.from(header);
-  return expected.length === received.length && timingSafeEqual(expected, received);
 }

@@ -16,6 +16,8 @@ export type Profile = {
   /** Earlier months' leftover counts in "Disponível agora", from the opening balance. */
   carryOver: boolean;
   openingBalanceCents: number;
+  notifyBudget: boolean;
+  notifyGoals: boolean;
 };
 
 /** The signed-in user's id and email, or a redirect to /login. */
@@ -39,7 +41,7 @@ export const requireProfile = cache(async (): Promise<Profile> => {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, display_name, primary_currency, month_start_day, onboarding_done, carry_over, opening_balance_cents",
+      "id, display_name, primary_currency, month_start_day, onboarding_done, carry_over, opening_balance_cents, notify_budget, notify_goals",
     )
     .eq("id", user.id)
     .single();
@@ -56,5 +58,7 @@ export const requireProfile = cache(async (): Promise<Profile> => {
     onboardingDone: data.onboarding_done,
     carryOver: data.carry_over,
     openingBalanceCents: Number(data.opening_balance_cents),
+    notifyBudget: data.notify_budget,
+    notifyGoals: data.notify_goals,
   };
 });
