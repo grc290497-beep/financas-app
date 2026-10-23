@@ -39,12 +39,12 @@
     "email": "E-mail",
     "currency": "Moeda principal",
     "changePassword": "Trocar senha",
-    "monthStartDay": "Mês financeiro começa",
+    "monthStartDay": "Início do mês financeiro",
     "dayValue": "dia {day}",
     "currencyHint": "A moeda principal não muda depois do cadastro, para não alterar o valor dos lançamentos já feitos.",
     "profile": {
       "title": "Perfil",
-      "name": "Como podemos te chamar",
+      "name": "Como podemos te chamar?",
       "monthStartDay": "Dia em que começa o seu mês",
       "save": "Salvar alterações",
       "saving": "Salvando…",
@@ -56,13 +56,13 @@
     },
     "balance": {
       "title": "Saldo",
-      "mode": "Como contar o disponível",
+      "mode": "Como calcular o disponível",
       "monthOnly": "Só este mês",
-      "carry": "Acumular meses",
-      "monthOnlyHint": "\"Disponível agora\" mostra só o que entrou menos o que saiu neste mês.",
-      "carryHint": "A sobra (ou falta) dos meses anteriores passa para o mês seguinte, como na sua conta do banco.",
+      "carry": "Somar meses anteriores",
+      "monthOnlyHint": "\"Disponível agora\" considera só o que entrou e saiu neste mês.",
+      "carryHint": "O que sobrou (ou faltou) nos meses anteriores passa para o mês seguinte, como na sua conta do banco.",
       "opening": "Saldo inicial",
-      "openingHint": "Quanto você tinha antes do primeiro lançamento no app. Use - para saldo negativo.",
+      "openingHint": "Quanto você tinha antes do primeiro lançamento no app. Se for negativo, use o sinal de menos (-).",
       "save": "Salvar",
       "saving": "Salvando…",
       "saved": "Saldo atualizado.",
@@ -90,7 +90,7 @@
     "contact": "Fale conosco",
     "delete": {
       "section": "Excluir conta",
-      "hint": "Apaga sua conta e todos os dados (lançamentos, fixos, metas e categorias). Não dá para desfazer.",
+      "hint": "Apaga sua conta e todos os seus dados (lançamentos, fixos, metas e categorias). Não dá para desfazer.",
       "button": "Excluir minha conta",
       "title": "Excluir sua conta para sempre?",
       "description": "Todos os seus dados serão apagados na hora e não poderão ser recuperados. Se quiser uma cópia, exporte antes.",
@@ -197,7 +197,7 @@
   },
   "Notifications": {
     "title": "Notificações",
-    "hint": "Avisos no celular quando um orçamento chega a 80% ou estoura, e lembrete da parcela das metas no fim do mês. Chegam uma vez por dia, de manhã.",
+    "hint": "Receba um aviso quando um orçamento chegar a 80% ou estourar, e um lembrete das metas perto do fim do mês. Os avisos chegam uma vez por dia, de manhã.",
     "enable": "Ativar notificações",
     "enabling": "Ativando…",
     "disable": "Desativar neste aparelho",
@@ -206,7 +206,7 @@
     "disabled": "Notificações desativadas neste aparelho.",
     "testSent": "Teste enviado. Deve chegar em alguns segundos.",
     "on": "Ativas neste aparelho",
-    "budget": "Orçamento a 80% e estourado",
+    "budget": "Orçamento perto do limite ou estourado",
     "goals": "Lembrete das metas (a partir do dia 25)",
     "saved": "Preferências salvas.",
     "unsupported": "Este navegador não recebe notificações.",
@@ -217,7 +217,7 @@
     "budgetOverTitle": "{name}: orçamento estourado",
     "budgetOverBody": "Você gastou {spent}, acima do limite de {budget}.",
     "goalTitle": "Meta {name}",
-    "goalBody": "Ainda faltam {amount} para a parcela deste mês.",
+    "goalBody": "Faltam {amount} para completar o valor deste mês.",
     "testTitle": "Finanças",
     "testBody": "As notificações estão funcionando.",
     "errors": {
@@ -231,13 +231,13 @@
   },
   "InstallApp": {
     "title": "App no celular e no computador",
-    "hint": "Instale o Finanças como um app: ganha ícone próprio, abre em tela cheia sem a barra do navegador e fica na lista de apps. É o mesmo site, sempre atualizado, sem baixar nada da loja.",
+    "hint": "Instale o Finanças como app: ele ganha ícone próprio, abre em tela cheia, sem a barra do navegador, e aparece junto com seus outros apps. É o mesmo site, sempre atualizado, sem precisar baixar nada da loja.",
     "button": "Instalar app",
     "bannerTitle": "Use o Finanças como app",
     "bannerHint": "Ícone na tela inicial, tela cheia e sem barra do navegador.",
     "dismiss": "Fechar aviso",
     "iosTitle": "Instalar no iPhone",
-    "iosIntro": "A Apple não deixa sites abrirem a instalação sozinhos, mas leva três toques no Safari:",
+    "iosIntro": "No iPhone, a instalação é feita pelo Safari, em três toques:",
     "iosStep1": "Toque em Compartilhar, na barra do Safari.",
     "iosStep2": "Escolha \"Adicionar à Tela de Início\".",
     "iosStep3": "Toque em Adicionar. O app aparece na sua tela de início."
@@ -385,7 +385,7 @@
     "show": "Ver",
     "hide": "Esconder",
     "remaining": "Falta {amount}",
-    "expenses": "Custos fixos",
+    "expenses": "Contas fixas",
     "incomes": "Entradas recorrentes",
     "next": "Próximo: {date}",
     "endedList": "{count, plural, one {# fixo encerrado} other {# fixos encerrados}}",
@@ -398,11 +398,11 @@
       "yearly": "Todo ano em {date}"
     },
     "empty": {
-      "title": "Nenhum custo fixo ainda",
-      "description": "Cadastre aluguel, contas e assinaturas uma vez. Eles aparecem como previstos todo mês, e você só marca como pago."
+      "title": "Nenhuma conta fixa ainda",
+      "description": "Cadastre aluguel, contas e assinaturas uma vez só. Eles aparecem como previstos todo mês, e você só marca como pagos."
     },
     "form": {
-      "expense": "Custo fixo",
+      "expense": "Conta fixa",
       "income": "Entrada",
       "name": "Nome",
       "namePlaceholder": "Ex.: Aluguel, Netflix, Salário",
@@ -427,17 +427,17 @@
       "endOn": "Termina em",
       "endOnPlaceholder": "Sem data de fim",
       "effectiveFrom": "Mudança vale a partir de",
-      "effectiveFromHint": "Para um aumento ou troca de emprego: antes dessa data fica o valor antigo. Vazio muda todos os previstos em aberto.",
+      "effectiveFromHint": "Útil para aumento ou troca de emprego: antes dessa data, vale o valor antigo. Em branco, a mudança vale para todos os previstos em aberto.",
       "save": "Salvar",
       "saving": "Salvando…",
       "delete": "Excluir",
-      "saved": "Fixo salvo. Os previstos deste mês já foram criados.",
+      "saved": "Fixo salvo. Os lançamentos previstos deste mês já foram criados.",
       "updated": "Fixo atualizado.",
       "deleted": "Fixo excluído. Os pagamentos já feitos continuam nos lançamentos."
     },
     "delete": {
       "title": "Excluir este fixo?",
-      "description": "Os previstos ainda não pagos somem. O que você já pagou continua nos lançamentos.",
+      "description": "Os previstos que ainda não foram pagos são apagados. O que você já pagou continua em Lançamentos.",
       "confirm": "Excluir",
       "cancel": "Cancelar"
     },
@@ -455,7 +455,7 @@
     },
     "errors": {
       "invalidInput": "Confira os campos destacados.",
-      "categoryInvalid": "Essa categoria não serve para esse tipo.",
+      "categoryInvalid": "Essa categoria não combina com esse tipo.",
       "paidAfterEffective": "Já há um pagamento confirmado a partir dessa data. Escolha uma data depois dele.",
       "endBeforeEffective": "A data de fim é anterior à data da mudança.",
       "fxUnavailable": "Sem cotação disponível agora. Tente de novo em instantes.",
@@ -595,27 +595,27 @@
     },
     "originalAmount": "Valor original",
     "planned": "Previsto",
-    "showFuture": "Ver futuros deste mês ({count})",
-    "hideFuture": "Esconder futuros",
-    "plannedHint": "Totais contam só o que já foi pago ou recebido.",
+    "showFuture": "Ver os próximos deste mês ({count})",
+    "hideFuture": "Esconder os próximos",
+    "plannedHint": "Os totais consideram só o que já foi pago ou recebido.",
     "searchAll": "{count, plural, =0 {Nenhum resultado em todos os meses} one {Buscando em todos os meses · # resultado} other {Buscando em todos os meses · # resultados}}",
     "searchMore": "(mostrando os {limit} mais recentes)",
     "errors": {
       "invalidInput": "Confira os campos destacados.",
-      "categoryInvalid": "Essa categoria não serve para esse tipo de lançamento.",
+      "categoryInvalid": "Essa categoria não combina com esse tipo de lançamento.",
       "fxUnavailable": "Sem cotação disponível para essa data. Digite a cotação manualmente.",
       "saveFailed": "Não conseguimos salvar. Tente de novo.",
       "deleteFailed": "Não conseguimos excluir. Tente de novo.",
       "notFound": "Esse lançamento não existe mais.",
       "recurringDateLocked": "A data de um fixo é o vencimento e não pode mudar. Ajuste o dia no cadastro do fixo.",
-      "goalLinked": "Este lançamento vem de um aporte numa meta. Para mudar, apague o aporte na meta e lance de novo.",
+      "goalLinked": "Este lançamento veio de um aporte em uma meta. Para mudar, exclua o aporte na meta e registre de novo.",
       "unexpected": "Algo deu errado. Tente de novo."
     }
   },
   "Auth": {
     "login": {
       "title": "Entrar",
-      "subtitle": "Bom te ver de novo.",
+      "subtitle": "Que bom ver você de novo.",
       "email": "E-mail",
       "password": "Senha",
       "submit": "Entrar",
@@ -682,7 +682,7 @@
     },
     "monthStart": {
       "title": "Em que dia começa o seu mês?",
-      "description": "Use o dia em que cai o seu salário. O tracker mensal segue esse período.",
+      "description": "Use o dia em que o salário cai. Os resumos do mês seguem esse período.",
       "label": "Dia de início",
       "day": "Dia {day}",
       "exampleFirst": "Seu mês vai do dia 1 até o último dia do mês.",
@@ -690,13 +690,13 @@
     },
     "balance": {
       "title": "Quanto você tem hoje?",
-      "description": "O saldo da sua conta agora. A partir dele, o app mostra quanto você tem disponível.",
+      "description": "O saldo atual da sua conta. É a partir dele que o app calcula quanto você tem disponível.",
       "label": "Saldo atual",
-      "hint": "Pode deixar em branco: começa em 0. Dá para mudar depois em Ajustes."
+      "hint": "Se preferir, deixe em branco e comece do zero. Dá para mudar depois em Ajustes."
     },
     "fixed": {
       "title": "Salário e aluguel",
-      "description": "Opcional. Eles entram todo mês sozinhos, e o painel já começa mostrando o que vai sobrar. Outros fixos você cadastra depois em Fixos.",
+      "description": "Opcional. Eles entram sozinhos todo mês, e o painel já mostra quanto vai sobrar. As outras contas fixas você cadastra depois, em Fixos.",
       "salary": "Salário",
       "rent": "Aluguel",
       "amount": "Valor",
@@ -719,7 +719,7 @@
     "greetingNoName": "Olá!",
     "summary": "Moeda principal: {currency} · Mês começa no dia {day}",
     "emptyTitle": "Nada lançado neste mês",
-    "emptyDescription": "Toque em + para registrar um gasto ou uma entrada, ou cadastre seus custos fixos.",
+    "emptyDescription": "Toque em + para registrar um gasto ou uma entrada, ou cadastre suas contas fixas.",
     "seeTransactions": "Ver lançamentos",
     "seeFixed": "Ver fixos",
     "period": "{start} a {end}",
@@ -757,13 +757,13 @@
     "noBudgets": "Defina limites por categoria para acompanhar seus gastos aqui.",
     "budgetLine": "{spent} de {budget}",
     "topCategories": "Onde foi o dinheiro",
-    "vsPrevious": "{change} vs. mês anterior",
+    "vsPrevious": "{change} em relação ao mês anterior",
     "upcoming": "Próximas contas",
     "noUpcoming": "Nenhuma conta prevista até o fim do mês.",
-    "inPrimary": "Valores em {currency}. Totais contam só o que já foi pago ou recebido.",
+    "inPrimary": "Valores em {currency}. Os totais consideram só o que já foi pago ou recebido.",
     "goals": "Metas",
     "seeGoals": "Ver metas",
-    "goalsHint": "O livre para gastar já reserva {amount} para suas metas este mês."
+    "goalsHint": "O valor livre para gastar já separa {amount} para as suas metas este mês."
   },
   "Goals": {
     "title": "Metas",
@@ -776,9 +776,9 @@
     "thisMonthDue": "Este mês: faltam {due} de {installment}",
     "thisMonthStart": "Este mês: guardar {amount}",
     "summary": "{amount} guardados em {count, plural, one {# meta} other {# metas}}",
-    "thisMonthDone": "Parcela deste mês completa",
+    "thisMonthDone": "Valor deste mês guardado",
     "later": "Depois: {amount}/mês até {deadline}",
-    "monthContributed": "Aportado em {month}: {amount}",
+    "monthContributed": "Guardado em {month}: {amount}",
     "monthPlanned": "Previsto para {month}: {amount}",
     "previousMonth": "Mês anterior",
     "nextMonth": "Próximo mês",
@@ -790,7 +790,7 @@
     },
     "empty": {
       "title": "Nenhuma meta ainda",
-      "description": "Crie uma meta, como uma reserva de emergência, e veja quanto guardar por mês para chegar lá no prazo."
+      "description": "Crie uma meta, como uma reserva de emergência, e veja quanto guardar por mês para chegar lá a tempo."
     },
     "metrics": {
       "saved": "Guardado",
@@ -884,7 +884,7 @@
     "previousMonth": "Mês anterior",
     "nextMonth": "Próximo mês",
     "current": "Mês atual",
-    "description": "Limite mensal por categoria, em {currency}. A barra fica ocre a partir de 80% e cobre ao estourar.",
+    "description": "Limite mensal por categoria, em {currency}. A barra muda de cor ao passar de 80% e de novo quando estoura.",
     "period": "{start} a {end}",
     "spent": "{spent} gastos",
     "planned": "+ {planned} previstos",
@@ -912,7 +912,7 @@
     "show": "Mostrar",
     "hidden": "Escondidas",
     "hiddenToast": "Categoria escondida.",
-    "shownToast": "Categoria de volta.",
+    "shownToast": "A categoria voltou a aparecer.",
     "kinds": {
       "income": "Entradas",
       "variable": "Gastos do dia a dia",
@@ -981,7 +981,7 @@
     },
     "errors": {
       "invalidInput": "Confira os campos e tente de novo.",
-      "duplicate": "Já existe uma categoria com esse nome nesse tipo.",
+      "duplicate": "Já existe uma categoria com esse nome neste tipo.",
       "saveFailed": "Não conseguimos salvar. Tente de novo.",
       "notFound": "Essa categoria não existe mais."
     }
