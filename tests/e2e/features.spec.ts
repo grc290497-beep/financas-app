@@ -19,6 +19,7 @@ let userId: string | undefined;
 
 const today = new Date().toISOString().slice(0, 10);
 const now = new Date();
+const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
 const lastMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 10))
   .toISOString()
   .slice(0, 10);
@@ -129,6 +130,14 @@ test("a goal contribution takes money out of Disponível agora, and deleting it 
   await expect(available(page)).toContainText("€ 900,00");
 });
 
+test("an entry dated tomorrow is planned and stays out of Disponível agora", async ({ page }) => {
+  await signIn(page);
+  await addExpense(page, { amount: "50", category: "Lazer", description: "Show", date: tomorrow });
+
+  await page.goto("/app");
+  await expect(available(page)).toContainText("€ 900,00");
+});
+
 test("a new category shows in quick add and a hidden one does not", async ({ page }) => {
   await signIn(page);
   await page.goto("/app/categories");
@@ -209,4 +218,21 @@ test("Sair from the avatar menu signs out", async ({ page }) => {
   await page.getByRole("button", { name: "Sua conta e ajustes" }).filter({ visible: true }).click();
   await page.getByRole("menuitem", { name: "Sair" }).click();
   await expect(page).toHaveURL(/\/login/);
+});
+
+// Very last: it changes the password the other tests sign in with.
+test("changing the password from Ajustes needs the current one", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/reset-password");
+  await page.waitForLoadState("networkidle");
+  const newPassword = randomUUID();
+  await page.getByLabel("Senha atual").fill("not-the-password");
+  await page.getByLabel("Nova senha", { exact: true }).fill(newPassword);
+  await page.getByLabel("Repita a nova senha").fill(newPassword);
+  await page.getByRole("button", { name: "Salvar e entrar" }).click();
+  await expect(page.getByText("A senha atual não confere.", { exact: false })).toBeVisible();
+
+  await page.getByLabel("Senha atual").fill(password);
+  await page.getByRole("button", { name: "Salvar e entrar" }).click();
+  await expect(page).toHaveURL(/\/app$/);
 });

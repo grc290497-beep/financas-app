@@ -2,7 +2,9 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { requireUser, signedInByRecentLink } from "@/lib/auth";
+import { supabaseAnonKey, supabaseUrl } from "@/lib/env";
 import { safeNextPath } from "@/lib/redirect";
 import { resolveSiteOrigin } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
@@ -124,7 +126,16 @@ export async function updatePassword(input: NewPasswordInput): Promise<AuthActio
   const parsed = newPasswordSchema.safeParse(input);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
 
-  await requireUser();
+  const user = await requireUser();
+  // Someone holding an unlocked phone must not be able to take over the account.
+  if (!(await signedInByRecentLink())) {
+    if (!parsed.data.currentPassword || !user.email) {
+      return { status: "error", error: "currentPassword" };
+    }
+    const check = await verifyPassword(user.email, parsed.data.currentPassword);
+    if (check !== "ok") return { status: "error", error: check };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
 
@@ -136,6 +147,18 @@ export async function updatePassword(input: NewPasswordInput): Promise<AuthActio
   }
 
   redirect("/app");
+}
+
+/** Checks a password on a throwaway client, so the user's own session cookies stay as they are. */
+async function verifyPassword(email: string, password: string) {
+  const client = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (error) return error.status === 429 ? "rateLimited" : "currentPassword";
+  // End only the session this check opened.
+  await client.auth.signOut({ scope: "local" });
+  return "ok";
 }
 
 export async function signOut() {

@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { FormSkeleton } from "@/components/auth/form-skeleton";
 import { NewPasswordForm } from "@/components/forms/new-password-form";
-import { requireUser } from "@/lib/auth";
+import { signedInByRecentLink } from "@/lib/auth";
 
 // Reached signed in: from the reset e-mail (via /auth/callback) or from Ajustes.
 export default async function ResetPasswordPage() {
@@ -24,16 +24,16 @@ export default async function ResetPasswordPage() {
       }
     >
       <Suspense fallback={<FormSkeleton fields={2} />}>
-        <SignedIn>
-          <NewPasswordForm />
-        </SignedIn>
+        <Form />
       </Suspense>
     </AuthShell>
   );
 }
 
-/** Without a session (an expired link) requireUser sends the user to /login. */
-async function SignedIn({ children }: { children: React.ReactNode }) {
-  await requireUser();
-  return children;
+/**
+ * Without a session (an expired link) requireUser sends the user to /login.
+ * From Ajustes (not a fresh reset link) the current password is asked too.
+ */
+async function Form() {
+  return <NewPasswordForm askCurrent={!(await signedInByRecentLink())} />;
 }

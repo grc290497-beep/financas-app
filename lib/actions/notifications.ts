@@ -5,14 +5,17 @@ import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { pushConfigured, sendPush } from "@/lib/push";
+import { isPushEndpoint } from "@/lib/push-endpoint";
 import { createClient } from "@/lib/supabase/server";
 
 // Error values are keys under "Notifications.errors" in messages/pt-BR.json.
 export type NotificationActionResult = { status: "ok" } | { status: "error"; error: string };
 
+const endpointSchema = z.url().max(1000).refine(isPushEndpoint);
+
 // What PushSubscription.toJSON() gives the browser.
 const subscriptionSchema = z.object({
-  endpoint: z.url().max(1000),
+  endpoint: endpointSchema,
   keys: z.object({ p256dh: z.string().min(1).max(200), auth: z.string().min(1).max(100) }),
 });
 
@@ -35,7 +38,7 @@ export async function saveSubscription(input: unknown): Promise<NotificationActi
 }
 
 export async function removeSubscription(endpoint: string): Promise<NotificationActionResult> {
-  const parsed = z.url().max(1000).safeParse(endpoint);
+  const parsed = z.string().max(1000).safeParse(endpoint);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
 
   await requireUser();

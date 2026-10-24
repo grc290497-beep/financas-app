@@ -53,6 +53,8 @@ export const newPasswordSchema = z
       .min(8, { error: "passwordTooShort" })
       .max(72, { error: "passwordTooLong" }),
     confirm: z.string(),
+    // Required by the server unless the session came from a reset link.
+    currentPassword: z.string().max(72).optional(),
   })
   .refine((v) => v.password === v.confirm, { path: ["confirm"], error: "passwordMismatch" });
 export type NewPasswordInput = z.infer<typeof newPasswordSchema>;
@@ -128,6 +130,7 @@ export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
 /** 999.999.999,99: far above any personal amount, well inside safe integers. */
 export const MAX_AMOUNT_CENTS = 99_999_999_999;
+const MAX_RATE = "1000";
 
 /** Typed text ("12,50") in, positive integer cents out. */
 const amountSchema = z.string().transform((value, ctx) => {
@@ -163,7 +166,10 @@ export const transactionSchema = z.object({
     .transform((value, ctx) => {
       if (!value) return null;
       try {
-        return formatRate(parseRate(value));
+        const rate = parseRate(value);
+        // EUR<->BRL sits far below this; the cap keeps amount * rate a safe integer.
+        if (rate > parseRate(MAX_RATE)) throw new Error("rate too large");
+        return formatRate(rate);
       } catch {
         ctx.addIssue({ code: "custom", message: "rateInvalid" });
         return z.NEVER;

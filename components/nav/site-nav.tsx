@@ -10,7 +10,20 @@ import { cn } from "@/lib/utils";
 
 export type SiteSection = { id: string; label: string };
 
-type Labels = { nav: string; login: string; signup: string; menu: string };
+type Labels = { nav: string; login: string; signup: string; openApp: string; menu: string };
+
+/**
+ * Signed in? Read from the Supabase session cookie, client side, so the public
+ * pages stay static. Only picks a button: the app itself checks the session.
+ */
+function useSignedIn() {
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    const sync = () => setSignedIn(/(^|; )sb-[^=]+-auth-token(\.0)?=/.test(document.cookie));
+    sync();
+  }, []);
+  return signedIn;
+}
 
 /**
  * The public navbar's links. On the landing page the link of the section on
@@ -20,6 +33,7 @@ type Labels = { nav: string; login: string; signup: string; menu: string };
 export function SiteNav({ sections, labels }: { sections: SiteSection[]; labels: Labels }) {
   const pathname = usePathname();
   const onLanding = pathname === "/";
+  const signedIn = useSignedIn();
   const active = useSectionOnScreen(onLanding ? sections.map((s) => s.id) : []);
   const activeLabel = sections.find((s) => s.id === active)?.label;
 
@@ -80,28 +94,36 @@ export function SiteNav({ sections, labels }: { sections: SiteSection[]; labels:
 
       <div className="ml-auto flex items-center gap-2">
         <InstallAppButton variant="ghost" size="sm" className="hidden md:inline-flex" />
-        <Button
-          asChild
-          variant="ghost"
-          size="sm"
-          className={cn(pathname === "/login" && "bg-accent text-foreground")}
-        >
-          <Link href="/login" aria-current={pathname === "/login" ? "page" : undefined}>
-            {labels.login}
-          </Link>
-        </Button>
-        <Button
-          asChild
-          size="sm"
-          className={cn(
-            "hidden sm:inline-flex",
-            pathname === "/signup" && "ring-2 ring-ring ring-offset-2 ring-offset-background",
-          )}
-        >
-          <Link href="/signup" aria-current={pathname === "/signup" ? "page" : undefined}>
-            {labels.signup}
-          </Link>
-        </Button>
+        {signedIn ? (
+          <Button asChild size="sm">
+            <Link href="/app">{labels.openApp}</Link>
+          </Button>
+        ) : (
+          <>
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className={cn(pathname === "/login" && "bg-accent text-foreground")}
+            >
+              <Link href="/login" aria-current={pathname === "/login" ? "page" : undefined}>
+                {labels.login}
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              className={cn(
+                "hidden sm:inline-flex",
+                pathname === "/signup" && "ring-2 ring-ring ring-offset-2 ring-offset-background",
+              )}
+            >
+              <Link href="/signup" aria-current={pathname === "/signup" ? "page" : undefined}>
+                {labels.signup}
+              </Link>
+            </Button>
+          </>
+        )}
 
         {/* Phones: the section links fold into a menu. */}
         <details ref={menuRef} className="group relative md:hidden">
@@ -135,8 +157,8 @@ export function SiteNav({ sections, labels }: { sections: SiteSection[]; labels:
               </Link>
             ))}
             <Button asChild size="sm" className="mt-2">
-              <Link href="/signup" onClick={closeMenu}>
-                {labels.signup}
+              <Link href={signedIn ? "/app" : "/signup"} onClick={closeMenu}>
+                {signedIn ? labels.openApp : labels.signup}
               </Link>
             </Button>
             <InstallAppButton variant="outline" size="sm" className="mt-2 self-stretch" />

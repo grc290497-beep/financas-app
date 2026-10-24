@@ -25,7 +25,9 @@ export async function createTransaction(input: TransactionInput): Promise<Transa
   if ("error" in prepared) return prepared;
 
   const supabase = await createClient();
-  const { error } = await supabase.from("transactions").insert(prepared.row);
+  const { error } = await supabase
+    .from("transactions")
+    .insert({ ...prepared.row, status: statusFor(parsed.data.occurredOn) });
   if (error) return { status: "error", error: "saveFailed" };
 
   revalidateTransactionViews();
@@ -70,10 +72,11 @@ export async function updateTransaction(
   const prepared = await prepareRow(parsed.data, keepRate);
   if ("error" in prepared) return prepared;
 
-  const { error } = await supabase
-    .from("transactions")
-    .update(prepared.row)
-    .eq("id", parsedId.data);
+  // A fixed cost's status follows paying it; a one-off follows its date.
+  const row = existing.recurring_item_id
+    ? prepared.row
+    : { ...prepared.row, status: statusFor(parsed.data.occurredOn) };
+  const { error } = await supabase.from("transactions").update(row).eq("id", parsedId.data);
   if (error) return { status: "error", error: "saveFailed" };
 
   revalidateTransactionViews();
@@ -183,6 +186,15 @@ async function prepareRow(
       occurred_on: data.occurredOn,
     },
   };
+}
+
+/**
+ * An entry dated in the future is expected, not done yet: it stays out of
+ * "Disponível agora" and the totals until its day, when confirmDue (in
+ * lib/recurring-store.ts, which confirms any planned row) confirms it.
+ */
+function statusFor(occurredOn: string): "planned" | "confirmed" {
+  return occurredOn > new Date().toISOString().slice(0, 10) ? "planned" : "confirmed";
 }
 
 function revalidateTransactionViews() {

@@ -12,8 +12,11 @@ import { newPasswordSchema, type NewPasswordInput } from "@/lib/validators";
 import { zodResolver } from "@/lib/zod-resolver";
 import { useValidationMessage } from "./use-validation-message";
 
-/** New password twice; on success the action sends the user into the app. */
-export function NewPasswordForm() {
+/**
+ * New password twice; on success the action sends the user into the app.
+ * `askCurrent`: also the current password (changing it from Ajustes).
+ */
+export function NewPasswordForm({ askCurrent = false }: { askCurrent?: boolean }) {
   const t = useTranslations("Auth");
   const validationMessage = useValidationMessage();
   const [pending, startTransition] = useTransition();
@@ -24,7 +27,7 @@ export function NewPasswordForm() {
     formState: { errors },
   } = useForm<NewPasswordInput>({
     resolver: zodResolver(newPasswordSchema),
-    defaultValues: { password: "", confirm: "" },
+    defaultValues: { password: "", confirm: "", currentPassword: "" },
   });
 
   const onSubmit = (data: NewPasswordInput) =>
@@ -42,13 +45,25 @@ export function NewPasswordForm() {
             </AlertDescription>
           </Alert>
         )}
+        {askCurrent && (
+          <Field>
+            <FieldLabel htmlFor="current-password">{t("reset.current")}</FieldLabel>
+            <Input
+              id="current-password"
+              type="password"
+              autoComplete="current-password"
+              autoFocus
+              {...register("currentPassword")}
+            />
+          </Field>
+        )}
         <Field data-invalid={!!errors.password}>
           <FieldLabel htmlFor="new-password">{t("reset.password")}</FieldLabel>
           <Input
             id="new-password"
             type="password"
             autoComplete="new-password"
-            autoFocus
+            autoFocus={!askCurrent}
             aria-invalid={!!errors.password}
             {...register("password")}
           />

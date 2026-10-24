@@ -1,6 +1,7 @@
 import "server-only";
 import webpush from "web-push";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isPushEndpoint } from "@/lib/push-endpoint";
 import { publicSiteOrigin } from "@/lib/site";
 
 // Sends Web Push messages (public/sw.js shows them). Keys come from the env:
@@ -37,6 +38,8 @@ export async function sendPush(
 ): Promise<number> {
   let delivered = 0;
   for (const sub of subscriptions) {
+    // Rows saved before the allowlist existed are never sent to.
+    if (!isPushEndpoint(sub.endpoint)) continue;
     try {
       await webpush.sendNotification(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },

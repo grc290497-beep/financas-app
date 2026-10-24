@@ -58,7 +58,7 @@
       "title": "Saldo",
       "mode": "Como calcular o disponível",
       "monthOnly": "Só este mês",
-      "carry": "Somar meses anteriores",
+      "carry": "Acumulado",
       "monthOnlyHint": "\"Disponível agora\" considera só o que entrou e saiu neste mês.",
       "carryHint": "O que sobrou (ou faltou) nos meses anteriores passa para o mês seguinte, como na sua conta do banco.",
       "opening": "Saldo inicial",
@@ -252,6 +252,7 @@
     "features": "Recursos",
     "login": "Entrar",
     "signup": "Criar conta",
+    "openApp": "Abrir o app",
     "menu": "Abrir menu"
   },
   "Landing": {
@@ -642,6 +643,7 @@
     "reset": {
       "title": "Nova senha",
       "subtitle": "Escolha a senha que vai usar daqui para frente.",
+      "current": "Senha atual",
       "password": "Nova senha",
       "confirm": "Repita a nova senha",
       "submit": "Salvar e entrar",
@@ -672,6 +674,7 @@
       "signUpFailed": "Não foi possível criar a conta. Tente de novo.",
       "link": "Esse link expirou ou já foi usado. Peça um novo.",
       "samePassword": "A senha nova precisa ser diferente da atual.",
+      "currentPassword": "A senha atual não confere. Esqueceu? Saia e use \"Esqueci minha senha\" no login.",
       "unexpected": "Algo deu errado. Tente de novo."
     }
   },

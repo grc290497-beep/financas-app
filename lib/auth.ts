@@ -34,6 +34,22 @@ export const requireUser = cache(async () => {
   return { id: claims.sub, email: claims.email as string | undefined };
 });
 
+/**
+ * Whether this session came from an e-mail link (password reset, magic link)
+ * in the last 15 minutes: proof of access to the inbox, so a new password can
+ * be set without the current one. Otherwise the current one is required.
+ */
+export async function signedInByRecentLink(): Promise<boolean> {
+  await requireUser();
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const amr = (data?.claims?.amr ?? []) as { method: string; timestamp: number }[];
+  const since = Date.now() / 1000 - 15 * 60;
+  return amr.some(
+    (entry) => ["recovery", "otp", "magiclink"].includes(entry.method) && entry.timestamp > since,
+  );
+}
+
 /** The signed-in user's profile (RLS limits the query to their own row). */
 export const requireProfile = cache(async (): Promise<Profile> => {
   const user = await requireUser();
@@ -46,6 +62,9 @@ export const requireProfile = cache(async (): Promise<Profile> => {
     .eq("id", user.id)
     .single();
 
+  // No row (PGRST116): the account was deleted, e.g. on another device, while
+  // this session's token is still valid. Any other error is a real failure.
+  if (error?.code === "PGRST116") redirect("/auth/signout");
   if (error || !data) {
     throw new Error("Profile not found for the signed-in user.");
   }

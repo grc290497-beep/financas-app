@@ -122,6 +122,10 @@ describe("transactionSchema", () => {
     expect(firstMessage(transactionSchema.safeParse({ ...valid, fxRate: "0" }))).toBe(
       "rateInvalid",
     );
+    expect(firstMessage(transactionSchema.safeParse({ ...valid, fxRate: "1000,01" }))).toBe(
+      "rateInvalid",
+    );
+    expect(transactionSchema.safeParse({ ...valid, fxRate: "1000" }).success).toBe(true);
     expect(firstMessage(transactionSchema.safeParse({ ...valid, categoryId: "x" }))).toBe(
       "categoryRequired",
     );

@@ -26,7 +26,13 @@ export async function SiteHeader() {
         </Link>
         <SiteNav
           sections={sections}
-          labels={{ nav: t("label"), login: t("login"), signup: t("signup"), menu: t("menu") }}
+          labels={{
+            nav: t("label"),
+            login: t("login"),
+            signup: t("signup"),
+            openApp: t("openApp"),
+            menu: t("menu"),
+          }}
         />
       </div>
     </header>

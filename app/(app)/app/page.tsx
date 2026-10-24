@@ -118,13 +118,21 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
     period.end >= today
       ? planned.filter((p) => p.type === "income").reduce((sum, p) => sum + p.amountPrimaryCents, 0)
       : 0;
+  // One-off entries dated later this month are planned too (lib/actions/transactions.ts);
+  // month_summary only counts fixed costs as planned, so add them to what goes out.
+  const plannedOneOffCents = planned
+    .filter((p) => p.type === "expense" && !p.recurringItemId)
+    .reduce((sum, p) => sum + p.amountPrimaryCents, 0);
   const m = computeMetrics(
-    summary,
+    { ...summary, variableSpentCents: summary.variableSpentCents + plannedOneOffCents },
     isCurrent ? daysLeft(period, today) : 0,
     goalsPlannedCents,
     plannedIncomeCents,
     carriedCents,
   );
+  // "Disponível agora" is up to today: a bill marked paid ahead of its date
+  // counts from that date on, the same as the sparkline under it.
+  const availableCents = carriedCents + movements.reduce((sum, mv) => sum + mv.cents, 0);
   const highlightedGoals = goals.filter((g) => g.status === "active").slice(0, 3);
   const previousById = new Map(previousSpend.map((c) => [c.id, c.spentCents]));
   const budgets = spend.filter((c) => c.budgetCents);
@@ -184,10 +192,10 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
               <p
                 className={cn(
                   "text-5xl font-semibold tracking-tight text-brass-light tabular-nums",
-                  m.balanceCents < 0 && "text-hero-negative",
+                  availableCents < 0 && "text-hero-negative",
                 )}
               >
-                <AnimatedMoney id="available" cents={m.balanceCents} currency={primary} />
+                <AnimatedMoney id="available" cents={availableCents} currency={primary} />
               </p>
               {/* tabular-nums: the sentence carries an amount, so it blurs with the rest. */}
               <p className="text-sm text-hero-muted tabular-nums">
