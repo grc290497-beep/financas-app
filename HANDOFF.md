@@ -22,33 +22,20 @@ O que faltar, instale** (peça confirmação ao usuário quando a instalação p
   Alternativa: CLI com `npm install -g @anthropic-ai/claude-code` e rodar `claude` na pasta do projeto.
 - O claude.ai no navegador sozinho **não** roda comandos nem edita arquivos.
 
-### Skills (pasta `~/.claude/skills/`)
-Devem existir estas skills:
-`animate, animate-expo, animation-performance, animation-vocabulary, apple-design, ask-sonner,
-break-ui, emil-design-eng, find-animation-opportunities, improve-animations, mobile-native,
-pick-ui-library, prototype, review-animations, write-swift, impeccable, graphify`
+### Skills, plugins e conectores
+A lista completa, com origem e comando de instalação, está em **`SETUP-CLAUDE.md`**
+(a mesma lista serve para outros projetos). Em resumo, conferido em 24/10/2026:
 
-Origem de cada uma:
-| Skill(s) | Origem | Como instalar |
-|---|---|---|
-| animate … write-swift (as de animação/design do Emil Kowalski) | https://github.com/emilkowalski/skills | clonar o repo e copiar cada pasta de skill para `~/.claude/skills/` |
-| impeccable | https://github.com/pbakaus/impeccable | **só a skill, sem os hooks** (o usuário escolheu assim). Copiar a pasta da skill para `~/.claude/skills/impeccable` |
-| graphify | https://github.com/Graphify-Labs/graphify | `pip install` a partir do código-fonte do repo e depois `graphify install` (cria `~/.claude/skills/graphify` e a linha no `~/.claude/CLAUDE.md`) |
+- **Plugins:** ponytail (nível **lite**: `/ponytail lite`), impeccable (plugin completo,
+  **com** os hooks de revisão de design), claude-security, claude-code-setup.
+- **Skills:** as 15 do Emil Kowalski (animate … write-swift, incluindo emil-design-eng)
+  e graphify. Usadas de fato neste projeto: emil-design-eng, impeccable e dataviz
+  (esta já vem com o Claude Code).
+- **Não** instalar `ui-ux-pro-max` (o usuário pediu para remover).
 
-**Não** instalar `ui-ux-pro-max` (o usuário pediu para remover).
-
-### Plugins
-- **ponytail** (plugin completo) — https://github.com/DietrichGebert/ponytail
-  ```
-  claude plugin marketplace add DietrichGebert/ponytail
-  claude plugin install ponytail@ponytail
-  ```
-  O usuário usa o nível **lite**: `/ponytail lite` (constrói o que foi pedido e aponta em uma
-  linha quando existe uma versão menor).
-
-### Conectores (claude.ai → Settings → Connectors) — o usuário conecta, você não digita credenciais
+Conectores deste projeto (o usuário conecta, você não digita credenciais):
 - **Supabase** (projeto `nbaetpofofagcogzykhv`)
-- **Vercel** (projeto `financas-app`)
+- **Vercel** (projeto `financas-app`, time `team_m5DvWyKhOBmqZStJdkGWtc46`)
 - **Figma** (opcional, para a fase de design)
 
 ### Memória a recriar
