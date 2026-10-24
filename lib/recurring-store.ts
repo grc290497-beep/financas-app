@@ -125,21 +125,30 @@ export type PlannedRow = {
   currency: Currency;
   amountPrimaryCents: number;
   occurredOn: string;
+  paid: boolean;
 };
 
-/** Planned (not yet paid) transactions in a date range, soonest first. */
-export async function listPlanned(from: string, to: string): Promise<PlannedRow[]> {
+/**
+ * Planned (not yet paid) transactions in a date range, soonest first. With
+ * `withPaid`, the fixed items' occurrences already paid or received come too.
+ */
+export async function listPlanned(
+  from: string,
+  to: string,
+  { withPaid = false } = {},
+): Promise<PlannedRow[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("transactions")
     .select(
-      "id, recurring_item_id, type, description, amount_cents, currency, amount_primary_cents, occurred_on",
+      "id, recurring_item_id, type, description, amount_cents, currency, amount_primary_cents, occurred_on, status",
     )
-    .eq("status", "planned")
     .gte("occurred_on", from)
-    .lte("occurred_on", to)
-    .order("occurred_on")
-    .order("description");
+    .lte("occurred_on", to);
+  query = withPaid
+    ? query.in("status", ["planned", "confirmed"]).not("recurring_item_id", "is", null)
+    : query.eq("status", "planned");
+  const { data, error } = await query.order("occurred_on").order("description");
   if (error) throw error;
   return data.map((t) => ({
     id: t.id,
@@ -150,5 +159,6 @@ export async function listPlanned(from: string, to: string): Promise<PlannedRow[
     currency: t.currency as Currency,
     amountPrimaryCents: Number(t.amount_primary_cents),
     occurredOn: t.occurred_on,
+    paid: t.status === "confirmed",
   }));
 }

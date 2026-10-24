@@ -55,7 +55,7 @@ export function QuickAdd(props: {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="bottom"
-          className="mx-auto max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl pb-[calc(1rem+env(safe-area-inset-bottom))]"
+          className="mx-auto max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl pb-0"
         >
           <SheetHeader className="pb-0">
             <SheetTitle>{t("add")}</SheetTitle>

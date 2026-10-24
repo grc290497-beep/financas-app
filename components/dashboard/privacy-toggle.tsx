@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
 import { PRIVACY_KEY } from "@/lib/prefs";
+import { cn } from "@/lib/utils";
 
 /**
- * The eye on the hero card: hides every amount (globals.css blurs
- * .tabular-nums under html[data-privacy]). The root layout applies the saved
- * choice before paint, so amounts never flash visible.
+ * The eye in the header (phones) and the sidebar: hides every amount on every
+ * page (globals.css masks .tabular-nums under html[data-privacy]). The root
+ * layout applies the saved choice before paint, so amounts never flash visible.
  */
-export function PrivacyToggle() {
+export function PrivacyToggle({ className }: { className?: string }) {
   const t = useTranslations("Dashboard");
   const [hidden, setHidden] = useState(false);
 
@@ -37,7 +38,11 @@ export function PrivacyToggle() {
       onClick={toggle}
       aria-pressed={hidden}
       aria-label={hidden ? t("showValues") : t("hideValues")}
-      className="raised -mr-1 flex size-9 items-center justify-center rounded-full text-hero-muted transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.94]"
+      title={hidden ? t("showValues") : t("hideValues")}
+      className={cn(
+        "flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-[transform,color,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-accent hover:text-foreground active:scale-[0.94]",
+        className,
+      )}
     >
       <Icon className="size-4" aria-hidden />
     </button>

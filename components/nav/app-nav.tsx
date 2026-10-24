@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Ellipsis, PanelLeftClose, PanelLeftOpen, Plus } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { PrivacyToggle } from "@/components/dashboard/privacy-toggle";
 import { AccountMenu } from "@/components/nav/account-menu";
 import { Avatar } from "@/components/nav/avatar";
 import {
@@ -113,17 +114,20 @@ export function AppNav({ name, email, initial }: { name: string; email: string; 
               <Logo />
             </span>
           </Link>
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            aria-label={t("toggleSidebar")}
-            aria-expanded={!collapsed}
-            title={t("toggleSidebar")}
-            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <PanelLeftClose className="size-4 collapsed:hidden" aria-hidden />
-            <PanelLeftOpen className="hidden size-4 collapsed:block" aria-hidden />
-          </button>
+          <div className="flex items-center gap-0.5 collapsed:flex-col">
+            <PrivacyToggle className="size-8 rounded-lg" />
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              aria-label={t("toggleSidebar")}
+              aria-expanded={!collapsed}
+              title={t("toggleSidebar")}
+              className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              <PanelLeftClose className="size-4 collapsed:hidden" aria-hidden />
+              <PanelLeftOpen className="hidden size-4 collapsed:block" aria-hidden />
+            </button>
+          </div>
         </div>
         <button
           type="button"

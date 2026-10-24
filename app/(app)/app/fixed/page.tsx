@@ -55,7 +55,7 @@ async function Fixed({ searchParams }: { searchParams: PageProps<"/app/fixed">["
   const monthLink = (count: number) =>
     `/app/fixed?month=${shiftPeriod(period, msd, count).start.slice(0, 7)}`;
   const [planned, items, categories, t] = await Promise.all([
-    listPlanned(period.start, period.end),
+    listPlanned(period.start, period.end, { withPaid: true }),
     listRecurringItems(),
     getCategories(),
     getTranslations("Fixed"),
@@ -65,7 +65,8 @@ async function Fixed({ searchParams }: { searchParams: PageProps<"/app/fixed">["
 
   const toPay = planned.filter((p) => p.type === "expense");
   const toReceive = planned.filter((p) => p.type === "income");
-  const remaining = toPay.reduce((sum, p) => sum + p.amountPrimaryCents, 0);
+  const pending = planned.filter((p) => !p.paid);
+  const remaining = toPay.filter((p) => !p.paid).reduce((sum, p) => sum + p.amountPrimaryCents, 0);
   // Items with no occurrence left (e.g. the old version after a raise) move to a folded list.
   const running = items.filter((i) => nextOccurrence(i, today) !== null);
   const ended = items.filter((i) => nextOccurrence(i, today) === null);
@@ -118,26 +119,21 @@ async function Fixed({ searchParams }: { searchParams: PageProps<"/app/fixed">["
             {t("allDone")}
           </p>
         ) : (
-          // Due items confirm themselves on the day; what is still to come stays folded.
+          // The month's fixed items, paid ones ticked; folded in the current month.
           // A future month is opened precisely to see what is planned, so it starts unfolded.
           <details className="group" open={!isCurrent}>
             <summary className="surface flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-sm select-none">
-              <span>{t("upcomingList", { count: planned.length })}</span>
+              <span className="flex items-center gap-2">
+                {pending.length === 0 && (
+                  <CheckCircle2 className="size-4 text-positive" aria-hidden />
+                )}
+                {pending.length > 0 ? t("upcomingList", { count: pending.length }) : t("allPaid")}
+              </span>
               <span className="text-muted-foreground group-open:hidden">{t("show")}</span>
               <span className="hidden text-muted-foreground group-open:inline">{t("hide")}</span>
             </summary>
             <div className="mt-3 flex flex-col gap-3">
-              {toPay.length > 0 && (
-                <PlannedList
-                  title={t("toPay")}
-                  rows={toPay}
-                  today={today}
-                  primary={primary}
-                  categoryIdByItem={new Map(items.map((i) => [i.id, i.categoryId]))}
-                  categoryById={categoryById}
-                  footer={t("remaining", { amount: formatMoney(remaining, primary) })}
-                />
-              )}
+              {/* Incomes first: usually fewer lines, and what pays for the rest. */}
               {toReceive.length > 0 && (
                 <PlannedList
                   title={t("toReceive")}
@@ -148,6 +144,21 @@ async function Fixed({ searchParams }: { searchParams: PageProps<"/app/fixed">["
                   categoryById={categoryById}
                 />
               )}
+              {toPay.length > 0 && (
+                <PlannedList
+                  title={t("toPay")}
+                  rows={toPay}
+                  today={today}
+                  primary={primary}
+                  categoryIdByItem={new Map(items.map((i) => [i.id, i.categoryId]))}
+                  categoryById={categoryById}
+                  footer={
+                    remaining > 0
+                      ? t("remaining", { amount: formatMoney(remaining, primary) })
+                      : undefined
+                  }
+                />
+              )}
             </div>
           </details>
         )}
@@ -155,20 +166,20 @@ async function Fixed({ searchParams }: { searchParams: PageProps<"/app/fixed">["
 
       {addButton}
 
-      {expenses.length > 0 && (
+      {incomes.length > 0 && (
         <ItemList
-          title={t("expenses")}
-          items={expenses}
+          title={t("incomes")}
+          items={incomes}
           today={today}
           categories={categories}
           categoryById={categoryById}
           primary={primary}
         />
       )}
-      {incomes.length > 0 && (
+      {expenses.length > 0 && (
         <ItemList
-          title={t("incomes")}
-          items={incomes}
+          title={t("expenses")}
+          items={expenses}
           today={today}
           categories={categories}
           categoryById={categoryById}
@@ -223,21 +234,29 @@ async function PlannedList({
           const category = categoryById.get(
             (row.recurringItemId && categoryIdByItem.get(row.recurringItemId)) || "",
           );
-          const overdue = row.occurredOn < today && row.type === "expense";
+          const overdue = !row.paid && row.occurredOn < today && row.type === "expense";
           const due = dayMonth(row.occurredOn);
           return (
             <li key={row.id} className="flex items-center gap-3 px-4 py-3.5">
               <CategoryIcon icon={category?.icon ?? null} color={category?.color ?? null} />
               <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate font-medium">{row.description}</span>
+                <span className={cn("truncate font-medium", row.paid && "text-muted-foreground")}>
+                  {row.description}
+                </span>
                 <span
-                  className={cn("text-sm", overdue ? "text-negative" : "text-muted-foreground")}
+                  className={cn(
+                    "flex items-center gap-1 text-sm",
+                    overdue ? "text-negative" : "text-muted-foreground",
+                  )}
                 >
-                  {overdue
-                    ? t("overdue", { date: due })
-                    : row.type === "income"
-                      ? t("receiveOn", { date: due })
-                      : t("dueOn", { date: due })}
+                  {row.paid && <CheckCircle2 className="size-3.5 text-positive" aria-hidden />}
+                  {row.paid
+                    ? t(row.type === "income" ? "receivedOn" : "paidOn", { date: due })
+                    : overdue
+                      ? t("overdue", { date: due })
+                      : row.type === "income"
+                        ? t("receiveOn", { date: due })
+                        : t("dueOn", { date: due })}
                 </span>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1">
@@ -250,14 +269,16 @@ async function PlannedList({
                   </span>
                 )}
               </div>
-              <PayButton
-                id={row.id}
-                type={row.type}
-                name={row.description ?? ""}
-                dueLabel={due}
-                amountCents={row.amountCents}
-                currency={row.currency}
-              />
+              {!row.paid && (
+                <PayButton
+                  id={row.id}
+                  type={row.type}
+                  name={row.description ?? ""}
+                  dueLabel={due}
+                  amountCents={row.amountCents}
+                  currency={row.currency}
+                />
+              )}
             </li>
           );
         })}

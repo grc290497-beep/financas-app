@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
+import { PrivacyToggle } from "@/components/dashboard/privacy-toggle";
 import { AccountMenu } from "@/components/nav/account-menu";
 import { requireProfile, requireUser } from "@/lib/auth";
 
@@ -17,9 +18,12 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           <Link href="/app">
             <Logo name={t("appName")} />
           </Link>
-          <Suspense fallback={<span className="size-8" />}>
-            <AccountLink />
-          </Suspense>
+          <div className="flex items-center gap-2">
+            <PrivacyToggle />
+            <Suspense fallback={<span className="size-8" />}>
+              <AccountLink />
+            </Suspense>
+          </div>
         </div>
       </header>
       {children}

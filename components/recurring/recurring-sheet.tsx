@@ -48,7 +48,9 @@ export function RecurringSheet({
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="bottom"
-          className="mx-auto max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl pb-[calc(1rem+env(safe-area-inset-bottom))]"
+          className="mx-auto max-h-[92dvh] w-full max-w-lg overflow-x-hidden overflow-y-auto rounded-t-2xl pb-[calc(1rem+env(safe-area-inset-bottom))]"
+          // Phones: no keyboard over half the form the moment it opens.
+          onOpenAutoFocus={(event) => event.preventDefault()}
         >
           <SheetHeader className="pb-0">
             <SheetTitle>{initial ? t("edit") : t("add")}</SheetTitle>

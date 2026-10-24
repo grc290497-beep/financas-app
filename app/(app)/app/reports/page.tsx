@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { format, parseISO } from "date-fns";
+import { addDays, format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { MonthSwitcher } from "@/components/nav/month-switcher";
+import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { CategoryPie, type CategorySlice } from "@/components/reports/category-pie";
 import { MonthBars } from "@/components/reports/month-bars";
 import { ExportLinks } from "@/components/settings/export-links";
@@ -12,11 +12,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { requireProfile } from "@/lib/auth";
 import { computeMetrics } from "@/lib/dashboard";
 import { formatMoney } from "@/lib/money";
-import { getFinancialPeriod, periodStartingIn, shiftPeriod } from "@/lib/period";
-import { currentDate, getCategorySpend, getMonthSummary } from "@/lib/transactions";
+import { getFinancialPeriod, periodStartingIn, shiftPeriod, type Period } from "@/lib/period";
+import { currentDate, getCategorySpend, getMonthSummary, getMovements } from "@/lib/transactions";
 import { cn } from "@/lib/utils";
 import { transactionFiltersSchema } from "@/lib/validators";
 
+const RANGES = ["days", "3m", "12m"] as const;
+type Range = (typeof RANGES)[number];
 const MONTHS = 12;
 const PIE_SLICES = 5; // the rest folds into "Outros"
 const OTHER_COLOR = "#94a3b8";
@@ -46,18 +48,23 @@ async function Reports({
   const { month } = transactionFiltersSchema.parse({
     month: Array.isArray(raw.month) ? raw.month[0] : raw.month,
   });
+  const rawRange = Array.isArray(raw.range) ? raw.range[0] : raw.range;
+  const range: Range = RANGES.includes(rawRange as Range) ? (rawRange as Range) : "12m";
+  const count = range === "3m" ? 3 : MONTHS;
   const msd = profile.monthStartDay;
   const current = getFinancialPeriod(await currentDate(), msd);
   const period = month ? periodStartingIn(month, msd) : current;
   const isCurrent = period.start === current.start;
-  const periods = Array.from({ length: MONTHS }, (_, i) =>
-    shiftPeriod(period, msd, i - MONTHS + 1),
-  );
+  // "Dias" is the viewed month on its own; the others end at it.
+  const periods =
+    range === "days"
+      ? [period]
+      : Array.from({ length: count }, (_, i) => shiftPeriod(period, msd, i - count + 1));
 
-  const [t, summaries, spend] = await Promise.all([
+  const [t, summaries, movements] = await Promise.all([
     getTranslations("Reports"),
     Promise.all(periods.map(getMonthSummary)),
-    getCategorySpend(period),
+    range === "days" ? getMovements(period.start, period.end) : [],
   ]);
 
   const primary = profile.primaryCurrency;
@@ -68,7 +75,17 @@ async function Reports({
   }));
   // Months before the first entry are just rows of zeros; the viewed month always stays.
   const first = all.findIndex((m) => m.incomeCents > 0 || m.expenseCents > 0);
-  const months = first === -1 ? all : all.slice(Math.min(first, MONTHS - 1));
+  const months = first === -1 ? all : all.slice(Math.min(first, all.length - 1));
+  // The pie covers the whole range shown.
+  const spend = await getCategorySpend({ start: months[0].start, end: period.end });
+  const bars =
+    range === "days"
+      ? dailyBars(movements, period)
+      : months.map((m) => ({
+          label: m.label,
+          incomeCents: m.incomeCents,
+          expenseCents: m.expenseCents,
+        }));
   const paid = spend.filter((c) => c.spentCents > 0); // already sorted by spend
   const slices: CategorySlice[] = paid.slice(0, PIE_SLICES).map((c) => ({
     name: c.name,
@@ -78,40 +95,64 @@ async function Reports({
   const otherCents = paid.slice(PIE_SLICES).reduce((sum, c) => sum + c.spentCents, 0);
   if (otherCents > 0) slices.push({ name: t("other"), cents: otherCents, color: OTHER_COLOR });
   const hasData = months.some((m) => m.incomeCents > 0 || m.expenseCents > 0);
-  const monthLink = (count: number) =>
-    `/app/reports?month=${shiftPeriod(period, msd, count).start.slice(0, 7)}`;
+  const rangeParam = range === "12m" ? "" : `range=${range}`;
+  const href = (start?: string) => {
+    const params = [start ? `month=${start.slice(0, 7)}` : "", rangeParam].filter(Boolean);
+    return `/app/reports${params.length ? `?${params.join("&")}` : ""}`;
+  };
+  const monthLink = (shift: number) => href(shiftPeriod(period, msd, shift).start);
+  const viewed = all[all.length - 1].label;
+  const rangeLabel =
+    range === "days" ? periodLabel(period, msd) : t("range", { from: months[0].label, to: viewed });
 
   return (
     <>
       <div className="flex flex-col gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <nav aria-label={t("rangeLabel")} className="raised-control flex rounded-xl p-1">
+          {RANGES.map((r) => (
+            <Link
+              key={r}
+              href={
+                r === "12m"
+                  ? `/app/reports${month ? `?month=${month}` : ""}`
+                  : `/app/reports?${month ? `month=${month}&` : ""}range=${r}`
+              }
+              aria-current={r === range ? "page" : undefined}
+              className={cn(
+                "flex-1 rounded-lg px-3 py-1.5 text-center text-sm transition-colors",
+                r === range
+                  ? "bg-background font-medium text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t(`ranges.${r}`)}
+            </Link>
+          ))}
+        </nav>
         <MonthSwitcher
-          label={t("range", { from: months[0].label, to: all[MONTHS - 1].label })}
+          label={rangeLabel}
           previousHref={monthLink(-1)}
           nextHref={monthLink(1)}
           previousLabel={t("previous")}
           nextLabel={t("next")}
-          currentHref={isCurrent ? undefined : "/app/reports"}
+          currentHref={isCurrent ? undefined : href()}
           currentLabel={t("current")}
         />
       </div>
 
       {hasData ? (
         <>
-          <Section title={t("evolution")} hint={t("inPrimary", { currency: primary })}>
+          <Section
+            title={range === "days" ? t("daily") : t("evolution")}
+            hint={t("inPrimary", { currency: primary })}
+          >
             <div className="surface p-4">
-              <MonthBars
-                data={months.map((m) => ({
-                  label: m.label,
-                  incomeCents: m.incomeCents,
-                  expenseCents: m.expenseCents,
-                }))}
-                currency={primary}
-              />
+              <MonthBars data={bars} currency={primary} />
             </div>
           </Section>
 
-          <Section title={t("byCategory", { month: all[MONTHS - 1].label })}>
+          <Section title={t("byCategory", { month: range === "days" ? viewed : rangeLabel })}>
             {slices.length ? (
               <div className="surface p-4">
                 <CategoryPie slices={slices} currency={primary} />
@@ -199,6 +240,29 @@ async function Reports({
       </Section>
     </>
   );
+}
+
+/** Income and expenses for each day of the period, from confirmed movements. */
+function dailyBars(movements: { date: string; cents: number }[], period: Period) {
+  const bars = new Map<string, { label: string; incomeCents: number; expenseCents: number }>();
+  for (
+    let day = parseISO(period.start);
+    format(day, "yyyy-MM-dd") <= period.end;
+    day = addDays(day, 1)
+  ) {
+    bars.set(format(day, "yyyy-MM-dd"), {
+      label: format(day, "dd"),
+      incomeCents: 0,
+      expenseCents: 0,
+    });
+  }
+  for (const m of movements) {
+    const bar = bars.get(m.date);
+    if (!bar) continue;
+    if (m.cents > 0) bar.incomeCents += m.cents;
+    else bar.expenseCents -= m.cents;
+  }
+  return [...bars.values()];
 }
 
 function Section({

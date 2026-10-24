@@ -179,7 +179,6 @@ export function RecurringForm({
             id="name"
             placeholder={t("form.namePlaceholder")}
             maxLength={60}
-            autoFocus={!initial}
             aria-invalid={!!errors.name}
             {...register("name")}
           />
@@ -229,7 +228,7 @@ export function RecurringForm({
           <FieldError errors={validationMessage(errors.categoryId)} />
         </FieldSet>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
           <Field>
             <FieldLabel htmlFor="frequency">{t("form.frequency")}</FieldLabel>
             <Select
@@ -275,7 +274,7 @@ export function RecurringForm({
         </div>
         {frequency === "monthly" && <FieldDescription>{t("form.dayHint")}</FieldDescription>}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
           <Field data-invalid={!!errors.startOn}>
             <FieldLabel htmlFor="startOn">{t("form.startOn")}</FieldLabel>
             <Input id="startOn" type="date" {...register("startOn")} />

@@ -6,7 +6,6 @@ import { ReceiptText } from "lucide-react";
 import { MonthSwitcher, periodLabel } from "@/components/nav/month-switcher";
 import { BudgetBar } from "@/components/budget/budget-bar";
 import { AnimatedMoney } from "@/components/dashboard/animated-money";
-import { PrivacyToggle } from "@/components/dashboard/privacy-toggle";
 import { Sparkline } from "@/components/dashboard/sparkline";
 import { InstallAppButton } from "@/components/pwa/install-app";
 import { GoalProgress, GoalStatusBadge } from "@/components/goals/goal-status";
@@ -179,12 +178,9 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/app">["se
               className="hero-card flex flex-col gap-1.5 rounded-3xl px-5 py-6"
               aria-labelledby="available"
             >
-              <div className="flex items-center justify-between gap-3">
-                <h2 id="available" className="text-sm text-hero-muted">
-                  {t("available")}
-                </h2>
-                <PrivacyToggle />
-              </div>
+              <h2 id="available" className="text-sm text-hero-muted">
+                {t("available")}
+              </h2>
               <p
                 className={cn(
                   "text-5xl font-semibold tracking-tight text-brass-light tabular-nums",

@@ -279,7 +279,8 @@ export function TransactionForm({
       </FieldGroup>
 
       {/* Stays reachable at the bottom of the sheet while the keyboard is open. */}
-      <div className="sticky bottom-0 -mx-4 flex gap-3 border-t bg-background/95 px-4 pt-3 pb-1 backdrop-blur">
+      {/* Opaque down to the sheet's edge: nothing scrolls visibly behind or below it. */}
+      <div className="sticky bottom-0 -mx-4 flex gap-3 border-t bg-background px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]">
         {initial && (
           <Button
             type="button"

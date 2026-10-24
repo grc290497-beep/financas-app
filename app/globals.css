@@ -60,6 +60,9 @@
   --color-positive: var(--positive);
   --color-negative: var(--negative);
   --color-warning: var(--warning);
+  --color-budget-ok: var(--budget-ok);
+  --color-budget-warning: var(--budget-warning);
+  --color-budget-over: var(--budget-over);
   --color-brass-light: var(--brass-light);
   /* Brass as text on light surfaces, where the plain brass is too pale to read. */
   --color-brass-dark: var(--brass-dark);
@@ -104,6 +107,10 @@
   --positive: oklch(0.45 0.1 72);
   --negative: oklch(0.52 0.14 42);
   --warning: oklch(0.62 0.13 65);
+  /* Budget bars: a traffic light, toned to sit with the green hero and brass. */
+  --budget-ok: oklch(0.58 0.11 158);
+  --budget-warning: oklch(0.76 0.15 82);
+  --budget-over: oklch(0.57 0.18 28);
   --brass: oklch(0.72 0.11 82);
   --brass-light: oklch(0.88 0.08 90);
   --brass-dark: oklch(0.52 0.09 72);
@@ -160,6 +167,9 @@
   --positive: oklch(0.82 0.1 85);
   --negative: oklch(0.74 0.13 50);
   --warning: oklch(0.78 0.13 70);
+  --budget-ok: oklch(0.7 0.12 158);
+  --budget-warning: oklch(0.83 0.14 85);
+  --budget-over: oklch(0.67 0.17 28);
   --brass: oklch(0.74 0.1 82);
   --brass-light: oklch(0.88 0.08 90);
   --brass-dark: oklch(0.54 0.09 72);
@@ -288,6 +298,17 @@ body:has([data-bottom-nav]) .site-footer {
   body:has([data-sidebar]) .app-header {
     display: none;
   }
+}
+
+/* iOS Safari gives date fields a wide intrinsic size (and centres the text),
+   which pushes two of them side by side past the screen. */
+input[type="date"] {
+  min-width: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 /* "Esconder valores" (the eye on Início): amounts turn into a blurred bar
